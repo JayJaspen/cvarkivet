@@ -11,7 +11,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Poolad anslutning – används av appen vid vanliga anrop.
+  url       = env("DATABASE_URL")
+  // Direktanslutning – krävs för migrationer, som inte fungerar via poolen.
+  // Båda sätts automatiskt av Neon-integrationen i Vercel.
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 // ---------------------------------------------------------------- Användare

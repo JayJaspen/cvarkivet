@@ -28,18 +28,21 @@ Skapa ett **privat** repo på github.com och följ instruktionerna för att push
 
 ## 2. Databas hos Neon
 
-1. Skapa konto på **neon.tech**.
-2. Nytt projekt, namn `cvarkivet`. Välj region **EU (Frankfurt)** – viktigt för GDPR.
-3. Kopiera anslutningssträngen under *Connection string* → välj **Pooled connection**.
-   Den ser ut ungefär så här:
-   `postgresql://user:lösen@ep-xxx-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require`
-4. Spara den, du behöver den i steg 5.
+Databasen skapas **inifrån Vercel**, inte på neon.tech. Gör därför steg 5 först,
+och kom tillbaka hit.
 
-Migrationen ligger redan färdig i `prisma/migrations/0_init/`. Skapa tabellerna
-genom att köra från din dator:
+1. I Vercel-projektet: **Storage** → **Create Database** → välj **Neon**.
+2. Region: **Europe (Frankfurt)** – viktigt, användarnas personuppgifter bör ligga inom EU.
+3. Vercel lägger automatiskt in `DATABASE_URL` (poolad) och `DATABASE_URL_UNPOOLED`
+   (direkt) som miljövariabler. Du behöver inte skriva in dem för hand.
+
+Migrationen ligger redan färdig i `prisma/migrations/0_init/`. Skapa tabellerna genom
+att köra från din dator, med **den opoolade** strängen (migrationer fungerar inte via
+anslutningspoolen):
 
 ```powershell
-$env:DATABASE_URL="din-neon-url-här"
+$env:DATABASE_URL_UNPOOLED="din-opoolade-url"
+$env:DATABASE_URL=$env:DATABASE_URL_UNPOOLED
 npx prisma migrate deploy
 ```
 
@@ -84,7 +87,8 @@ Vercel lägger automatiskt in `BLOB_READ_WRITE_TOKEN` som miljövariabel.
 
 | Namn | Värde |
 |---|---|
-| `DATABASE_URL` | Neon-strängen från steg 2 |
+| `DATABASE_URL` | sätts automatiskt av Neon-integrationen |
+| `DATABASE_URL_UNPOOLED` | sätts automatiskt av Neon-integrationen |
 | `AUTH_SECRET` | **Generera en ny**, se nedan |
 | `NEXT_PUBLIC_APP_URL` | `https://cvarkivet.se` |
 | `RESEND_API_KEY` | Nyckeln från steg 3 |

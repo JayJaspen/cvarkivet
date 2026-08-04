@@ -19,7 +19,13 @@ if (!schema.includes('provider = "postgresql"')) {
 
 const local =
   '// AUTOGENERERAD – ändra prisma/schema.prisma i stället.\n' +
-  schema.replace('provider = "postgresql"', 'provider = "sqlite"');
+  schema
+    .replace('provider = "postgresql"', 'provider = "sqlite"')
+    // SQLite har ingen anslutningspool och stödjer inte directUrl.
+    .replace(/^\s*directUrl\s*=.*$/m, '')
+    .replace(/^\s*\/\/ Direktanslutning.*$/m, '')
+    .replace(/^\s*\/\/ Båda sätts automatiskt.*$/m, '')
+    .replace(/^\s*\/\/ Poolad anslutning.*$/m, '');
 
 writeFileSync(dest, local);
 console.log('Skrev prisma/schema.local.prisma (SQLite).');
