@@ -1,0 +1,25 @@
+node_modules
+.next
+out
+build
+.vercel
+
+# Databasfiler och autogenererat lokalt schema
+*.db
+*.db-journal
+prisma/schema.local.prisma
+
+# Hemligheter – får aldrig checkas in
+.env
+.env*.local
+
+# Loggar från lokala testkörningar
+*.log
+
+# Lokalt uppladdade logotyper (i drift ligger de i Vercel Blob)
+public/uploads/*
+!public/uploads/.gitkeep
+
+.DS_Store
+next-env.d.ts
+tsconfig.tsbuildinfo

@@ -1,0 +1,259 @@
+'use server';
+
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/db';
+import { createSession, destroySession } from '@/lib/session';
+import { validBirthDate, validEmail, normalizeDomain, domainOf } from '@/lib/utils';
+import { appUrl, passwordResetEmail, sendEmail } from '@/lib/email';
+
+export type FormState = { error?: string; ok?: string } | undefined;
+
+// ------------------------------------------------------------------- Logga in
+
+export async function login(_prev: FormState, form: FormData): Promise<FormState> {
+  const email = String(form.get('email') ?? '').trim().toLowerCase();
+  const password = String(form.get('password') ?? '');
+
+  if (!email || !password) return { error: 'Fyll i både e-postadress och lösenord.' };
+
+  const admin = await prisma.admin.findUnique({ where: { email } });
+  if (admin && (await bcrypt.compare(password, admin.passwordHash))) {
+    await createSession(admin.id, 'ADMIN');
+    redirect('/admin/anvandare');
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user && (await bcrypt.compare(password, user.passwordHash))) {
+    if (user.suspended) return { error: 'Kontot är avstängt. Kontakta support@cvarkivet.se.' };
+    // Inloggning nollställer klockan för gallring av inaktiva konton.
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date(), retentionWarningAt: null },
+    });
+    await createSession(user.id, 'USER');
+    redirect('/kandidat/jobb');
+  }
+
+  const company = await prisma.company.findUnique({ where: { email } });
+  if (company && (await bcrypt.compare(password, company.passwordHash))) {
+    if (company.suspended) return { error: 'Kontot är avstängt. Kontakta support@cvarkivet.se.' };
+    await prisma.company.update({
+      where: { id: company.id },
+      data: { lastLoginAt: new Date(), retentionWarningAt: null },
+    });
+    await createSession(company.id, 'COMPANY');
+    redirect('/foretag/cvarkivet');
+  }
+
+  return { error: 'Fel e-postadress eller lösenord.' };
+}
+
+export async function logout() {
+  destroySession();
+  redirect('/');
+}
+
+// ------------------------------------------------------- Registrera användare
+
+export async function registerUser(_prev: FormState, form: FormData): Promise<FormState> {
+  const firstName = String(form.get('firstName') ?? '').trim();
+  const lastName = String(form.get('lastName') ?? '').trim();
+  const email = String(form.get('email') ?? '').trim().toLowerCase();
+  const phone = String(form.get('phone') ?? '').trim();
+  const birthRaw = String(form.get('birthDate') ?? '');
+  const password = String(form.get('password') ?? '');
+  const password2 = String(form.get('password2') ?? '');
+  const terms = form.get('terms');
+
+  if (!firstName || !lastName) return { error: 'Fyll i för- och efternamn.' };
+  if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
+  if (phone.replace(/\D/g, '').length < 6) return { error: 'Ange ett giltigt telefonnummer.' };
+
+  const birthDate = validBirthDate(birthRaw);
+  if (!birthDate) return { error: 'Ange födelsedatum som ÅÅÅÅMMDD, t.ex. 19900115.' };
+
+  if (password.length < 8) return { error: 'Lösenordet måste vara minst 8 tecken.' };
+  if (password !== password2) return { error: 'Lösenorden matchar inte.' };
+  if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
+
+  const taken =
+    (await prisma.user.findUnique({ where: { email } })) ||
+    (await prisma.company.findUnique({ where: { email } }));
+  if (taken) return { error: 'E-postadressen är redan registrerad.' };
+
+  const user = await prisma.user.create({
+    data: {
+      firstName,
+      lastName,
+      email,
+      phone,
+      birthDate,
+      passwordHash: await bcrypt.hash(password, 10),
+    },
+  });
+
+  // Kontot är aktivt direkt – ingen verifiering krävs.
+  await createSession(user.id, 'USER');
+  redirect('/kandidat/cv?valkommen=1');
+}
+
+// --------------------------------------------------------- Registrera företag
+
+export async function registerCompany(_prev: FormState, form: FormData): Promise<FormState> {
+  const orgNumber = String(form.get('orgNumber') ?? '').trim();
+  const name = String(form.get('name') ?? '').trim();
+  const contactName = String(form.get('contactName') ?? '').trim();
+  const email = String(form.get('email') ?? '').trim().toLowerCase();
+  const phone = String(form.get('phone') ?? '').trim();
+  const address = String(form.get('address') ?? '').trim();
+  const municipality = String(form.get('municipality') ?? '').trim();
+  const website = normalizeDomain(String(form.get('website') ?? ''));
+  const password = String(form.get('password') ?? '');
+  const password2 = String(form.get('password2') ?? '');
+  const terms = form.get('terms');
+
+  if (!/^\d{6}-?\d{4}$/.test(orgNumber))
+    return { error: 'Ange organisationsnummer i formatet 556677-8899.' };
+  if (!name) return { error: 'Ange företagsnamn.' };
+  if (!contactName) return { error: 'Ange namn på kontaktperson.' };
+  if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
+  if (phone.replace(/\D/g, '').length < 6) return { error: 'Ange ett giltigt telefonnummer.' };
+  if (!address) return { error: 'Ange adress.' };
+  if (!municipality) return { error: 'Välj hemmahörande kommun.' };
+  if (password.length < 8) return { error: 'Lösenordet måste vara minst 8 tecken.' };
+  if (password !== password2) return { error: 'Lösenorden matchar inte.' };
+  if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
+
+  const orgTaken = await prisma.company.findUnique({ where: { orgNumber } });
+  if (orgTaken) return { error: 'Organisationsnumret är redan registrerat.' };
+
+  const emailTaken =
+    (await prisma.company.findUnique({ where: { email } })) ||
+    (await prisma.user.findUnique({ where: { email } }));
+  if (emailTaken) return { error: 'E-postadressen är redan registrerad.' };
+
+  // Karensspärr: ett företag som sagt upp sin prenumeration ska inte kunna
+  // kringgå de 2 månaderna genom att registrera ett nytt konto på samma domän.
+  const domain = domainOf(email);
+  if (domain) {
+    const iKarens = await prisma.company.findFirst({
+      where: {
+        blockedUntil: { gt: new Date() },
+        email: { endsWith: `@${domain}` },
+      },
+      select: { blockedUntil: true },
+    });
+    if (iKarens)
+      return {
+        error:
+          'Ett konto med samma e-postdomän har nyligen sagt upp sin prenumeration. ' +
+          'Nytt konto kan registreras efter ' +
+          iKarens.blockedUntil!.toLocaleDateString('sv-SE') +
+          '. Kontakta support@cvarkivet.se om detta är fel.',
+      };
+  }
+
+  const company = await prisma.company.create({
+    data: {
+      orgNumber,
+      name,
+      contactName,
+      email,
+      phone,
+      address,
+      municipality,
+      website: website || null,
+      passwordHash: await bcrypt.hash(password, 10),
+    },
+  });
+
+  await createSession(company.id, 'COMPANY');
+  redirect('/foretag/var-sida?valkommen=1');
+}
+
+// ------------------------------------------------------ Glömt lösenord
+
+const hashToken = (token: string) => crypto.createHash('sha256').update(token).digest('hex');
+
+export async function requestPasswordReset(
+  _prev: FormState,
+  form: FormData
+): Promise<FormState> {
+  const email = String(form.get('email') ?? '').trim().toLowerCase();
+  if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  const company = user ? null : await prisma.company.findUnique({ where: { email } });
+
+  // Samma svar oavsett om kontot finns – annars går det att kartlägga
+  // vilka adresser som är registrerade.
+  const account = user
+    ? { id: user.id, role: 'USER' as const, name: user.firstName, suspended: user.suspended }
+    : company
+      ? {
+          id: company.id,
+          role: 'COMPANY' as const,
+          name: company.contactName,
+          suspended: company.suspended,
+        }
+      : null;
+
+  if (account && !account.suspended) {
+    const token = crypto.randomBytes(32).toString('hex');
+
+    await prisma.$transaction([
+      // Äldre länkar för samma konto ska sluta gälla.
+      prisma.passwordResetToken.deleteMany({
+        where: { accountId: account.id, usedAt: null },
+      }),
+      prisma.passwordResetToken.create({
+        data: {
+          tokenHash: hashToken(token),
+          accountId: account.id,
+          role: account.role,
+          expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+        },
+      }),
+    ]);
+
+    const mail = passwordResetEmail(account.name, appUrl(`/aterstall-losenord?token=${token}`));
+    await sendEmail({ to: email, ...mail });
+  }
+
+  return {
+    ok: 'Om adressen finns registrerad har vi skickat en återställningslänk. Kolla även skräpposten.',
+  };
+}
+
+export async function resetPassword(_prev: FormState, form: FormData): Promise<FormState> {
+  const token = String(form.get('token') ?? '');
+  const password = String(form.get('password') ?? '');
+  const password2 = String(form.get('password2') ?? '');
+
+  if (password.length < 8) return { error: 'Lösenordet måste vara minst 8 tecken.' };
+  if (password !== password2) return { error: 'Lösenorden matchar inte.' };
+
+  const record = await prisma.passwordResetToken.findUnique({
+    where: { tokenHash: hashToken(token) },
+  });
+
+  if (!record || record.usedAt || record.expiresAt < new Date())
+    return { error: 'Länken är ogiltig eller har gått ut. Begär en ny återställning.' };
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  if (record.role === 'USER') {
+    await prisma.user.update({ where: { id: record.accountId }, data: { passwordHash } });
+  } else {
+    await prisma.company.update({ where: { id: record.accountId }, data: { passwordHash } });
+  }
+
+  await prisma.passwordResetToken.update({
+    where: { id: record.id },
+    data: { usedAt: new Date() },
+  });
+
+  redirect('/logga-in?aterstallt=1');
+}

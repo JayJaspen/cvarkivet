@@ -1,0 +1,321 @@
+// CVArkivet.se – datamodell
+//
+// Produktionsdatabasen är PostgreSQL (Neon).
+// För lokal utveckling utan internet finns en SQLite-variant:
+//   npm run dev:sqlite   – genererar prisma/schema.local.prisma automatiskt
+// Ändra ALDRIG schema.local.prisma för hand, den skrivs över.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------- Användare
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  birthDate    String // ÅÅÅÅMMDD – ersätter personnummer (GDPR: dataminimering)
+  phone        String
+  suspended    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  /// Senaste aktivitet – uppdateras vid inloggning och som mest en gång per dygn
+  /// när kandidaten använder sidan. Styr gallringen av inaktiva konton.
+  lastLoginAt  DateTime?
+  /// Sattes när varningsmailet inför gallring skickades.
+  retentionWarningAt DateTime?
+
+  // CV
+  homeMunicipality  String? // Hemmahörande kommun – visas i företagens träfflista
+  headline          String? // Yrkesrubrik, t.ex. "Lagerarbetare"
+  coverLetter       String? // Personligt brev
+  summary           String? // Kort presentation
+  skills            String? // Fritext
+  languages         String? // Fritext
+  drivingLicense    String? // t.ex. "B, C"
+  cvUpdatedAt       DateTime?
+
+  // CV-inställningar
+  activelyLooking   Boolean @default(true)
+  salaryExpectation Int? // kr/mån, frivilligt
+  openToRemote      Boolean @default(false)
+
+  // Notisinställningar
+  notifyOnCvView Boolean @default(true)
+
+  categories     UserCategory[]
+  municipalities UserMunicipality[]
+  experiences    Experience[]
+  educations     Education[]
+
+  favorites      Favorite[]
+  hiddenCompanies HiddenCompany[]
+  hiddenDomains  HiddenDomain[]
+
+  cvViews        CvView[]
+  companyVisits  CompanyVisit[]
+  hearts         Heart[]
+  applications   Application[]
+  messages       Message[]
+  viewNotices    CvViewNotification[]
+
+  @@index([activelyLooking])
+}
+
+model UserCategory {
+  id       String @id @default(cuid())
+  userId   String
+  category String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([category])
+}
+
+model UserMunicipality {
+  id           String @id @default(cuid())
+  userId       String
+  municipality String // kommunnamn eller "Distans"
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, municipality])
+  @@index([municipality])
+}
+
+model Experience {
+  id          String  @id @default(cuid())
+  userId      String
+  title       String
+  employer    String
+  location    String?
+  fromDate    String // ÅÅÅÅ-MM
+  toDate      String? // null = pågående
+  description String?
+  sortOrder   Int     @default(0)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id        String  @id @default(cuid())
+  userId    String
+  program   String
+  school    String
+  fromDate  String
+  toDate    String?
+  sortOrder Int     @default(0)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------ Företag
+
+model Company {
+  id           String   @id @default(cuid())
+  orgNumber    String   @unique
+  name         String // Visas för användarna
+  contactName  String
+  email        String   @unique
+  phone        String
+  address      String
+  municipality String
+  logoUrl      String?
+  presentation String?
+  website      String?
+  passwordHash String
+  suspended    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+  retentionWarningAt DateTime?
+
+  // Prenumeration: NONE | CV | CV_ADS
+  subscription        String    @default("NONE")
+  subscriptionStarted DateTime?
+  cancelledAt         DateTime?
+  blockedUntil        DateTime? // 2 mån karens efter uppsägning
+
+  jobAds          JobAd[]
+  cvViews         CvView[]
+  hearts          Heart[]
+  favoritedBy     Favorite[]
+  hiddenBy        HiddenCompany[]
+  visits          CompanyVisit[]
+  messages        Message[]
+  subscriptionLog SubscriptionEvent[]
+  viewNotices     CvViewNotification[]
+
+  @@index([subscription])
+}
+
+model SubscriptionEvent {
+  id        String   @id @default(cuid())
+  companyId String
+  type      String // ACTIVATED | CHANGED | CANCELLED
+  plan      String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------ Annonser
+
+model JobAd {
+  id           String   @id @default(cuid())
+  companyId    String
+  title        String
+  body         String
+  applyEmail   String?
+  applyUrl     String?
+  deadline     DateTime
+  salaryMin    Int?
+  salaryMax    Int?
+  municipality String
+  category     String
+  createdAt    DateTime @default(now())
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  applications Application[]
+
+  @@index([deadline])
+  @@index([municipality])
+  @@index([category])
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  userId    String
+  jobAdId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobAd     JobAd    @relation(fields: [jobAdId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobAdId])
+}
+
+// ------------------------------------------------------- Relationer & loggar
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+}
+
+model HiddenCompany {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+}
+
+model HiddenDomain {
+  id     String @id @default(cuid())
+  userId String
+  domain String // t.ex. "ab.se"
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, domain])
+}
+
+model Heart {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, userId])
+}
+
+/// Loggas varje gång ett företag aktivt öppnar ett CV
+model CvView {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyId])
+}
+
+/// Loggas varje gång en användare öppnar en företagsprofil (syns för admin)
+model CompanyVisit {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// -------------------------------------------------------------- Meddelanden
+
+model Message {
+  id         String   @id @default(cuid())
+  companyId  String
+  userId     String
+  senderType String // COMPANY | USER
+  body       String
+  createdAt  DateTime @default(now())
+  readAt     DateTime?
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, userId])
+}
+
+/// Håller reda på när vi senast mailade kandidaten om att ett visst
+/// företag läst CV:t – så att vi aldrig spammar mer än en gång per dygn.
+model CvViewNotification {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String
+  sentAt    DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, userId])
+}
+
+// ------------------------------------------------------ Lösenordsåterställning
+
+/// Gäller både kandidat- och företagskonton. Token lagras hashad –
+/// själva länken finns bara i mailet.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  accountId String
+  role      String // USER | COMPANY
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([accountId])
+}
+
+// -------------------------------------------------------------------- Admin
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
