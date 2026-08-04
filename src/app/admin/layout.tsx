@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         tabs={[
           { href: '/admin/anvandare', label: 'Registrerade användare' },
           { href: '/admin/foretag', label: 'Registrerade företag' },
+          { href: '/admin/mitt-konto', label: 'Mitt konto' },
         ]}
       />
       <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>

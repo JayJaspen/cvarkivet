@@ -1,4 +1,4 @@
-﻿-- CreateSchema
+-- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateTable
@@ -391,14 +391,3 @@ ALTER TABLE "CvViewNotification" ADD CONSTRAINT "CvViewNotification_companyId_fk
 -- AddForeignKey
 ALTER TABLE "CvViewNotification" ADD CONSTRAINT "CvViewNotification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-node.exe : npm notice
-At line:1 char:1
-+ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (npm notice:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-npm notice New minor version of npm available! 11.8.0 -> 11.19.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0
-npm notice To update run: npm install -g npm@11.19.0
-npm notice

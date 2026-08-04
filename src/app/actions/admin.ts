@@ -1,10 +1,37 @@
 'use server';
 
+import bcrypt from 'bcryptjs';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
 import { korGallring } from '@/lib/retention';
+
+export type FormState = { error?: string; ok?: string } | undefined;
+
+export async function changeAdminPassword(
+  _prev: FormState,
+  form: FormData
+): Promise<FormState> {
+  const admin = await requireAdmin();
+  const current = String(form.get('current') ?? '');
+  const next = String(form.get('next') ?? '');
+  const next2 = String(form.get('next2') ?? '');
+
+  if (!(await bcrypt.compare(current, admin.passwordHash)))
+    return { error: 'Nuvarande lösenord stämmer inte.' };
+  if (next.length < 12)
+    return { error: 'Adminlösenordet måste vara minst 12 tecken.' };
+  if (next !== next2) return { error: 'De nya lösenorden matchar inte.' };
+  if (next === current) return { error: 'Välj ett annat lösenord än det nuvarande.' };
+
+  await prisma.admin.update({
+    where: { id: admin.id },
+    data: { passwordHash: await bcrypt.hash(next, 12) },
+  });
+
+  return { ok: 'Lösenordet är uppdaterat.' };
+}
 
 export async function toggleUserSuspended(form: FormData) {
   await requireAdmin();
