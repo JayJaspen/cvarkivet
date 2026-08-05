@@ -24,6 +24,7 @@ export default function CompanyForm() {
           name="orgNumber"
           required
           placeholder="556677-8899"
+          hint="Kontrolleras automatiskt."
         />
         <Field
           label="Företagsnamn"
@@ -43,7 +44,7 @@ export default function CompanyForm() {
         name="email"
         type="email"
         required
-        hint="Används även som inloggning."
+        hint="Måste vara en företagsadress – Gmail, Hotmail och liknande accepteras inte. Används även som inloggning."
       />
 
       <div className="grid gap-4 sm:grid-cols-2">

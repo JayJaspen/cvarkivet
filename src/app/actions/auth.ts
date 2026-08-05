@@ -5,8 +5,20 @@ import crypto from 'crypto';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { createSession, destroySession } from '@/lib/session';
-import { validBirthDate, validEmail, normalizeDomain, domainOf } from '@/lib/utils';
-import { appUrl, passwordResetEmail, sendEmail } from '@/lib/email';
+import {
+  validBirthDate,
+  validEmail,
+  normalizeDomain,
+  domainOf,
+  arPrivatEpostdoman,
+  giltigtOrgnummer,
+} from '@/lib/utils';
+import {
+  appUrl,
+  newCompanyForReviewEmail,
+  passwordResetEmail,
+  sendEmail,
+} from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -114,11 +126,25 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
   const password2 = String(form.get('password2') ?? '');
   const terms = form.get('terms');
 
-  if (!/^\d{6}-?\d{4}$/.test(orgNumber))
-    return { error: 'Ange organisationsnummer i formatet 556677-8899.' };
+  const orgnr = giltigtOrgnummer(orgNumber);
+  if (!orgnr)
+    return {
+      error:
+        'Organisationsnumret är inte giltigt. Kontrollera att du skrivit rätt – ' +
+        'formatet är 556677-8899 och sista siffran är en kontrollsiffra.',
+    };
+
   if (!name) return { error: 'Ange företagsnamn.' };
   if (!contactName) return { error: 'Ange namn på kontaktperson.' };
   if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
+
+  if (arPrivatEpostdoman(email))
+    return {
+      error:
+        'Använd företagets egen e-postadress, inte en privat adress som Gmail eller ' +
+        'Hotmail. Har ni ingen företagsdomän, kontakta support@cvarkivet.se.',
+    };
+
   if (phone.replace(/\D/g, '').length < 6) return { error: 'Ange ett giltigt telefonnummer.' };
   if (!address) return { error: 'Ange adress.' };
   if (!municipality) return { error: 'Välj hemmahörande kommun.' };
@@ -126,7 +152,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
   if (password !== password2) return { error: 'Lösenorden matchar inte.' };
   if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
 
-  const orgTaken = await prisma.company.findUnique({ where: { orgNumber } });
+  const orgTaken = await prisma.company.findUnique({ where: { orgNumber: orgnr } });
   if (orgTaken) return { error: 'Organisationsnumret är redan registrerat.' };
 
   const emailTaken =
@@ -157,7 +183,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
 
   const company = await prisma.company.create({
     data: {
-      orgNumber,
+      orgNumber: orgnr,
       name,
       contactName,
       email,
@@ -168,6 +194,16 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
       passwordHash: await bcrypt.hash(password, 10),
     },
   });
+
+  // Meddela administratörerna att det finns något att granska.
+  const admins = await prisma.admin.findMany({ select: { email: true } });
+  const notis = newCompanyForReviewEmail(
+    name,
+    orgnr,
+    email,
+    appUrl(`/admin/foretag/${company.id}`)
+  );
+  for (const a of admins) await sendEmail({ to: a.email, ...notis });
 
   await createSession(company.id, 'COMPANY');
   redirect('/foretag/var-sida?valkommen=1');

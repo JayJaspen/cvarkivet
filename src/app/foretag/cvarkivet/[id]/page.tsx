@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
-import { harCvAtkomst } from '@/lib/data';
+import { arGodkant, harCvAtkomst } from '@/lib/data';
+import GranskningNotis from '@/components/GranskningNotis';
 import { Badge, Card, PageHeader } from '@/components/ui';
 import { ageFromBirthDate, formatDateTime, kr } from '@/lib/utils';
 import { isUserHiddenFrom } from '@/lib/visibility';
@@ -15,7 +16,16 @@ export const dynamic = 'force-dynamic';
 export default async function CvDetail({ params }: { params: { id: string } }) {
   const company = await requireCompany();
 
-  if (!harCvAtkomst(company.subscription)) {
+  if (!arGodkant(company)) {
+    return (
+      <>
+        <PageHeader title="CVArkivet" />
+        <GranskningNotis status={company.status} reviewNote={company.reviewNote} />
+      </>
+    );
+  }
+
+  if (!harCvAtkomst(company)) {
     return (
       <>
         <PageHeader title="CVArkivet" />

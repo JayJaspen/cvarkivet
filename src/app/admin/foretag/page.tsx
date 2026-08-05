@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/session';
 import { PLANER, planNamn, prisInklMoms } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
-import { toggleCompanySuspended } from '@/app/actions/admin';
+import { godkannForetag, toggleCompanySuspended } from '@/app/actions/admin';
 import { contains } from '@/lib/search';
 
 export const dynamic = 'force-dynamic';
@@ -12,14 +12,15 @@ export const dynamic = 'force-dynamic';
 export default async function AdminCompanies({
   searchParams,
 }: {
-  searchParams: { q?: string; plan?: string; status?: string };
+  searchParams: { q?: string; plan?: string; status?: string; granskning?: string };
 }) {
   await requireAdmin();
-  const { q, plan, status } = searchParams;
+  const { q, plan, status, granskning } = searchParams;
 
   const companies = await prisma.company.findMany({
     where: {
       ...(plan ? { subscription: plan } : {}),
+      ...(granskning ? { status: granskning } : {}),
       ...(status === 'avstangda' ? { suspended: true } : {}),
       ...(status === 'aktiva' ? { suspended: false } : {}),
       ...(q
@@ -32,9 +33,13 @@ export default async function AdminCompanies({
     orderBy: { createdAt: 'desc' },
   });
 
-  const [cvCount, adsCount] = await Promise.all([
+  const [cvCount, adsCount, vantande] = await Promise.all([
     prisma.company.count({ where: { subscription: 'CV', suspended: false } }),
     prisma.company.count({ where: { subscription: 'CV_ADS', suspended: false } }),
+    prisma.company.findMany({
+      where: { status: 'PENDING' },
+      orderBy: { createdAt: 'asc' },
+    }),
   ]);
 
   const månadsintäkt = cvCount * PLANER.CV.pris + adsCount * PLANER.CV_ADS.pris;
@@ -66,6 +71,49 @@ export default async function AdminCompanies({
         </Card>
       </div>
 
+      {vantande.length > 0 && (
+        <Card className="mb-6 border-amber-300 bg-amber-50">
+          <h2 className="h2">
+            {vantande.length} {vantande.length === 1 ? 'företag väntar' : 'företag väntar'} på
+            granskning
+          </h2>
+          <p className="muted mt-1">
+            Ogranskade företag syns inte för kandidaterna och kommer inte åt något CV.
+          </p>
+
+          <div className="mt-4 space-y-3">
+            {vantande.map((c) => (
+              <div
+                key={c.id}
+                className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-amber-200 bg-white p-4"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-slate-900">{c.name}</p>
+                  <p className="muted">
+                    {c.orgNumber} · {c.municipality} · registrerad {formatDate(c.createdAt)}
+                  </p>
+                  <p className="muted">
+                    {c.contactName} · {c.email} · {c.phone}
+                  </p>
+                  <p className="muted">{c.address}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Link href={`/admin/foretag/${c.id}`} className="btn-secondary">
+                    Granska
+                  </Link>
+                  <form action={godkannForetag}>
+                    <input type="hidden" name="id" value={c.id} />
+                    <button className="btn-primary" type="submit">
+                      Godkänn
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       <Card className="mb-6">
         <form className="grid gap-3 sm:grid-cols-5">
           <div className="sm:col-span-2">
@@ -87,11 +135,12 @@ export default async function AdminCompanies({
             </select>
           </div>
           <div>
-            <label className="label">Status</label>
-            <select name="status" defaultValue={status ?? ''} className="input">
+            <label className="label">Granskning</label>
+            <select name="granskning" defaultValue={granskning ?? ''} className="input">
               <option value="">Alla</option>
-              <option value="aktiva">Aktiva</option>
-              <option value="avstangda">Avstängda</option>
+              <option value="PENDING">Väntar</option>
+              <option value="APPROVED">Godkända</option>
+              <option value="REJECTED">Avslagna</option>
             </select>
           </div>
           <div className="flex items-end gap-2">
@@ -157,7 +206,15 @@ export default async function AdminCompanies({
                   <td className="td">{c._count.jobAds}</td>
                   <td className="td">{c._count.cvViews}</td>
                   <td className="td">
-                    {c.suspended ? <Badge tone="red">Avstängd</Badge> : <Badge tone="green">Aktiv</Badge>}
+                    <div className="flex flex-wrap gap-1">
+                      {c.status === 'PENDING' && <Badge tone="amber">Väntar granskning</Badge>}
+                      {c.status === 'REJECTED' && <Badge tone="red">Avslaget</Badge>}
+                      {c.suspended ? (
+                        <Badge tone="red">Avstängd</Badge>
+                      ) : (
+                        c.status === 'APPROVED' && <Badge tone="green">Aktiv</Badge>
+                      )}
+                    </div>
                   </td>
                   <td className="td">
                     <div className="flex gap-2">

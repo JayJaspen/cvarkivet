@@ -10,11 +10,23 @@ export default function Page() {
           <Logo />
         </div>
 
+        <Notice tone="amber" title="Alla företag granskas innan de får tillgång">
+          <p>
+            För att skydda kandidaternas uppgifter godkänner vi varje företag manuellt. Ni kan
+            logga in och fylla i era uppgifter direkt, men får tillgång till CVArkivet först när
+            granskningen är klar. Ni får ett mail när det är gjort.
+          </p>
+          <p className="mt-2">
+            Registrera er med företagets egen e-postadress – privata adresser som Gmail eller
+            Hotmail godkänns inte.
+          </p>
+        </Notice>
+
         <Notice tone="blue" title="Det är gratis att skapa konto">
           <p>
             Registreringen kostar ingenting. För att kunna använda tjänsten – söka bland CV och
             publicera annonser – aktiverar ni en prenumeration under fliken <b>Vår sida</b> när
-            kontot är skapat.
+            kontot är godkänt.
           </p>
           <ul className="mt-2 space-y-1">
             <li>

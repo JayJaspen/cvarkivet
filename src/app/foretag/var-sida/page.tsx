@@ -34,11 +34,34 @@ export default async function VarSidaPage({
 
       {searchParams.valkommen && (
         <Notice tone="green" title="Kontot är skapat!">
-          Aktivera en prenumeration nedan för att komma åt CVArkivet.
+          Nästa steg är att vi granskar er registrering. Fyll gärna i presentation och
+          logotyp nedan – det gör granskningen snabbare.
         </Notice>
       )}
 
-      {company.subscription === 'NONE' && !searchParams.valkommen && (
+      {company.status === 'PENDING' && (
+        <Notice tone="amber" title="Ert konto granskas">
+          Alla företag granskas manuellt innan de får tillgång till CVArkivet. Ni får ett
+          mail så snart kontot är godkänt. Fram till dess kan ni fylla i era uppgifter men
+          inte söka bland CV, annonsera eller teckna prenumeration.
+        </Notice>
+      )}
+
+      {company.status === 'REJECTED' && (
+        <Notice tone="red" title="Ansökan har fått avslag">
+          <p>Vi kunde inte godkänna kontot efter granskning.</p>
+          {company.reviewNote && (
+            <p className="mt-2">
+              <b>Motivering:</b> {company.reviewNote}
+            </p>
+          )}
+          <p className="mt-2">
+            Tror ni att det blivit fel? Kontakta support@cvarkivet.se.
+          </p>
+        </Notice>
+      )}
+
+      {company.status === 'APPROVED' && company.subscription === 'NONE' && !searchParams.valkommen && (
         <Notice tone="amber" title="Ingen aktiv prenumeration">
           Kontot är gratis, men tjänsten kräver en prenumeration. Välj ett paket nedan.
         </Notice>
@@ -71,6 +94,12 @@ export default async function VarSidaPage({
               Nuvarande: <b>{planNamn(company.subscription)}</b>
               {company.subscriptionStarted && ` sedan ${formatDate(company.subscriptionStarted)}`}
             </p>
+
+            {company.status !== 'APPROVED' && (
+              <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                Prenumeration kan tecknas när kontot är godkänt.
+              </div>
+            )}
 
             {blocked && (
               <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
@@ -105,7 +134,11 @@ export default async function VarSidaPage({
                     {!current && (
                       <form action={activateSubscription} className="mt-3">
                         <input type="hidden" name="plan" value={id} />
-                        <button className="btn-primary w-full" type="submit" disabled={!!blocked}>
+                        <button
+                          className="btn-primary w-full"
+                          type="submit"
+                          disabled={!!blocked || company.status !== 'APPROVED'}
+                        >
                           {company.subscription === 'NONE' ? 'Aktivera' : 'Byt till detta paket'}
                         </button>
                       </form>

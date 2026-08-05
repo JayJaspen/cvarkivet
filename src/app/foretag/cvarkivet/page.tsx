@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
-import { harCvAtkomst, KATEGORIER, KOMMUNER_MED_DISTANS } from '@/lib/data';
+import { arGodkant, harCvAtkomst, KATEGORIER, KOMMUNER_MED_DISTANS } from '@/lib/data';
+import GranskningNotis from '@/components/GranskningNotis';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { ageFromBirthDate, kr } from '@/lib/utils';
 import { hiddenUserIdsForCompany } from '@/lib/visibility';
@@ -25,7 +26,16 @@ export default async function CvArkivetPage({
 }) {
   const company = await requireCompany();
 
-  if (!harCvAtkomst(company.subscription)) {
+  if (!arGodkant(company)) {
+    return (
+      <>
+        <PageHeader title="CVArkivet" />
+        <GranskningNotis status={company.status} reviewNote={company.reviewNote} />
+      </>
+    );
+  }
+
+  if (!harCvAtkomst(company)) {
     return (
       <>
         <PageHeader title="CVArkivet" />

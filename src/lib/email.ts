@@ -83,6 +83,62 @@ export function passwordResetEmail(name: string, url: string) {
   };
 }
 
+export function companyApprovedEmail(contactName: string, companyName: string, url: string) {
+  return {
+    subject: `${companyName} är nu godkänt på CVArkivet`,
+    html: layout(
+      `Hej ${contactName}!`,
+      `<p>Vi har granskat er registrering och <strong>${companyName}</strong> är nu godkänt
+        på CVArkivet.</p>
+       <p>Nästa steg är att aktivera en prenumeration under fliken <em>Vår sida</em>.
+        Därefter kan ni söka bland kandidaternas CV.</p>
+       <ul style="padding-left:18px">
+         <li>CV-prenumeration – 299 kr/mån exkl. moms</li>
+         <li>CV + Annonspaket – 499 kr/mån exkl. moms</li>
+       </ul>`,
+      { url, label: 'Logga in och kom igång' }
+    ),
+    text: `Hej ${contactName}!\n\n${companyName} är nu godkänt på CVArkivet.\n\nAktivera en prenumeration under Vår sida så kommer ni åt CVArkivet:\n- CV-prenumeration 299 kr/mån exkl. moms\n- CV + Annonspaket 499 kr/mån exkl. moms\n\nLogga in: ${url}`,
+  };
+}
+
+export function companyRejectedEmail(
+  contactName: string,
+  companyName: string,
+  motivering: string
+) {
+  return {
+    subject: `Angående er registrering på CVArkivet`,
+    html: layout(
+      `Hej ${contactName}!`,
+      `<p>Vi har granskat registreringen av <strong>${companyName}</strong> och kan tyvärr
+        inte godkänna kontot.</p>
+       ${motivering ? `<p><strong>Motivering:</strong><br>${motivering}</p>` : ''}
+       <p>Tror ni att det blivit fel, svara gärna till support@cvarkivet.se så tittar vi
+        på det igen.</p>`
+    ),
+    text: `Hej ${contactName}!\n\nVi har granskat registreringen av ${companyName} och kan tyvärr inte godkänna kontot.\n\n${motivering ? `Motivering: ${motivering}\n\n` : ''}Tror ni att det blivit fel, hör av er till support@cvarkivet.se.`,
+  };
+}
+
+export function newCompanyForReviewEmail(
+  companyName: string,
+  orgNumber: string,
+  email: string,
+  url: string
+) {
+  return {
+    subject: `Nytt företag att granska: ${companyName}`,
+    html: layout(
+      'Ett företag väntar på granskning',
+      `<p><strong>${companyName}</strong> har registrerat sig och väntar på godkännande.</p>
+       <p>Organisationsnummer: ${orgNumber}<br>Kontakt: ${email}</p>`,
+      { url, label: 'Granska företaget' }
+    ),
+    text: `${companyName} har registrerat sig och väntar på godkännande.\n\nOrganisationsnummer: ${orgNumber}\nKontakt: ${email}\n\nGranska: ${url}`,
+  };
+}
+
 export function retentionWarningEmail(name: string, dagar: number, url: string) {
   return {
     subject: `Ditt konto på CVArkivet raderas om ${dagar} dagar`,

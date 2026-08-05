@@ -39,6 +39,7 @@ async function main() {
       address: 'Hamngatan 12, 211 22 Malmö',
       municipality: 'Malmö',
       subscription: 'CV_ADS',
+      status: 'APPROVED',
       presentation:
         'Nordisk Logistik AB är en av Sydsveriges ledande tredjepartslogistiker med 240 anställda. Vi kör dygnet runt och satsar hårt på intern utveckling.',
     },
@@ -51,6 +52,7 @@ async function main() {
       address: 'Verkstadsgatan 5, 417 07 Göteborg',
       municipality: 'Göteborg',
       subscription: 'CV',
+      status: 'APPROVED',
       presentation:
         'Vi bygger bostäder i västra Sverige. Trygga anställningar, kollektivavtal och bra kompisgäng.',
     },
@@ -63,6 +65,7 @@ async function main() {
       address: 'Kungsgatan 40, 111 35 Stockholm',
       municipality: 'Stockholm',
       subscription: 'NONE',
+      status: 'PENDING', // ligger i granskningskön så att adminvyn går att testa
       presentation: 'Teknikkonsulter inom automation och industriell IT.',
     },
   ];
@@ -71,11 +74,16 @@ async function main() {
   for (const f of foretag) {
     const c = await prisma.company.upsert({
       where: { email: f.email },
-      update: {},
+      update: {
+        status: f.status,
+        subscription: f.subscription,
+        reviewedAt: f.status === 'APPROVED' ? new Date() : null,
+      },
       create: {
         ...f,
         passwordHash: pw,
         subscriptionStarted: f.subscription === 'NONE' ? null : new Date(),
+        reviewedAt: f.status === 'APPROVED' ? new Date() : null,
       },
     });
     skapadeForetag.push(c);
@@ -248,9 +256,9 @@ async function main() {
 Klart! Testinloggningar (lösenord för alla: losenord123)
 
   Admin:      admin@cvarkivet.se
-  Företag:    rekrytering@nordisklogistik.se   (CV + Annonspaket)
-              jobb@byggpartnervast.se          (CV-prenumeration)
-              hr@ab.se                         (ingen prenumeration)
+  Företag:    rekrytering@nordisklogistik.se   (godkänt, CV + Annonspaket)
+              jobb@byggpartnervast.se          (godkänt, CV-prenumeration)
+              hr@ab.se                         (VÄNTAR PÅ GRANSKNING – testa admin här)
   Kandidater: johan@example.se, sara@example.se, ali@example.se, emma@example.se
 `);
 }

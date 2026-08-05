@@ -20,10 +20,12 @@ export default async function JobbPage({
   const jobs = await prisma.jobAd.findMany({
     where: {
       deadline: { gte: new Date() }, // utgångna annonser försvinner för kandidater
-      company: { suspended: false },
+      company: { suspended: false, status: 'APPROVED' },
       ...(kommun ? { municipality: kommun } : {}),
       ...(kategori ? { category: kategori } : {}),
-      ...(foretag ? { company: { name: contains(foretag), suspended: false } } : {}),
+      ...(foretag
+        ? { company: { name: contains(foretag), suspended: false, status: 'APPROVED' } }
+        : {}),
     },
     include: { company: { select: { id: true, name: true, logoUrl: true, municipality: true } } },
     orderBy: { createdAt: 'desc' },

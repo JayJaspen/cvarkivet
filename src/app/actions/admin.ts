@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
 import { korGallring } from '@/lib/retention';
+import { appUrl, companyApprovedEmail, companyRejectedEmail, sendEmail } from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -71,6 +72,58 @@ export async function korGallringManuellt(form: FormData) {
     foretag: String(resultat.raderadeForetag),
   });
   redirect(`/admin/anvandare?${params.toString()}`);
+}
+
+// -------------------------------------------------- Granskning av företag
+
+export async function godkannForetag(form: FormData) {
+  await requireAdmin();
+  const id = String(form.get('id'));
+
+  const company = await prisma.company.update({
+    where: { id },
+    data: { status: 'APPROVED', reviewedAt: new Date(), reviewNote: null },
+  });
+
+  const mail = companyApprovedEmail(company.contactName, company.name, appUrl('/logga-in'));
+  await sendEmail({ to: company.email, ...mail });
+
+  revalidatePath('/admin/foretag');
+  revalidatePath(`/admin/foretag/${id}`);
+}
+
+export async function avslaForetag(form: FormData) {
+  await requireAdmin();
+  const id = String(form.get('id'));
+  const motivering = String(form.get('motivering') ?? '').trim();
+
+  const company = await prisma.company.update({
+    where: { id },
+    data: {
+      status: 'REJECTED',
+      reviewedAt: new Date(),
+      reviewNote: motivering || null,
+      subscription: 'NONE',
+    },
+  });
+
+  const mail = companyRejectedEmail(company.contactName, company.name, motivering);
+  await sendEmail({ to: company.email, ...mail });
+
+  revalidatePath('/admin/foretag');
+  revalidatePath(`/admin/foretag/${id}`);
+}
+
+/** Ångra ett beslut och lägga tillbaka företaget i kön. */
+export async function aterstallGranskning(form: FormData) {
+  await requireAdmin();
+  const id = String(form.get('id'));
+  await prisma.company.update({
+    where: { id },
+    data: { status: 'PENDING', reviewedAt: null, reviewNote: null },
+  });
+  revalidatePath('/admin/foretag');
+  revalidatePath(`/admin/foretag/${id}`);
 }
 
 /** Admin kan häva karensen om t.ex. ett företag sagt upp av misstag. */

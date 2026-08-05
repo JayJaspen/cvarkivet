@@ -17,7 +17,7 @@ export default async function CompanyProfile({ params }: { params: { id: string 
       jobAds: { where: { deadline: { gte: new Date() } }, orderBy: { createdAt: 'desc' } },
     },
   });
-  if (!company || company.suspended) notFound();
+  if (!company || company.suspended || company.status !== 'APPROVED') notFound();
 
   // Logga besöket (admin kan se vilka företagsprofiler en användare besökt)
   await prisma.companyVisit.create({ data: { userId: user.id, companyId: company.id } });

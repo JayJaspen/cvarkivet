@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
-import { harAnnonsAtkomst } from '@/lib/data';
+import { arGodkant, harAnnonsAtkomst } from '@/lib/data';
+import GranskningNotis from '@/components/GranskningNotis';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate, kr } from '@/lib/utils';
 import Paywall from '@/components/Paywall';
@@ -12,7 +13,16 @@ export const dynamic = 'force-dynamic';
 export default async function AnnonserPage() {
   const company = await requireCompany();
 
-  if (!harAnnonsAtkomst(company.subscription)) {
+  if (!arGodkant(company)) {
+    return (
+      <>
+        <PageHeader title="Annonser" />
+        <GranskningNotis status={company.status} reviewNote={company.reviewNote} />
+      </>
+    );
+  }
+
+  if (!harAnnonsAtkomst(company)) {
     return (
       <>
         <PageHeader title="Annonser" />

@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
 import { uploadLogo } from '@/lib/storage';
-import { harAnnonsAtkomst, harCvAtkomst } from '@/lib/data';
+import { arGodkant, harAnnonsAtkomst, harCvAtkomst } from '@/lib/data';
 import { monthsFromNow, normalizeDomain, validEmail } from '@/lib/utils';
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -91,6 +91,9 @@ export async function activateSubscription(form: FormData) {
   const plan = String(form.get('plan'));
   if (!['CV', 'CV_ADS'].includes(plan)) return;
 
+  // Ingen prenumeration innan kontot är granskat och godkänt.
+  if (!arGodkant(company)) return;
+
   // Karens: 2 månader efter uppsägning
   if (company.blockedUntil && company.blockedUntil > new Date()) return;
 
@@ -143,7 +146,9 @@ export async function cancelSubscription() {
 
 export async function saveJobAd(_prev: FormState, form: FormData): Promise<FormState> {
   const company = await requireCompany();
-  if (!harAnnonsAtkomst(company.subscription))
+  if (!arGodkant(company))
+    return { error: 'Kontot är inte godkänt ännu. Du kan publicera annonser när granskningen är klar.' };
+  if (!harAnnonsAtkomst(company))
     return { error: 'Annonsering kräver prenumerationen CV + Annonspaket.' };
 
   const id = String(form.get('id') ?? '');
@@ -203,7 +208,7 @@ export async function deleteJobAd(form: FormData) {
 
 export async function toggleHeart(form: FormData) {
   const company = await requireCompany();
-  if (!harCvAtkomst(company.subscription)) return;
+  if (!harCvAtkomst(company)) return;
 
   const userId = String(form.get('userId'));
   const existing = await prisma.heart.findUnique({
@@ -218,7 +223,7 @@ export async function toggleHeart(form: FormData) {
 
 export async function messageCandidate(form: FormData) {
   const company = await requireCompany();
-  if (!harCvAtkomst(company.subscription)) return;
+  if (!harCvAtkomst(company)) return;
 
   const userId = String(form.get('userId'));
   const body = String(form.get('body') ?? '').trim();

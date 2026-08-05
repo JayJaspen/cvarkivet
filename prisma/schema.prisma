@@ -137,6 +137,12 @@ model Company {
   lastLoginAt  DateTime?
   retentionWarningAt DateTime?
 
+  /// Granskningsstatus: PENDING | APPROVED | REJECTED
+  /// Nya företag måste godkännas av admin innan de får se några CV.
+  status          String    @default("PENDING")
+  reviewedAt      DateTime?
+  reviewNote      String? // Motivering vid avslag, visas för företaget
+
   // Prenumeration: NONE | CV | CV_ADS
   subscription        String    @default("NONE")
   subscriptionStarted DateTime?
@@ -154,6 +160,7 @@ model Company {
   viewNotices     CvViewNotification[]
 
   @@index([subscription])
+  @@index([status])
 }
 
 model SubscriptionEvent {

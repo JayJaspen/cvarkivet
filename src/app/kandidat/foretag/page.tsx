@@ -20,6 +20,7 @@ export default async function ForetagPage({
     prisma.company.findMany({
       where: {
         suspended: false,
+        status: 'APPROVED', // ogranskade företag syns inte för kandidaterna
         ...(q ? { name: contains(q) } : {}),
         ...(kommun ? { municipality: kommun } : {}),
       },

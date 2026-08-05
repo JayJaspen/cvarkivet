@@ -141,10 +141,25 @@ export function planNamn(id: string) {
   return (PLANER as Record<string, { namn: string }>)[id]?.namn ?? id;
 }
 
-export function harCvAtkomst(subscription: string) {
-  return subscription === 'CV' || subscription === 'CV_ADS';
+/** Ett företag måste vara godkänt av admin innan det får se något CV. */
+export function arGodkant(company: { status: string }) {
+  return company.status === 'APPROVED';
 }
 
-export function harAnnonsAtkomst(subscription: string) {
-  return subscription === 'CV_ADS';
+export function statusText(status: string) {
+  return status === 'APPROVED'
+    ? 'Godkänt'
+    : status === 'REJECTED'
+      ? 'Avslaget'
+      : 'Väntar på granskning';
+}
+
+export function harCvAtkomst(company: { subscription: string; status: string }) {
+  if (!arGodkant(company)) return false;
+  return company.subscription === 'CV' || company.subscription === 'CV_ADS';
+}
+
+export function harAnnonsAtkomst(company: { subscription: string; status: string }) {
+  if (!arGodkant(company)) return false;
+  return company.subscription === 'CV_ADS';
 }

@@ -14,8 +14,13 @@ export default async function Home() {
 
   const [users, companies, ads] = await Promise.all([
     prisma.user.count({ where: { suspended: false } }),
-    prisma.company.count({ where: { suspended: false } }),
-    prisma.jobAd.count({ where: { deadline: { gte: new Date() } } }),
+    prisma.company.count({ where: { suspended: false, status: 'APPROVED' } }),
+    prisma.jobAd.count({
+      where: {
+        deadline: { gte: new Date() },
+        company: { suspended: false, status: 'APPROVED' },
+      },
+    }),
   ]);
 
   return (

@@ -5,7 +5,14 @@ import { requireAdmin } from '@/lib/session';
 import { planNamn } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate, formatDateTime, kr } from '@/lib/utils';
-import { clearCompanyBlock, toggleCompanySuspended } from '@/app/actions/admin';
+import {
+  aterstallGranskning,
+  avslaForetag,
+  clearCompanyBlock,
+  godkannForetag,
+  toggleCompanySuspended,
+} from '@/app/actions/admin';
+import { statusText } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,6 +60,82 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
         <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
           Kontot är avstängt och företaget kan inte logga in.
         </div>
+      )}
+
+      {company.status === 'PENDING' && (
+        <Card className="mb-6 border-amber-300 bg-amber-50">
+          <h2 className="h2">Företaget väntar på granskning</h2>
+          <p className="muted mt-1 max-w-2xl">
+            Kontrollera att organisationsnumret och företagsnamnet hör ihop, och att
+            e-postdomänen ser ut att tillhöra företaget. Godkänner du får de tillgång till
+            alla registrerade CV.
+          </p>
+
+          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <div>
+              <dt className="text-slate-500">Organisationsnummer</dt>
+              <dd className="font-medium">{company.orgNumber}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">E-postdomän</dt>
+              <dd className="font-medium">@{company.email.split('@').pop()}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Uppgiven webbplats</dt>
+              <dd className="font-medium">{company.website || 'ingen angiven'}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Presentation ifylld</dt>
+              <dd className="font-medium">{company.presentation ? 'Ja' : 'Nej'}</dd>
+            </div>
+          </dl>
+
+          <div className="mt-5 flex flex-wrap items-start gap-3">
+            <form action={godkannForetag}>
+              <input type="hidden" name="id" value={company.id} />
+              <button className="btn-primary" type="submit">
+                Godkänn företaget
+              </button>
+            </form>
+
+            <form action={avslaForetag} className="flex flex-wrap items-start gap-2">
+              <input type="hidden" name="id" value={company.id} />
+              <input
+                name="motivering"
+                placeholder="Motivering (skickas till företaget)"
+                className="input w-72"
+              />
+              <button className="btn-danger" type="submit">
+                Avslå
+              </button>
+            </form>
+          </div>
+        </Card>
+      )}
+
+      {company.status === 'REJECTED' && (
+        <Card className="mb-6 border-red-200 bg-red-50">
+          <h2 className="h2">Ansökan avslagen {formatDate(company.reviewedAt)}</h2>
+          {company.reviewNote && (
+            <p className="mt-2 text-sm text-red-900">
+              <b>Motivering:</b> {company.reviewNote}
+            </p>
+          )}
+          <div className="mt-4 flex gap-2">
+            <form action={godkannForetag}>
+              <input type="hidden" name="id" value={company.id} />
+              <button className="btn-primary" type="submit">
+                Godkänn ändå
+              </button>
+            </form>
+            <form action={aterstallGranskning}>
+              <input type="hidden" name="id" value={company.id} />
+              <button className="btn-secondary" type="submit">
+                Lägg tillbaka i kön
+              </button>
+            </form>
+          </div>
+        </Card>
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -124,6 +207,13 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
           <Card>
             <h2 className="h2 mb-3">Faktureringsunderlag</h2>
             <dl className="space-y-2 text-sm">
+              <div>
+                <dt className="text-slate-500">Granskningsstatus</dt>
+                <dd className="font-medium">
+                  {statusText(company.status)}
+                  {company.reviewedAt && ` · ${formatDate(company.reviewedAt)}`}
+                </dd>
+              </div>
               <div>
                 <dt className="text-slate-500">Prenumeration</dt>
                 <dd className="font-medium">{planNamn(company.subscription)}</dd>
