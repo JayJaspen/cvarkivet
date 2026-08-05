@@ -41,7 +41,8 @@ export default function Page() {
         <div className="card">
           <h1 className="h1">Registrera företag</h1>
           <p className="muted mt-1 mb-6">
-            Kontot är aktivt direkt efter registrering – ingen verifiering behövs.
+            Ni loggar in direkt efter registrering, men får tillgång till CVArkivet när vi
+            har granskat uppgifterna. Det går oftast på en arbetsdag.
           </p>
           <CompanyForm />
         </div>

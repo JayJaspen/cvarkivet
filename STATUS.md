@@ -1,6 +1,9 @@
 # Status och nästa steg
 
-Senast uppdaterad: **4 augusti 2026**
+Senast uppdaterad: **5 augusti 2026**
+
+> **Sajten är live på https://cvarkivet.vercel.app** (testmiljö).
+> Domänen cvarkivet.se är ännu inte påkopplad. Se DRIFTSATTNING.md steg 6.
 
 Den här filen är till för att snabbt komma tillbaka in i projektet efter en paus –
 eller för att ge en ny person (eller AI-assistent) hela bilden på fem minuter.
@@ -52,6 +55,8 @@ Registrerade företag (faktureringsunderlag per prenumeration, lästa CV, stäng
 | **PostgreSQL (Neon) i drift, SQLite lokalt** | Postgres krävs på Vercel. SQLite-varianten gör att du kan utveckla utan databaskonto eller internet. |
 | **Vercel + Neon framför egen server** | Enklare drift, automatisk deploy och SSL. Dyrare än en VPS men kräver ingen serverkunskap. |
 | **Gallring efter 24 månader, varning efter 23** | Integritetspolicyn lovade det redan. Betalande företag undantas så att en kund aldrig försvinner av misstag. |
+| **Manuellt godkännande av företag** | Hindrar låtsasföretag från att bläddra bland riktiga personers CV. Företaget kan logga in och förbereda sig under tiden, vilket ger dig bättre underlag att bedöma dem på. |
+| **Företag måste ha egen e-postdomän** | Gör det svårare att skapa falska konton, och krävs för att kandidaternas domänblockering ska fungera. Kandidater får fortfarande använda vilken adress de vill. |
 
 ---
 

@@ -73,7 +73,14 @@ src/app/admin/            Registrerade användare · Registrerade företag
 
 ## Affärsregler i koden
 
-- Konton är **aktiva direkt** – ingen verifiering, varken för kandidater eller företag.
+- **Kandidatkonton är aktiva direkt** – ingen verifiering.
+- **Företagskonton måste godkännas av admin.** De kan logga in och fylla i sina uppgifter,
+  men kommer inte åt CVArkivet, annonser eller prenumeration förrän de är godkända, och
+  syns inte för kandidaterna. Admin får mail vid ny registrering, företaget får mail vid
+  beslut. Avslag kan motiveras och motiveringen visas för företaget.
+- **Företag måste ha egen e-postdomän.** Gmail, Hotmail, Outlook, svenska
+  internetleverantörer och engångsadresser blockeras. Listan finns i `src/lib/utils.ts`.
+- **Organisationsnumret kontrolleras** med kontrollsiffra, så påhittade nummer avvisas.
 - Företag utan prenumeration möts av en **paywall** i stället för CVArkivet och Annonser.
 - **CV-prenumeration 299 kr/mån** ger CVArkivet.
   **CV + Annonspaket 499 kr/mån** ger även annonsering. Priser exklusive moms.

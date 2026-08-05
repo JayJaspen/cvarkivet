@@ -35,9 +35,18 @@ export default function Villkor() {
           <section>
             <h2 className="h2 mb-2">3. Konto för företag</h2>
             <p>
-              Registrering är kostnadsfri. För att söka bland CV eller publicera annonser krävs en
-              aktiv prenumeration: CV-prenumeration 299 kr/mån eller CV + Annonspaket 499 kr/mån
-              (priser exklusive moms). Prenumerationen faktureras månadsvis.
+              Registrering är kostnadsfri. Alla företagskonton granskas manuellt innan de får
+              tillgång till kandidaternas CV. CVArkivet förbehåller sig rätten att neka ett
+              företag utan att ange skäl, exempelvis om uppgifterna inte går att verifiera.
+            </p>
+            <p className="mt-2">
+              Företag ska registrera sig med en e-postadress på företagets egen domän. Privata
+              adresser hos gratistjänster godkänns inte.
+            </p>
+            <p className="mt-2">
+              För att söka bland CV eller publicera annonser krävs en aktiv prenumeration:
+              CV-prenumeration 299 kr/mån eller CV + Annonspaket 499 kr/mån (priser exklusive
+              moms). Prenumerationen faktureras månadsvis.
             </p>
             <p className="mt-2">
               Prenumerationen kan sägas upp när som helst. Efter uppsägning kan en ny prenumeration

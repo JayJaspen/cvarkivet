@@ -48,9 +48,9 @@ export default function Integritetspolicy() {
           <section>
             <h2 className="h2 mb-2">Vem ser dina uppgifter</h2>
             <p>
-              Ditt CV visas endast för företag med aktiv prenumeration. Du kan när som helst dölja
-              din profil för enskilda företag eller för hela e-postdomäner – då blir du helt osynlig
-              för dem.
+              Ditt CV visas endast för företag som vi har granskat och godkänt, och som har en
+              aktiv prenumeration. Du kan när som helst dölja din profil för enskilda företag eller
+              för hela e-postdomäner – då blir du helt osynlig för dem.
             </p>
           </section>
 
