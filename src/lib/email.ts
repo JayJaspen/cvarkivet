@@ -1,4 +1,5 @@
 import 'server-only';
+import { SUPPORT_EPOST } from './data';
 
 /**
  * Utskick av transaktionsmail via Resend.
@@ -114,10 +115,10 @@ export function companyRejectedEmail(
       `<p>Vi har granskat registreringen av <strong>${companyName}</strong> och kan tyvärr
         inte godkänna kontot.</p>
        ${motivering ? `<p><strong>Motivering:</strong><br>${motivering}</p>` : ''}
-       <p>Tror ni att det blivit fel, svara gärna till support@cvarkivet.se så tittar vi
+       <p>Tror ni att det blivit fel, svara gärna till ${SUPPORT_EPOST} så tittar vi
         på det igen.</p>`
     ),
-    text: `Hej ${contactName}!\n\nVi har granskat registreringen av ${companyName} och kan tyvärr inte godkänna kontot.\n\n${motivering ? `Motivering: ${motivering}\n\n` : ''}Tror ni att det blivit fel, hör av er till support@cvarkivet.se.`,
+    text: `Hej ${contactName}!\n\nVi har granskat registreringen av ${companyName} och kan tyvärr inte godkänna kontot.\n\n${motivering ? `Motivering: ${motivering}\n\n` : ''}Tror ni att det blivit fel, hör av er till ${SUPPORT_EPOST}.`,
   };
 }
 

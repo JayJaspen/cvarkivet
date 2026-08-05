@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo } from '@/components/ui';
+import { SUPPORT_EPOST } from '@/lib/data';
 
 export default function Integritetspolicy() {
   return (
@@ -17,7 +18,7 @@ export default function Integritetspolicy() {
         <div className="space-y-6 text-sm leading-relaxed text-slate-700">
           <section>
             <h2 className="h2 mb-2">Personuppgiftsansvarig</h2>
-            <p>CVArkivet.se. Kontakt: support@cvarkivet.se.</p>
+            <p>CVArkivet.se. Kontakt: {SUPPORT_EPOST}.</p>
           </section>
 
           <section>

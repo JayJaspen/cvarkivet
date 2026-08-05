@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo } from '@/components/ui';
+import { SUPPORT_EPOST } from '@/lib/data';
 import LoginForm from './LoginForm';
 
 export default function LoginPage({
@@ -20,7 +21,7 @@ export default function LoginPage({
 
           {searchParams.fel === 'avstangd' && (
             <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-              Kontot är avstängt. Kontakta support@cvarkivet.se.
+              Kontot är avstängt. Kontakta {SUPPORT_EPOST}.
             </div>
           )}
 

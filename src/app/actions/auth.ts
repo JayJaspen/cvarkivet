@@ -19,6 +19,7 @@ import {
   passwordResetEmail,
   sendEmail,
 } from '@/lib/email';
+import { SUPPORT_EPOST } from '@/lib/data';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -38,7 +39,7 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (user && (await bcrypt.compare(password, user.passwordHash))) {
-    if (user.suspended) return { error: 'Kontot är avstängt. Kontakta support@cvarkivet.se.' };
+    if (user.suspended) return { error: `Kontot är avstängt. Kontakta ${SUPPORT_EPOST}.` };
     // Inloggning nollställer klockan för gallring av inaktiva konton.
     await prisma.user.update({
       where: { id: user.id },
@@ -50,7 +51,7 @@ export async function login(_prev: FormState, form: FormData): Promise<FormState
 
   const company = await prisma.company.findUnique({ where: { email } });
   if (company && (await bcrypt.compare(password, company.passwordHash))) {
-    if (company.suspended) return { error: 'Kontot är avstängt. Kontakta support@cvarkivet.se.' };
+    if (company.suspended) return { error: `Kontot är avstängt. Kontakta ${SUPPORT_EPOST}.` };
     await prisma.company.update({
       where: { id: company.id },
       data: { lastLoginAt: new Date(), retentionWarningAt: null },
@@ -142,7 +143,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
     return {
       error:
         'Använd företagets egen e-postadress, inte en privat adress som Gmail eller ' +
-        'Hotmail. Har ni ingen företagsdomän, kontakta support@cvarkivet.se.',
+        `Hotmail. Har ni ingen företagsdomän, kontakta ${SUPPORT_EPOST}.`,
     };
 
   if (phone.replace(/\D/g, '').length < 6) return { error: 'Ange ett giltigt telefonnummer.' };
@@ -177,7 +178,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
           'Ett konto med samma e-postdomän har nyligen sagt upp sin prenumeration. ' +
           'Nytt konto kan registreras efter ' +
           iKarens.blockedUntil!.toLocaleDateString('sv-SE') +
-          '. Kontakta support@cvarkivet.se om detta är fel.',
+          `. Kontakta ${SUPPORT_EPOST} om detta är fel.`,
       };
   }
 

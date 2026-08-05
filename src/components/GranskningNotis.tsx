@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Card } from './ui';
+import { SUPPORT_EPOST } from '@/lib/data';
 
 /**
  * Visas för företag vars konto ännu inte granskats, eller som fått avslag.
@@ -31,8 +32,8 @@ export default function GranskningNotis({
         )}
         <p className="muted mt-4">
           Tror ni att det blivit fel? Hör av er till{' '}
-          <a href="mailto:support@cvarkivet.se" className="text-brand-600 hover:underline">
-            support@cvarkivet.se
+          <a href={`mailto:${SUPPORT_EPOST}`} className="text-brand-600 hover:underline">
+            {SUPPORT_EPOST}
           </a>
           .
         </p>

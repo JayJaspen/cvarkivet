@@ -106,6 +106,12 @@ export const KATEGORIER: string[] = [
   'Övrigt',
 ];
 
+/**
+ * Adressen användare och företag hänvisas till i felmeddelanden och mail.
+ * Måste vara en adress du faktiskt läser – ändra här så slår det igenom överallt.
+ */
+export const SUPPORT_EPOST = 'support@cvarkivet.se';
+
 /** Alla priser anges exklusive moms (B2B-standard). */
 export const MOMSSATS = 0.25;
 

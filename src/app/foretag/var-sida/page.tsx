@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
-import { PLANER, planNamn, prisInklMoms } from '@/lib/data';
+import { PLANER, planNamn, prisInklMoms, SUPPORT_EPOST } from '@/lib/data';
 import { Badge, Card, Notice, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { activateSubscription, cancelSubscription } from '@/app/actions/company';
@@ -56,7 +56,7 @@ export default async function VarSidaPage({
             </p>
           )}
           <p className="mt-2">
-            Tror ni att det blivit fel? Kontakta support@cvarkivet.se.
+            Tror ni att det blivit fel? Kontakta {SUPPORT_EPOST}.
           </p>
         </Notice>
       )}
