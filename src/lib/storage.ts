@@ -28,7 +28,8 @@ async function laddaUpp(
   prefix: string,
   id: string,
   tillatnaTyper: string[],
-  vadHeterDet: string
+  vadHeterDet: string,
+  slumpmassigtNamn = false
 ): Promise<UploadResult> {
   if (file.size > MAX_BYTES) return { error: `${vadHeterDet} får vara max 2 MB.` };
 
@@ -48,7 +49,7 @@ async function laddaUpp(
       access: 'public',
       token,
       contentType: file.type,
-      addRandomSuffix: false,
+      addRandomSuffix: slumpmassigtNamn,
     });
     return { url: blob.url };
   }
@@ -83,9 +84,14 @@ export function uploadLogo(file: File, companyId: string) {
 }
 
 /**
- * Profilbild på kandidatens CV. SVG tillåts inte här – en SVG kan innehålla
- * skript, och till skillnad från logotyper laddas de här bilderna upp av
- * vem som helst som skapar ett konto.
+ * Profilbild på kandidatens CV.
+ *
+ * SVG tillåts inte här – en SVG kan innehålla skript, och till skillnad från
+ * logotyper laddas de här bilderna upp av vem som helst som skapar ett konto.
+ *
+ * Filnamnet får ett slumpmässigt tillägg. Bilderna ligger på en publik adress
+ * för att kunna visas i webbläsaren, och då ska adressen inte gå att gissa sig
+ * till utifrån användarens id.
  */
 export function uploadProfilePhoto(file: File, userId: string) {
   return laddaUpp(
@@ -94,6 +100,7 @@ export function uploadProfilePhoto(file: File, userId: string) {
     'foto',
     userId,
     ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'],
-    'Profilbilden'
+    'Profilbilden',
+    true
   );
 }
