@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
+import Logotyp from './Logotyp';
 
 export type Tab = { href: string; label: string; badge?: number };
 
@@ -49,14 +50,9 @@ export default function Nav({
 
   const menyInnehall = (
     <div className="flex h-full flex-col">
-      <Link href="/" className="flex items-center gap-2.5 px-5 py-6">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-sm font-bold text-white">
-          CV
-        </span>
-        <span className="text-lg font-semibold text-white">
-          CVArkivet<span className="text-brand-200">.se</span>
-        </span>
-      </Link>
+      <div className="px-5 py-6">
+        <Logotyp variant="ljus" />
+      </div>
 
       <nav className="flex-1 space-y-1 px-3">
         {tabs.map((t) => {
@@ -109,14 +105,7 @@ export default function Nav({
     <>
       {/* Mobilens topprad */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-sand-200 bg-white px-4 py-3 md:hidden">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">
-            CV
-          </span>
-          <span className="font-semibold text-sand-900">
-            CVArkivet<span className="text-brand-600">.se</span>
-          </span>
-        </Link>
+        <Logotyp storlek="liten" />
         <button
           type="button"
           onClick={() => setOpen(true)}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Logotyp from './Logotyp';
 
 export function Card({
   children,
@@ -199,15 +200,7 @@ export function Notice({
   );
 }
 
+/** Behålls som tunn omslagning så att äldre anrop fortsätter fungera. */
 export function Logo({ light = false }: { light?: boolean }) {
-  return (
-    <Link href="/" className="flex items-center gap-2">
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">
-        CV
-      </span>
-      <span className={`text-lg font-semibold ${light ? 'text-white' : 'text-sand-900'}`}>
-        CVArkivet<span className="text-brand-500">.se</span>
-      </span>
-    </Link>
-  );
+  return <Logotyp variant={light ? 'ljus' : 'gron'} />;
 }
