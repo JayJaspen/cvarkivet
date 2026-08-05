@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireUser, destroySession } from '@/lib/session';
 import { normalizeDomain, validBirthDate, validEmail } from '@/lib/utils';
+import { uploadProfilePhoto } from '@/lib/storage';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -18,10 +19,20 @@ export async function saveCv(_prev: FormState, form: FormData): Promise<FormStat
   const categories = form.getAll('categories').map(String).filter(Boolean);
   const municipalities = form.getAll('municipalities').map(String).filter(Boolean);
 
+  // Profilbild – frivillig
+  let photoUrl = user.photoUrl;
+  const photo = form.get('photo') as File | null;
+  if (photo && typeof photo === 'object' && photo.size > 0) {
+    const result = await uploadProfilePhoto(photo, user.id);
+    if ('error' in result) return { error: result.error };
+    photoUrl = result.url;
+  }
+
   await prisma.$transaction([
     prisma.user.update({
       where: { id: user.id },
       data: {
+        photoUrl,
         homeMunicipality: String(form.get('homeMunicipality') ?? '').trim() || null,
         headline: String(form.get('headline') ?? '').trim() || null,
         summary: String(form.get('summary') ?? '').trim() || null,
@@ -47,6 +58,12 @@ export async function saveCv(_prev: FormState, form: FormData): Promise<FormStat
 
   revalidatePath('/kandidat/cv');
   return { ok: 'CV:t är sparat.' };
+}
+
+export async function removePhoto() {
+  const user = await requireUser();
+  await prisma.user.update({ where: { id: user.id }, data: { photoUrl: null } });
+  revalidatePath('/kandidat/cv');
 }
 
 export async function addExperience(form: FormData) {

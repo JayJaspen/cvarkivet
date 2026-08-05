@@ -24,7 +24,10 @@ export default function Integritetspolicy() {
           <section>
             <h2 className="h2 mb-2">Vilka uppgifter vi behandlar</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>Kandidater: namn, födelsedatum, e-post, telefon, CV-innehåll och jobbpreferenser.</li>
+              <li>
+                Kandidater: namn, födelsedatum, e-post, telefon, CV-innehåll, jobbpreferenser och
+                – om du själv väljer att ladda upp en – profilbild.
+              </li>
               <li>
                 Företag: organisationsnummer, företagsnamn, kontaktperson, e-post, telefon och
                 adress.

@@ -69,6 +69,14 @@ export default async function AdminUserDetail({ params }: { params: { id: string
         <div className="space-y-6 lg:col-span-2">
           <Card>
             <h2 className="h2 mb-3">CV</h2>
+            {user.photoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.photoUrl}
+                alt=""
+                className="mb-3 h-20 w-20 rounded-full border border-slate-200 object-cover"
+              />
+            )}
             <p className="font-medium">{user.headline || 'Ingen yrkesrubrik'}</p>
             <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">
               {user.summary || 'Ingen presentation.'}

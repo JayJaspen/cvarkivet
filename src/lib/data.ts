@@ -2,7 +2,11 @@
 
 export const REMOTE = 'Distans';
 
-export const KOMMUNER: string[] = [
+/**
+ * Källistan är grupperad länsvis – lättare att kontrollera mot Sveriges 290 kommuner.
+ * Exporten KOMMUNER nedan sorteras om i bokstavsordning innan den används i gränssnittet.
+ */
+const KOMMUNER_LANSVIS: string[] = [
   // Stockholms län
   'Botkyrka', 'Danderyd', 'Ekerö', 'Haninge', 'Huddinge', 'Järfälla', 'Lidingö',
   'Nacka', 'Norrtälje', 'Nykvarn', 'Nynäshamn', 'Salem', 'Sigtuna', 'Sollentuna',
@@ -72,7 +76,15 @@ export const KOMMUNER: string[] = [
   'Kiruna', 'Luleå', 'Pajala', 'Piteå', 'Älvsbyn', 'Överkalix', 'Övertorneå',
 ];
 
-/** Kommuner + "Distans" – används i CV-inställningar och filter */
+/**
+ * Alla 290 kommuner i bokstavsordning enligt svensk sorteringsordning,
+ * så att å, ä och ö hamnar sist i stället för bland a och o.
+ */
+export const KOMMUNER: string[] = [...KOMMUNER_LANSVIS].sort((a, b) =>
+  a.localeCompare(b, 'sv')
+);
+
+/** Kommuner + "Distans" överst – används i CV-inställningar och filter */
 export const KOMMUNER_MED_DISTANS: string[] = [REMOTE, ...KOMMUNER];
 
 export const KATEGORIER: string[] = [

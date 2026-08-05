@@ -37,6 +37,7 @@ model User {
   retentionWarningAt DateTime?
 
   // CV
+  photoUrl          String? // Frivillig profilbild
   homeMunicipality  String? // Hemmahörande kommun – visas i företagens träfflista
   headline          String? // Yrkesrubrik, t.ex. "Lagerarbetare"
   coverLetter       String? // Personligt brev

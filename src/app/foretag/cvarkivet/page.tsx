@@ -210,17 +210,34 @@ export default async function CvArkivetPage({
                     </form>
                   </td>
                   <td className="td">
-                    <Link
-                      href={`/foretag/cvarkivet/${c.id}`}
-                      className="font-medium text-brand-600 hover:underline"
-                    >
-                      {c.firstName} {c.lastName}
-                    </Link>
-                    <p className="muted">
-                      {c.headline || 'Ingen yrkesrubrik'}
-                      {ageFromBirthDate(c.birthDate) !== null &&
-                        ` · ${ageFromBirthDate(c.birthDate)} år`}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      {c.photoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={c.photoUrl}
+                          alt=""
+                          className="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-400">
+                          {c.firstName.slice(0, 1)}
+                          {c.lastName.slice(0, 1)}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <Link
+                          href={`/foretag/cvarkivet/${c.id}`}
+                          className="font-medium text-brand-600 hover:underline"
+                        >
+                          {c.firstName} {c.lastName}
+                        </Link>
+                        <p className="muted">
+                          {c.headline || 'Ingen yrkesrubrik'}
+                          {ageFromBirthDate(c.birthDate) !== null &&
+                            ` · ${ageFromBirthDate(c.birthDate)} år`}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="td">
                     {c.homeMunicipality || '–'}

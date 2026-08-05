@@ -70,18 +70,36 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
         ← Tillbaka till CVArkivet
       </Link>
 
-      <PageHeader
-        title={`${user.firstName} ${user.lastName}`}
-        description={user.headline ?? undefined}
-        action={
-          <form action={toggleHeart}>
-            <input type="hidden" name="userId" value={user.id} />
-            <button className={heart ? 'btn-primary' : 'btn-secondary'} type="submit">
-              {heart ? '♥ Hjärtad' : '♡ Hjärta kandidaten'}
-            </button>
-          </form>
-        }
-      />
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-5">
+          {user.photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.photoUrl}
+              alt={`${user.firstName} ${user.lastName}`}
+              className="h-28 w-28 rounded-full border border-slate-200 object-cover"
+            />
+          ) : (
+            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-slate-100 text-3xl font-semibold text-slate-400">
+              {user.firstName.slice(0, 1)}
+              {user.lastName.slice(0, 1)}
+            </div>
+          )}
+          <div className="min-w-0">
+            <h1 className="h1">
+              {user.firstName} {user.lastName}
+            </h1>
+            {user.headline && <p className="muted mt-1">{user.headline}</p>}
+          </div>
+        </div>
+
+        <form action={toggleHeart}>
+          <input type="hidden" name="userId" value={user.id} />
+          <button className={heart ? 'btn-primary' : 'btn-secondary'} type="submit">
+            {heart ? '♥ Hjärtad' : '♡ Hjärta kandidaten'}
+          </button>
+        </form>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">

@@ -1,13 +1,15 @@
 'use client';
 
+import { useTransition } from 'react';
 import { useFormState } from 'react-dom';
-import { saveCv } from '@/app/actions/user';
+import { removePhoto, saveCv } from '@/app/actions/user';
 import { Card, Field, Select, TextArea } from '@/components/ui';
 import MultiSelect from '@/components/MultiSelect';
 import SubmitButton from '@/components/SubmitButton';
 import { KATEGORIER, KOMMUNER, KOMMUNER_MED_DISTANS } from '@/lib/data';
 
 type UserLite = {
+  photoUrl: string | null;
   homeMunicipality: string | null;
   headline: string | null;
   summary: string | null;
@@ -29,6 +31,7 @@ export default function CvForm({
   municipalities: string[];
 }) {
   const [state, formAction] = useFormState(saveCv, undefined);
+  const [pending, startTransition] = useTransition();
 
   return (
     <form action={formAction} className="space-y-6">
@@ -42,6 +45,53 @@ export default function CvForm({
           {state.ok}
         </div>
       )}
+
+      <Card>
+        <h2 className="h2 mb-1">Profilbild</h2>
+        <p className="muted mb-4">
+          Helt frivilligt. Vissa arbetsgivare uppskattar ett ansikte, andra väljer medvetet bort
+          bilder för att motverka omedveten diskriminering. Du kan ta bort den när du vill.
+        </p>
+
+        <div className="flex flex-wrap items-center gap-4">
+          {user.photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.photoUrl}
+              alt="Din profilbild"
+              className="h-24 w-24 rounded-full border border-slate-200 object-cover"
+            />
+          ) : (
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 text-2xl text-slate-400">
+              👤
+            </div>
+          )}
+
+          <div className="min-w-0 flex-1">
+            <input
+              type="file"
+              name="photo"
+              accept="image/png,image/jpeg,image/webp"
+              className="input"
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              PNG, JPG eller WEBP. Max 2 MB. Bilden beskärs till en cirkel, så en kvadratisk
+              bild blir snyggast.
+            </p>
+
+            {user.photoUrl && (
+              <button
+                type="button"
+                onClick={() => startTransition(() => removePhoto())}
+                disabled={pending}
+                className="mt-2 text-sm text-red-600 hover:underline disabled:opacity-50"
+              >
+                {pending ? 'Tar bort…' : 'Ta bort bilden'}
+              </button>
+            )}
+          </div>
+        </div>
+      </Card>
 
       <Card>
         <h2 className="h2 mb-4">Presentation</h2>
@@ -133,7 +183,8 @@ export default function CvForm({
             hint="Välj en eller flera kategorier."
             options={KATEGORIER}
             defaultSelected={categories}
-            placeholder="Sök kategori…"
+            placeholder="Välj kategorier…"
+            sokPlaceholder="Sök kategori…"
           />
 
           <MultiSelect
@@ -142,7 +193,8 @@ export default function CvForm({
             hint='Välj en eller flera kommuner. "Distans" ligger överst i listan.'
             options={KOMMUNER_MED_DISTANS}
             defaultSelected={municipalities}
-            placeholder="Sök kommun…"
+            placeholder="Välj kommuner…"
+            sokPlaceholder="Sök kommun…"
           />
         </div>
 
