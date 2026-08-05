@@ -2,8 +2,22 @@
 
 Senast uppdaterad: **5 augusti 2026**
 
-> **Sajten är live på https://cvarkivet.vercel.app** (testmiljö).
-> Domänen cvarkivet.se är ännu inte påkopplad. Se DRIFTSATTNING.md steg 6.
+> **Sajten är live på https://cvarkivet.se** med giltigt SSL.
+> www skickas vidare till huvudadressen, http går över till https.
+
+## ⚠️ Måste lösas innan riktiga användare släpps in
+
+1. **E-post till domänen fungerar inte.** MX-posten för cvarkivet.se är en så kallad
+   null-MX, vilket uttryckligen talar om för avsändare att domänen inte tar emot mail.
+   Följden: `support@cvarkivet.se` studsar, trots att adressen står i villkoren,
+   integritetspolicyn och i flera felmeddelanden. Svar på mail från sidan når heller
+   ingen. Åtgärd: aktivera e-post hos one.com eller peka MX mot annan leverantör.
+2. **Resend är inte kopplat**, så inga mail skickas – varken lösenordsåterställning,
+   notiser till kandidater eller besked till företag om godkännande. Kräver DNS-poster
+   hos one.com, gör det i samma veva som punkt 1.
+3. **Vercel Pro krävs.** Hobby-planen får inte användas kommersiellt.
+4. **Juristgranskning** av villkor och integritetspolicy.
+5. **Point-in-time restore** påslaget i Neon.
 
 Den här filen är till för att snabbt komma tillbaka in i projektet efter en paus –
 eller för att ge en ny person (eller AI-assistent) hela bilden på fem minuter.
