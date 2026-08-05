@@ -165,6 +165,7 @@ export default async function AdminCompanies({
                 <th className="th">Org.nr</th>
                 <th className="th">Kontakt</th>
                 <th className="th">Prenumeration</th>
+                <th className="th">Faktureras</th>
                 <th className="th">Annonser</th>
                 <th className="th">Lästa CV</th>
                 <th className="th">Status</th>
@@ -202,6 +203,24 @@ export default async function AdminCompanies({
                     {c.blockedUntil && c.blockedUntil > new Date() && (
                       <p className="muted">Karens t.o.m. {formatDate(c.blockedUntil)}</p>
                     )}
+                  </td>
+                  <td className="td">
+                    {c.subscription === 'NONE' ? (
+                      <span className="muted">–</span>
+                    ) : c.invoiceMethod === 'EMAIL' ? (
+                      <>
+                        <Badge tone="blue">PDF via e-post</Badge>
+                        <p className="muted mt-0.5">{c.invoiceEmail}</p>
+                      </>
+                    ) : c.invoiceMethod === 'PAPER' ? (
+                      <>
+                        <Badge>Pappersfaktura</Badge>
+                        <p className="muted mt-0.5 whitespace-pre-wrap">{c.invoiceAddress}</p>
+                      </>
+                    ) : (
+                      <Badge tone="amber">Ej valt</Badge>
+                    )}
+                    {c.invoiceRef && <p className="muted">Ref: {c.invoiceRef}</p>}
                   </td>
                   <td className="td">{c._count.jobAds}</td>
                   <td className="td">{c._count.cvViews}</td>

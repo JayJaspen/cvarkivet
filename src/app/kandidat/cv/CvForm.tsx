@@ -79,16 +79,20 @@ export default function CvForm({
               bild blir snyggast.
             </p>
 
-            {user.photoUrl && (
-              <button
-                type="button"
-                onClick={() => startTransition(() => removePhoto())}
-                disabled={pending}
-                className="mt-2 text-sm text-red-600 hover:underline disabled:opacity-50"
-              >
-                {pending ? 'Tar bort…' : 'Ta bort bilden'}
-              </button>
-            )}
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <SubmitButton pendingText="Sparar bilden…">Spara bilden</SubmitButton>
+
+              {user.photoUrl && (
+                <button
+                  type="button"
+                  onClick={() => startTransition(() => removePhoto())}
+                  disabled={pending}
+                  className="text-sm text-red-600 hover:underline disabled:opacity-50"
+                >
+                  {pending ? 'Tar bort…' : 'Ta bort bilden'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </Card>

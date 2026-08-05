@@ -86,16 +86,50 @@ export async function changeCompanyPassword(
 
 // ------------------------------------------------------------- Prenumeration
 
-export async function activateSubscription(form: FormData) {
+/** Kontrollerar fakturauppgifterna som skickats med formuläret. */
+function lasFakturauppgifter(form: FormData):
+  | { ok: true; data: { invoiceMethod: string; invoiceAddress: string | null; invoiceEmail: string | null; invoiceRef: string | null } }
+  | { ok: false; error: string } {
+  const invoiceMethod = String(form.get('invoiceMethod') ?? '');
+  const invoiceRef = String(form.get('invoiceRef') ?? '').trim() || null;
+
+  if (invoiceMethod === 'EMAIL') {
+    const invoiceEmail = String(form.get('invoiceEmail') ?? '').trim().toLowerCase();
+    if (!validEmail(invoiceEmail))
+      return { ok: false, error: 'Ange en giltig e-postadress för fakturan.' };
+    return { ok: true, data: { invoiceMethod, invoiceEmail, invoiceAddress: null, invoiceRef } };
+  }
+
+  if (invoiceMethod === 'PAPER') {
+    const invoiceAddress = String(form.get('invoiceAddress') ?? '').trim();
+    if (invoiceAddress.length < 5)
+      return { ok: false, error: 'Ange en fullständig fakturaadress.' };
+    return { ok: true, data: { invoiceMethod, invoiceAddress, invoiceEmail: null, invoiceRef } };
+  }
+
+  return { ok: false, error: 'Välj hur ni vill ta emot fakturan.' };
+}
+
+export async function activateSubscription(
+  _prev: FormState,
+  form: FormData
+): Promise<FormState> {
   const company = await requireCompany();
   const plan = String(form.get('plan'));
-  if (!['CV', 'CV_ADS'].includes(plan)) return;
+  if (!['CV', 'CV_ADS'].includes(plan)) return { error: 'Välj ett paket.' };
 
   // Ingen prenumeration innan kontot är granskat och godkänt.
-  if (!arGodkant(company)) return;
+  if (!arGodkant(company))
+    return { error: 'Kontot är inte godkänt ännu. Prenumeration kan tecknas när granskningen är klar.' };
 
   // Karens: 2 månader efter uppsägning
-  if (company.blockedUntil && company.blockedUntil > new Date()) return;
+  if (company.blockedUntil && company.blockedUntil > new Date())
+    return {
+      error: `Ny prenumeration kan tecknas tidigast ${company.blockedUntil.toLocaleDateString('sv-SE')}.`,
+    };
+
+  const faktura = lasFakturauppgifter(form);
+  if (!faktura.ok) return { error: faktura.error };
 
   await prisma.$transaction([
     prisma.company.update({
@@ -104,6 +138,7 @@ export async function activateSubscription(form: FormData) {
         subscription: plan,
         subscriptionStarted: company.subscriptionStarted ?? new Date(),
         cancelledAt: null,
+        ...faktura.data,
       },
     }),
     prisma.subscriptionEvent.create({
@@ -117,6 +152,22 @@ export async function activateSubscription(form: FormData) {
 
   revalidatePath('/foretag/var-sida');
   revalidatePath('/foretag/cvarkivet');
+  return { ok: 'Prenumerationen är aktiverad.' };
+}
+
+/** Ändra faktureringssätt utan att röra prenumerationen. */
+export async function updateInvoiceSettings(
+  _prev: FormState,
+  form: FormData
+): Promise<FormState> {
+  const company = await requireCompany();
+
+  const faktura = lasFakturauppgifter(form);
+  if (!faktura.ok) return { error: faktura.error };
+
+  await prisma.company.update({ where: { id: company.id }, data: faktura.data });
+  revalidatePath('/foretag/var-sida');
+  return { ok: 'Faktureringsuppgifterna är sparade.' };
 }
 
 export async function cancelSubscription() {

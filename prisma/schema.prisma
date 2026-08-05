@@ -144,6 +144,14 @@ model Company {
   reviewedAt      DateTime?
   reviewNote      String? // Motivering vid avslag, visas för företaget
 
+  // Fakturering – väljs när prenumerationen aktiveras
+  /// PAPER = pappersfaktura till invoiceAddress
+  /// EMAIL = PDF-faktura till invoiceEmail
+  invoiceMethod  String?
+  invoiceAddress String?
+  invoiceEmail   String?
+  invoiceRef     String? // Frivillig referens/beställarkod som kunden vill ha på fakturan
+
   // Prenumeration: NONE | CV | CV_ADS
   subscription        String    @default("NONE")
   subscriptionStarted DateTime?

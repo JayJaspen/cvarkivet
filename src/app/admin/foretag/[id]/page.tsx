@@ -12,7 +12,7 @@ import {
   godkannForetag,
   toggleCompanySuspended,
 } from '@/app/actions/admin';
-import { statusText } from '@/lib/data';
+import { fakturasattText, statusText } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
@@ -230,8 +230,40 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                 <dt className="text-slate-500">Organisationsnummer</dt>
                 <dd>{company.orgNumber}</dd>
               </div>
+              <div className="rounded-lg bg-slate-50 p-3">
+                <dt className="text-slate-500">Faktureringssätt</dt>
+                <dd className="font-medium">{fakturasattText(company.invoiceMethod)}</dd>
+
+                {company.invoiceMethod === 'EMAIL' && (
+                  <>
+                    <dt className="mt-2 text-slate-500">Skickas till</dt>
+                    <dd>
+                      <a
+                        href={`mailto:${company.invoiceEmail}`}
+                        className="text-brand-600 hover:underline"
+                      >
+                        {company.invoiceEmail}
+                      </a>
+                    </dd>
+                  </>
+                )}
+
+                {company.invoiceMethod === 'PAPER' && (
+                  <>
+                    <dt className="mt-2 text-slate-500">Postas till</dt>
+                    <dd className="whitespace-pre-wrap">{company.invoiceAddress}</dd>
+                  </>
+                )}
+
+                {company.invoiceRef && (
+                  <>
+                    <dt className="mt-2 text-slate-500">Er referens</dt>
+                    <dd>{company.invoiceRef}</dd>
+                  </>
+                )}
+              </div>
               <div>
-                <dt className="text-slate-500">Fakturaadress</dt>
+                <dt className="text-slate-500">Besöksadress</dt>
                 <dd>{company.address}</dd>
               </div>
               <div>

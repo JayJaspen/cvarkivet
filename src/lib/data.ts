@@ -150,6 +150,24 @@ export const PLANER = {
 
 export type PlanId = keyof typeof PLANER;
 
+export const FAKTURASATT = {
+  EMAIL: {
+    id: 'EMAIL',
+    namn: 'PDF-faktura via e-post',
+    beskrivning: 'Fakturan skickas som PDF till en e-postadress ni väljer.',
+  },
+  PAPER: {
+    id: 'PAPER',
+    namn: 'Pappersfaktura',
+    beskrivning: 'Fakturan skickas med post till er fakturaadress.',
+  },
+} as const;
+
+export function fakturasattText(id: string | null) {
+  if (!id) return 'Ej valt';
+  return (FAKTURASATT as Record<string, { namn: string }>)[id]?.namn ?? id;
+}
+
 /** Pris inklusive moms, avrundat till hela kronor. */
 export function prisInklMoms(pris: number) {
   return Math.round(pris * (1 + MOMSSATS));
