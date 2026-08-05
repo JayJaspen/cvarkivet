@@ -7,6 +7,7 @@ import { prisma } from '@/lib/db';
 import { requireUser, destroySession } from '@/lib/session';
 import { normalizeDomain, validBirthDate, validEmail } from '@/lib/utils';
 import { uploadProfilePhoto } from '@/lib/storage';
+import { appUrl, interestReceivedEmail, sendEmail } from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -237,13 +238,42 @@ export async function deleteAccount() {
 
 // ---------------------------------------------------------------- Ansökningar
 
-export async function applyToJob(form: FormData) {
+/**
+ * Kandidaten anmäler intresse för en annons utan att mejla.
+ * Företaget ser anmälan och kan ta kontakt själv.
+ */
+export async function visaIntresse(form: FormData) {
   const user = await requireUser();
   const jobAdId = String(form.get('jobAdId'));
-  await prisma.application.upsert({
+  const message = String(form.get('message') ?? '').trim() || null;
+
+  const annons = await prisma.jobAd.findUnique({
+    where: { id: jobAdId },
+    include: { company: { select: { id: true, name: true, email: true } } },
+  });
+  if (!annons || annons.deadline < new Date()) return;
+
+  await prisma.interest.upsert({
     where: { userId_jobAdId: { userId: user.id, jobAdId } },
-    create: { userId: user.id, jobAdId },
-    update: {},
+    create: { userId: user.id, jobAdId, message },
+    update: { message },
+  });
+
+  const mail = interestReceivedEmail(
+    annons.company.name,
+    `${user.firstName} ${user.lastName}`,
+    annons.title,
+    appUrl(`/foretag/annonser/${jobAdId}`)
+  );
+  await sendEmail({ to: annons.company.email, ...mail });
+
+  revalidatePath('/kandidat/jobb');
+}
+
+export async function taBortIntresse(form: FormData) {
+  const user = await requireUser();
+  await prisma.interest.deleteMany({
+    where: { userId: user.id, jobAdId: String(form.get('jobAdId')) },
   });
   revalidatePath('/kandidat/jobb');
 }

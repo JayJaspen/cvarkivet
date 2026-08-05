@@ -5,7 +5,7 @@ import { KATEGORIER, KOMMUNER_MED_DISTANS } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate, kr } from '@/lib/utils';
 import { contains } from '@/lib/search';
-import { applyToJob } from '@/app/actions/user';
+import IntresseKnapp from './IntresseKnapp';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,15 +27,18 @@ export default async function JobbPage({
         ? { company: { name: contains(foretag), suspended: false, status: 'APPROVED' } }
         : {}),
     },
-    include: { company: { select: { id: true, name: true, logoUrl: true, municipality: true } } },
+    include: {
+      company: { select: { id: true, name: true, logoUrl: true, municipality: true } },
+    },
     orderBy: { createdAt: 'desc' },
   });
 
-  const myApplications = await prisma.application.findMany({
-    where: { userId: user.id },
-    select: { jobAdId: true },
-  });
-  const applied = new Set(myApplications.map((a) => a.jobAdId));
+  const [mittIntresse, doldaForetag] = await Promise.all([
+    prisma.interest.findMany({ where: { userId: user.id }, select: { jobAdId: true } }),
+    prisma.hiddenCompany.findMany({ where: { userId: user.id }, select: { companyId: true } }),
+  ]);
+  const anmalt = new Set(mittIntresse.map((i) => i.jobAdId));
+  const dolda = new Set(doldaForetag.map((h) => h.companyId));
 
   return (
     <>
@@ -99,58 +102,74 @@ export default async function JobbPage({
           {jobs.map((j) => (
             <Card key={j.id}>
               <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg font-semibold text-slate-900">{j.title}</h2>
-                    {applied.has(j.id) && <Badge tone="green">Ansökt</Badge>}
+                <div className="flex min-w-0 flex-1 gap-4">
+                  {j.company.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={j.company.logoUrl}
+                      alt={j.company.name}
+                      className="h-14 w-14 shrink-0 rounded-lg border border-slate-200 object-contain p-1"
+                    />
+                  ) : (
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-bold text-slate-500">
+                      {j.company.name.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-lg font-semibold text-slate-900">{j.title}</h2>
+                      {anmalt.has(j.id) && <Badge tone="green">Intresse anmält</Badge>}
+                    </div>
+                    <p className="mt-1 text-sm text-slate-600">
+                      <Link
+                        href={`/kandidat/foretag/${j.company.id}`}
+                        className="font-medium text-brand-600 hover:underline"
+                      >
+                        {j.company.name}
+                      </Link>{' '}
+                      · {j.municipality}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <Badge tone="blue">{j.category}</Badge>
+                      {(j.salaryMin || j.salaryMax) && (
+                        <Badge>
+                          {j.salaryMin ? kr(j.salaryMin) : '?'} –{' '}
+                          {j.salaryMax ? kr(j.salaryMax) : '?'}
+                        </Badge>
+                      )}
+                      <Badge tone="amber">Sista ansökningsdag {formatDate(j.deadline)}</Badge>
+                    </div>
+                    <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">{j.body}</p>
                   </div>
-                  <p className="mt-1 text-sm text-slate-600">
-                    <Link
-                      href={`/kandidat/foretag/${j.company.id}`}
-                      className="font-medium text-brand-600 hover:underline"
-                    >
-                      {j.company.name}
-                    </Link>{' '}
-                    · {j.municipality}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    <Badge tone="blue">{j.category}</Badge>
-                    {(j.salaryMin || j.salaryMax) && (
-                      <Badge>
-                        {j.salaryMin ? kr(j.salaryMin) : '?'} – {j.salaryMax ? kr(j.salaryMax) : '?'}
-                      </Badge>
-                    )}
-                    <Badge tone="amber">Sista ansökningsdag {formatDate(j.deadline)}</Badge>
-                  </div>
-                  <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">{j.body}</p>
                 </div>
 
-                <div className="flex w-full flex-col gap-2 sm:w-48">
+                <div className="flex w-full flex-col gap-2 sm:w-56">
+                  <IntresseKnapp
+                    jobAdId={j.id}
+                    foretagsnamn={j.company.name}
+                    anmalt={anmalt.has(j.id)}
+                    dold={dolda.has(j.company.id)}
+                  />
+
                   {j.applyUrl && (
                     <a
                       href={j.applyUrl}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="btn-primary"
+                      className="btn-secondary"
                     >
                       Ansök via länk
                     </a>
                   )}
                   {j.applyEmail && (
-                    <a href={`mailto:${j.applyEmail}?subject=Ansökan: ${encodeURIComponent(j.title)}`} className="btn-secondary">
+                    <a
+                      href={`mailto:${j.applyEmail}?subject=Ansökan: ${encodeURIComponent(j.title)}`}
+                      className="btn-secondary"
+                    >
                       Ansök via e-post
                     </a>
                   )}
-                  <form action={applyToJob}>
-                    <input type="hidden" name="jobAdId" value={j.id} />
-                    <button
-                      className="btn-secondary w-full"
-                      type="submit"
-                      disabled={applied.has(j.id)}
-                    >
-                      {applied.has(j.id) ? 'Markerad som ansökt' : 'Markera som ansökt'}
-                    </button>
-                  </form>
                 </div>
               </div>
             </Card>

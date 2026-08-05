@@ -140,6 +140,26 @@ export function newCompanyForReviewEmail(
   };
 }
 
+export function interestReceivedEmail(
+  companyName: string,
+  candidateName: string,
+  annonsTitel: string,
+  url: string
+) {
+  return {
+    subject: `Ny intresseanmälan på "${annonsTitel}"`,
+    html: layout(
+      `Hej ${companyName}!`,
+      `<p><strong>${candidateName}</strong> har anmält intresse för er annons
+        <em>${annonsTitel}</em>.</p>
+       <p>Kandidaten har inte skickat någon formell ansökan – hen signalerar att hen är
+        intresserad och vill bli kontaktad. Öppna anmälan för att läsa CV:t och höra av er.</p>`,
+      { url, label: 'Se intresseanmälan' }
+    ),
+    text: `Hej ${companyName}!\n\n${candidateName} har anmält intresse för er annons "${annonsTitel}".\n\nKandidaten vill bli kontaktad. Se anmälan: ${url}`,
+  };
+}
+
 export function retentionWarningEmail(name: string, dagar: number, url: string) {
   return {
     subject: `Ditt konto på CVArkivet raderas om ${dagar} dagar`,

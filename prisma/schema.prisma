@@ -67,7 +67,7 @@ model User {
   cvViews        CvView[]
   companyVisits  CompanyVisit[]
   hearts         Heart[]
-  applications   Application[]
+  interests      Interest[]
   messages       Message[]
   viewNotices    CvViewNotification[]
 
@@ -198,22 +198,27 @@ model JobAd {
   createdAt    DateTime @default(now())
   company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  applications Application[]
+  interests Interest[]
 
   @@index([deadline])
   @@index([municipality])
   @@index([category])
 }
 
-model Application {
-  id        String   @id @default(cuid())
+/// Kandidatens intresseanmälan på en annons – ett alternativ till att mejla.
+/// Företaget ser vilka som anmält intresse och kan ta kontakt själva.
+model Interest {
+  id        String    @id @default(cuid())
   userId    String
   jobAdId   String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobAd     JobAd    @relation(fields: [jobAdId], references: [id], onDelete: Cascade)
+  message   String? // Frivillig hälsning till företaget
+  createdAt DateTime  @default(now())
+  viewedAt  DateTime? // När företaget öppnade anmälan
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobAd     JobAd     @relation(fields: [jobAdId], references: [id], onDelete: Cascade)
 
   @@unique([userId, jobAdId])
+  @@index([jobAdId])
 }
 
 // ------------------------------------------------------- Relationer & loggar

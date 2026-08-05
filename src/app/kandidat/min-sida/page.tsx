@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export default async function MinSidaPage() {
   const user = await requireUser();
 
-  const [views, viewers, hiddenDomains, hiddenCompanies, applications] = await Promise.all([
+  const [views, viewers, hiddenDomains, hiddenCompanies, intresseanmalningar] = await Promise.all([
     prisma.cvView.count({ where: { userId: user.id } }),
     prisma.cvView.groupBy({
       by: ['companyId'],
@@ -30,7 +30,7 @@ export default async function MinSidaPage() {
       where: { userId: user.id },
       include: { company: { select: { id: true, name: true } } },
     }),
-    prisma.application.count({ where: { userId: user.id } }),
+    prisma.interest.count({ where: { userId: user.id } }),
   ]);
 
   const companies = await prisma.company.findMany({
@@ -63,8 +63,8 @@ export default async function MinSidaPage() {
           <p className="mt-1 text-3xl font-bold text-brand-600">{viewerRows.length}</p>
         </Card>
         <Card>
-          <p className="muted">Markerade ansökningar</p>
-          <p className="mt-1 text-3xl font-bold text-brand-600">{applications}</p>
+          <p className="muted">Intresseanmälningar</p>
+          <p className="mt-1 text-3xl font-bold text-brand-600">{intresseanmalningar}</p>
         </Card>
       </div>
 

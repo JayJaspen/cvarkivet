@@ -9,9 +9,14 @@ export const dynamic = 'force-dynamic';
 export default async function ForetagLayout({ children }: { children: React.ReactNode }) {
   const company = await requireCompany();
 
-  const unread = await prisma.message.count({
-    where: { companyId: company.id, senderType: 'USER', readAt: null },
-  });
+  const [unread, nyaIntressen] = await Promise.all([
+    prisma.message.count({
+      where: { companyId: company.id, senderType: 'USER', readAt: null },
+    }),
+    prisma.interest.count({
+      where: { viewedAt: null, jobAd: { companyId: company.id } },
+    }),
+  ]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -21,7 +26,7 @@ export default async function ForetagLayout({ children }: { children: React.Reac
         logoutAction={logout}
         tabs={[
           { href: '/foretag/cvarkivet', label: 'CVArkivet' },
-          { href: '/foretag/annonser', label: 'Annonser' },
+          { href: '/foretag/annonser', label: 'Annonser', badge: nyaIntressen },
           { href: '/foretag/var-sida', label: 'Vår sida' },
           { href: '/foretag/meddelanden', label: 'Meddelanden', badge: unread },
         ]}

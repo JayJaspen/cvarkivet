@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
 import { arGodkant, harAnnonsAtkomst } from '@/lib/data';
@@ -36,7 +37,7 @@ export default async function AnnonserPage() {
 
   const ads = await prisma.jobAd.findMany({
     where: { companyId: company.id },
-    include: { _count: { select: { applications: true } } },
+    include: { _count: { select: { interests: true } } },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -78,19 +79,33 @@ export default async function AnnonserPage() {
                             </Badge>
                           )}
                           <Badge tone="amber">Sista dag {formatDate(a.deadline)}</Badge>
-                          <Badge>{a._count.applications} markerade ansökningar</Badge>
                         </div>
                         <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">{a.body}</p>
                         <p className="muted mt-2">
                           Ansökan: {a.applyEmail ?? ''} {a.applyUrl ?? ''}
                         </p>
                       </div>
-                      <form action={deleteJobAd}>
-                        <input type="hidden" name="id" value={a.id} />
-                        <button className="btn-danger" type="submit">
-                          Radera
-                        </button>
-                      </form>
+
+                      <div className="flex flex-col items-end gap-2">
+                        <Link
+                          href={`/foretag/annonser/${a.id}`}
+                          className={a._count.interests > 0 ? 'btn-primary' : 'btn-secondary'}
+                        >
+                          {a._count.interests === 0
+                            ? 'Inga intresseanmälningar'
+                            : `${a._count.interests} ${
+                                a._count.interests === 1
+                                  ? 'intresseanmälan'
+                                  : 'intresseanmälningar'
+                              }`}
+                        </Link>
+                        <form action={deleteJobAd}>
+                          <input type="hidden" name="id" value={a.id} />
+                          <button className="btn-danger" type="submit">
+                            Radera
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </Card>
                 );

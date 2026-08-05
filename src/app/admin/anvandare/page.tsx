@@ -37,7 +37,7 @@ export default async function AdminUsers({
         : {}),
     },
     include: {
-      _count: { select: { cvViews: true, companyVisits: true, applications: true } },
+      _count: { select: { cvViews: true, companyVisits: true, interests: true } },
       categories: true,
     },
     orderBy: { createdAt: 'desc' },
