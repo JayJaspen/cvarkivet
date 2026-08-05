@@ -19,7 +19,7 @@ export default async function ForetagLayout({ children }: { children: React.Reac
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Nav
         name={company.name}
         role={planNamnFor(company.subscription, company.companyType)}
@@ -31,7 +31,9 @@ export default async function ForetagLayout({ children }: { children: React.Reac
           { href: '/foretag/meddelanden', label: 'Meddelanden', badge: unread },
         ]}
       />
-      <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+      <main className="px-4 py-8 md:ml-64 md:px-8">
+        <div className="mx-auto max-w-6xl">{children}</div>
+      </main>
     </div>
   );
 }

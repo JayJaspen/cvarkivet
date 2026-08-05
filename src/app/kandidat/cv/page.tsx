@@ -53,11 +53,11 @@ export default async function CvPage({
               {experiences.map((e) => (
                 <div
                   key={e.id}
-                  className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 p-4"
+                  className="flex items-start justify-between gap-4 rounded-lg border border-sand-200 p-4"
                 >
                   <div>
                     <p className="font-medium">{e.title}</p>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-sand-600">
                       {e.employer}
                       {e.location ? ` · ${e.location}` : ''}
                     </p>
@@ -65,7 +65,7 @@ export default async function CvPage({
                       {e.fromDate} – {e.toDate || 'pågående'}
                     </p>
                     {e.description && (
-                      <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">
+                      <p className="mt-2 whitespace-pre-wrap text-sm text-sand-800">
                         {e.description}
                       </p>
                     )}
@@ -80,8 +80,8 @@ export default async function CvPage({
               ))}
             </div>
 
-            <form action={addExperience} className="grid gap-3 rounded-lg bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-700">Lägg till erfarenhet</p>
+            <form action={addExperience} className="grid gap-3 rounded-lg bg-sand-50 p-4">
+              <p className="text-sm font-medium text-sand-800">Lägg till erfarenhet</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <input name="title" placeholder="Titel *" className="input" required />
                 <input name="employer" placeholder="Arbetsgivare *" className="input" required />
@@ -115,11 +115,11 @@ export default async function CvPage({
               {educations.map((e) => (
                 <div
                   key={e.id}
-                  className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 p-4"
+                  className="flex items-start justify-between gap-4 rounded-lg border border-sand-200 p-4"
                 >
                   <div>
                     <p className="font-medium">{e.program}</p>
-                    <p className="text-sm text-slate-600">{e.school}</p>
+                    <p className="text-sm text-sand-600">{e.school}</p>
                     <p className="muted">
                       {e.fromDate} – {e.toDate || 'pågående'}
                     </p>
@@ -134,8 +134,8 @@ export default async function CvPage({
               ))}
             </div>
 
-            <form action={addEducation} className="grid gap-3 rounded-lg bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-700">Lägg till utbildning</p>
+            <form action={addEducation} className="grid gap-3 rounded-lg bg-sand-50 p-4">
+              <p className="text-sm font-medium text-sand-800">Lägg till utbildning</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <input name="program" placeholder="Utbildning/program *" className="input" required />
                 <input name="school" placeholder="Skola *" className="input" required />
@@ -154,7 +154,7 @@ export default async function CvPage({
         <div className="space-y-6">
           <Card>
             <h2 className="h2 mb-3">Så syns du</h2>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2 text-sm text-sand-600">
               <li>
                 • Företag med aktiv prenumeration ser namn, ålder, kommun, kategorier, löneanspråk
                 och hela ditt CV.

@@ -98,10 +98,10 @@ export default async function ForetagPage({
                     <img
                       src={c.logoUrl}
                       alt={c.name}
-                      className="h-12 w-12 rounded-lg border border-slate-200 object-contain"
+                      className="h-12 w-12 rounded-lg border border-sand-200 object-contain"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-sm font-bold text-slate-500">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sand-100 text-sm font-bold text-sand-500">
                       {c.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
@@ -109,7 +109,7 @@ export default async function ForetagPage({
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/kandidat/foretag/${c.id}`}
-                      className="font-semibold text-slate-900 hover:text-brand-600"
+                      className="font-semibold text-sand-900 hover:text-brand-600"
                     >
                       {c.name}
                     </Link>

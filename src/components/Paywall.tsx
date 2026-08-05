@@ -26,17 +26,17 @@ export default function Paywall({
             <div
               key={period}
               className={`rounded-xl border p-5 text-left ${
-                period === 'YEARLY' ? 'border-brand-300 bg-brand-50' : 'border-slate-200'
+                period === 'YEARLY' ? 'border-brand-300 bg-brand-50' : 'border-sand-200'
               }`}
             >
               <p className="font-semibold">{PERIODER[period].namn}</p>
               <p className="mt-1 text-2xl font-bold text-brand-600">
                 {kr(belopp)} kr
-                <span className="text-sm font-normal text-slate-500">
+                <span className="text-sm font-normal text-sand-500">
                   {PERIODER[period].enhet} exkl. moms
                 </span>
               </p>
-              <p className="text-xs text-slate-500">{kr(prisInklMoms(belopp))} kr inkl. moms</p>
+              <p className="text-xs text-sand-500">{kr(prisInklMoms(belopp))} kr inkl. moms</p>
               <p className="muted mt-2">Full tillgång till CVArkivet och egna annonser.</p>
             </div>
           );

@@ -42,7 +42,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
 
   return (
     <>
-      <Link href="/admin/anvandare" className="muted mb-4 inline-block hover:text-slate-900">
+      <Link href="/admin/anvandare" className="muted mb-4 inline-block hover:text-sand-900">
         ← Alla användare
       </Link>
 
@@ -74,19 +74,19 @@ export default async function AdminUserDetail({ params }: { params: { id: string
               <img
                 src={user.photoUrl}
                 alt=""
-                className="mb-3 h-20 w-20 rounded-full border border-slate-200 object-cover"
+                className="mb-3 h-20 w-20 rounded-full border border-sand-200 object-cover"
               />
             )}
             <p className="font-medium">{user.headline || 'Ingen yrkesrubrik'}</p>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">
+            <p className="mt-2 whitespace-pre-wrap text-sm text-sand-800">
               {user.summary || 'Ingen presentation.'}
             </p>
-            <h3 className="mt-5 text-sm font-semibold text-slate-700">Personligt brev</h3>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+            <h3 className="mt-5 text-sm font-semibold text-sand-800">Personligt brev</h3>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-sand-800">
               {user.coverLetter || 'Inget personligt brev.'}
             </p>
 
-            <h3 className="mt-5 text-sm font-semibold text-slate-700">Arbetslivserfarenhet</h3>
+            <h3 className="mt-5 text-sm font-semibold text-sand-800">Arbetslivserfarenhet</h3>
             {user.experiences.length === 0 ? (
               <p className="muted">–</p>
             ) : (
@@ -99,7 +99,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
               </ul>
             )}
 
-            <h3 className="mt-5 text-sm font-semibold text-slate-700">Utbildning</h3>
+            <h3 className="mt-5 text-sm font-semibold text-sand-800">Utbildning</h3>
             {user.educations.length === 0 ? (
               <p className="muted">–</p>
             ) : (
@@ -121,13 +121,13 @@ export default async function AdminUserDetail({ params }: { params: { id: string
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="border-b border-slate-200">
+                  <thead className="border-b border-sand-200">
                     <tr>
                       <th className="th">Företag</th>
                       <th className="th">Tidpunkt</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-sand-100">
                     {visits.map((v) => (
                       <tr key={v.id}>
                         <td className="td">
@@ -162,7 +162,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
                     >
                       {v.company.name}
                     </Link>
-                    <span className="text-slate-500">{formatDateTime(v.createdAt)}</span>
+                    <span className="text-sand-500">{formatDateTime(v.createdAt)}</span>
                   </li>
                 ))}
               </ul>
@@ -175,31 +175,31 @@ export default async function AdminUserDetail({ params }: { params: { id: string
             <h2 className="h2 mb-3">Kontouppgifter</h2>
             <dl className="space-y-2 text-sm">
               <div>
-                <dt className="text-slate-500">Ålder</dt>
+                <dt className="text-sand-500">Ålder</dt>
                 <dd>{ageFromBirthDate(user.birthDate) ?? '–'} år</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Registrerad</dt>
+                <dt className="text-sand-500">Registrerad</dt>
                 <dd>{formatDate(user.createdAt)}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Senaste inloggning</dt>
+                <dt className="text-sand-500">Senaste inloggning</dt>
                 <dd>{formatDateTime(user.lastLoginAt)}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Hemkommun</dt>
+                <dt className="text-sand-500">Hemkommun</dt>
                 <dd>{user.homeMunicipality || '–'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Löneanspråk</dt>
+                <dt className="text-sand-500">Löneanspråk</dt>
                 <dd>{user.salaryExpectation ? kr(user.salaryExpectation) : '–'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Söker aktivt</dt>
+                <dt className="text-sand-500">Söker aktivt</dt>
                 <dd>{user.activelyLooking ? 'Ja' : 'Nej'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Kategorier</dt>
+                <dt className="text-sand-500">Kategorier</dt>
                 <dd className="mt-1 flex flex-wrap gap-1">
                   {user.categories.map((c) => (
                     <Badge key={c.id} tone="blue">
@@ -209,7 +209,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Kommuner</dt>
+                <dt className="text-sand-500">Kommuner</dt>
                 <dd className="mt-1 flex flex-wrap gap-1">
                   {user.municipalities.map((m) => (
                     <Badge key={m.id}>{m.municipality}</Badge>
@@ -221,7 +221,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
 
           <Card>
             <h2 className="h2 mb-3">Integritetsval</h2>
-            <p className="text-sm font-medium text-slate-700">Blockerade domäner</p>
+            <p className="text-sm font-medium text-sand-800">Blockerade domäner</p>
             <div className="mt-1 flex flex-wrap gap-1">
               {user.hiddenDomains.length === 0 && <span className="muted">Inga</span>}
               {user.hiddenDomains.map((d) => (
@@ -231,7 +231,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
               ))}
             </div>
 
-            <p className="mt-4 text-sm font-medium text-slate-700">Dolda företag</p>
+            <p className="mt-4 text-sm font-medium text-sand-800">Dolda företag</p>
             <div className="mt-1 flex flex-wrap gap-1">
               {user.hiddenCompanies.length === 0 && <span className="muted">Inga</span>}
               {user.hiddenCompanies.map((h) => (
@@ -241,7 +241,7 @@ export default async function AdminUserDetail({ params }: { params: { id: string
               ))}
             </div>
 
-            <p className="mt-4 text-sm font-medium text-slate-700">Favoritföretag</p>
+            <p className="mt-4 text-sm font-medium text-sand-800">Favoritföretag</p>
             <div className="mt-1 flex flex-wrap gap-1">
               {user.favorites.length === 0 && <span className="muted">Inga</span>}
               {user.favorites.map((f) => (

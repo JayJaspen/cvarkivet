@@ -46,7 +46,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
 
   return (
     <>
-      <Link href="/admin/foretag" className="muted mb-4 inline-block hover:text-slate-900">
+      <Link href="/admin/foretag" className="muted mb-4 inline-block hover:text-sand-900">
         ← Alla företag
       </Link>
 
@@ -80,11 +80,11 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
 
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-slate-500">Organisationsnummer</dt>
+              <dt className="text-sand-500">Organisationsnummer</dt>
               <dd className="font-medium">{company.orgNumber}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Angiven bolagstyp</dt>
+              <dt className="text-sand-500">Angiven bolagstyp</dt>
               <dd className="font-medium">
                 {bolagstypText(company.companyType)}
                 {company.companyType === 'AGENCY'
@@ -93,15 +93,15 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
               </dd>
             </div>
             <div>
-              <dt className="text-slate-500">E-postdomän</dt>
+              <dt className="text-sand-500">E-postdomän</dt>
               <dd className="font-medium">@{company.email.split('@').pop()}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Uppgiven webbplats</dt>
+              <dt className="text-sand-500">Uppgiven webbplats</dt>
               <dd className="font-medium">{company.website || 'ingen angiven'}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Presentation ifylld</dt>
+              <dt className="text-sand-500">Presentation ifylld</dt>
               <dd className="font-medium">{company.presentation ? 'Ja' : 'Nej'}</dd>
             </div>
           </dl>
@@ -177,7 +177,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
             ) : (
               <div className="space-y-3">
                 {company.jobAds.map((a) => (
-                  <div key={a.id} className="rounded-lg border border-slate-200 p-4">
+                  <div key={a.id} className="rounded-lg border border-sand-200 p-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium">{a.title}</p>
                       {a.deadline < new Date() ? (
@@ -190,7 +190,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                       {a.category} · {a.municipality} · sista dag {formatDate(a.deadline)} ·{' '}
                       {kr(a.salaryMin)}–{kr(a.salaryMax)}
                     </p>
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">{a.body}</p>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-sand-800">{a.body}</p>
                   </div>
                 ))}
               </div>
@@ -205,13 +205,13 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="border-b border-slate-200">
+                  <thead className="border-b border-sand-200">
                     <tr>
                       <th className="th">Kandidat</th>
                       <th className="th">Tidpunkt</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-sand-100">
                     {views.map((v) => (
                       <tr key={v.id}>
                         <td className="td">
@@ -237,14 +237,14 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
             <h2 className="h2 mb-3">Faktureringsunderlag</h2>
             <dl className="space-y-2 text-sm">
               <div>
-                <dt className="text-slate-500">Granskningsstatus</dt>
+                <dt className="text-sand-500">Granskningsstatus</dt>
                 <dd className="font-medium">
                   {statusText(company.status)}
                   {company.reviewedAt && ` · ${formatDate(company.reviewedAt)}`}
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Bolagstyp</dt>
+                <dt className="text-sand-500">Bolagstyp</dt>
                 <dd>
                   <form action={andraBolagstyp} className="mt-1 flex gap-2">
                     <input type="hidden" name="id" value={company.id} />
@@ -264,14 +264,14 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Prenumeration</dt>
+                <dt className="text-sand-500">Prenumeration</dt>
                 <dd className="font-medium">
                   {planNamnFor(company.subscription, company.companyType)}
                 </dd>
               </div>
               {company.subscription !== 'NONE' && (
                 <div>
-                  <dt className="text-slate-500">Belopp</dt>
+                  <dt className="text-sand-500">Belopp</dt>
                   <dd className="font-medium">
                     {pris(
                       company.companyType,
@@ -283,29 +283,29 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
               )}
               {company.subscriptionEndsAt && (
                 <div>
-                  <dt className="text-slate-500">Gäller till och med</dt>
+                  <dt className="text-sand-500">Gäller till och med</dt>
                   <dd>{formatDate(company.subscriptionEndsAt)}</dd>
                 </div>
               )}
               <div>
-                <dt className="text-slate-500">Startdatum</dt>
+                <dt className="text-sand-500">Startdatum</dt>
                 <dd>{formatDate(company.subscriptionStarted)}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Uppsagd</dt>
+                <dt className="text-sand-500">Uppsagd</dt>
                 <dd>{formatDate(company.cancelledAt)}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Organisationsnummer</dt>
+                <dt className="text-sand-500">Organisationsnummer</dt>
                 <dd>{company.orgNumber}</dd>
               </div>
-              <div className="rounded-lg bg-slate-50 p-3">
-                <dt className="text-slate-500">Faktureringssätt</dt>
+              <div className="rounded-lg bg-sand-50 p-3">
+                <dt className="text-sand-500">Faktureringssätt</dt>
                 <dd className="font-medium">{fakturasattText(company.invoiceMethod)}</dd>
 
                 {company.invoiceMethod === 'EMAIL' && (
                   <>
-                    <dt className="mt-2 text-slate-500">Skickas till</dt>
+                    <dt className="mt-2 text-sand-500">Skickas till</dt>
                     <dd>
                       <a
                         href={`mailto:${company.invoiceEmail}`}
@@ -319,24 +319,24 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
 
                 {company.invoiceMethod === 'PAPER' && (
                   <>
-                    <dt className="mt-2 text-slate-500">Postas till</dt>
+                    <dt className="mt-2 text-sand-500">Postas till</dt>
                     <dd className="whitespace-pre-wrap">{company.invoiceAddress}</dd>
                   </>
                 )}
 
                 {company.invoiceRef && (
                   <>
-                    <dt className="mt-2 text-slate-500">Er referens</dt>
+                    <dt className="mt-2 text-sand-500">Er referens</dt>
                     <dd>{company.invoiceRef}</dd>
                   </>
                 )}
               </div>
               <div>
-                <dt className="text-slate-500">Besöksadress</dt>
+                <dt className="text-sand-500">Besöksadress</dt>
                 <dd>{company.address}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Kontaktperson</dt>
+                <dt className="text-sand-500">Kontaktperson</dt>
                 <dd>
                   {company.contactName}
                   <br />
@@ -377,7 +377,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                           : 'Sade upp'}{' '}
                       {historikPlanText(h.plan)}
                     </span>
-                    <span className="text-slate-500">{formatDate(h.createdAt)}</span>
+                    <span className="text-sand-500">{formatDate(h.createdAt)}</span>
                   </li>
                 ))}
               </ul>

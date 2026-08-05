@@ -10,7 +10,7 @@ export default function AterstallLosenord({
   const token = searchParams.token ?? '';
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-sand-50 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <Logo />
@@ -33,7 +33,7 @@ export default function AterstallLosenord({
           )}
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-sand-600">
           <Link href="/logga-in" className="font-medium text-brand-600 hover:underline">
             ← Tillbaka till inloggningen
           </Link>

@@ -80,7 +80,7 @@ export default async function AnnonserPage() {
                           )}
                           <Badge tone="amber">Sista dag {formatDate(a.deadline)}</Badge>
                         </div>
-                        <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">{a.body}</p>
+                        <p className="mt-3 whitespace-pre-wrap text-sm text-sand-800">{a.body}</p>
                         <p className="muted mt-2">
                           Ansökan: {a.applyEmail ?? ''} {a.applyUrl ?? ''}
                         </p>

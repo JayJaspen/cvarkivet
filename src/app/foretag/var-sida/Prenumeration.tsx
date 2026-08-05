@@ -46,7 +46,7 @@ function Fakturaval({ company, idPrefix }: { company: CompanyLite; idPrefix: str
         <label
           key={id}
           className={`flex cursor-pointer gap-3 rounded-lg border p-3 ${
-            metod === id ? 'border-brand-500 bg-brand-50' : 'border-slate-200'
+            metod === id ? 'border-brand-500 bg-brand-50' : 'border-sand-200'
           }`}
         >
           <input
@@ -55,11 +55,11 @@ function Fakturaval({ company, idPrefix }: { company: CompanyLite; idPrefix: str
             value={id}
             checked={metod === id}
             onChange={() => setMetod(id)}
-            className="mt-0.5 h-4 w-4 border-slate-300 text-brand-600"
+            className="mt-0.5 h-4 w-4 border-sand-300 text-brand-600"
           />
           <span>
-            <span className="block text-sm font-medium text-slate-900">{FAKTURASATT[id].namn}</span>
-            <span className="block text-xs text-slate-500">{FAKTURASATT[id].beskrivning}</span>
+            <span className="block text-sm font-medium text-sand-900">{FAKTURASATT[id].namn}</span>
+            <span className="block text-xs text-sand-500">{FAKTURASATT[id].beskrivning}</span>
           </span>
         </label>
       ))}
@@ -176,7 +176,7 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
               <div
                 key={period}
                 className={`rounded-xl border p-4 ${
-                  nuvarande ? 'border-brand-500 bg-brand-50' : 'border-slate-200'
+                  nuvarande ? 'border-brand-500 bg-brand-50' : 'border-sand-200'
                 }`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
@@ -191,11 +191,11 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
 
                 <p className="mt-1 text-2xl font-bold text-brand-600">
                   {kr(belopp)} kr
-                  <span className="text-sm font-normal text-slate-500">
+                  <span className="text-sm font-normal text-sand-500">
                     {p.enhet} exkl. moms
                   </span>
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-sand-500">
                   {kr(prisInklMoms(belopp))} kr inkl. moms
                   {period === 'YEARLY' &&
                     ` · motsvarar ${kr(Math.round(belopp / 12))} kr/mån`}
@@ -220,7 +220,7 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
                 )}
 
                 {oppen && (
-                  <form action={aktivera} className="mt-4 space-y-4 border-t border-slate-200 pt-4">
+                  <form action={aktivera} className="mt-4 space-y-4 border-t border-sand-200 pt-4">
                     <input type="hidden" name="period" value={period} />
                     <Fakturaval company={company} idPrefix={`akt-${period}`} />
 
@@ -237,7 +237,7 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
                       </button>
                     </div>
 
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-sand-500">
                       {period === 'YEARLY'
                         ? 'Årsabonnemanget gäller ett år från idag. Säger ni upp det i förtid behåller ni åtkomsten perioden ut, men ingen återbetalning sker.'
                         : 'Månadsabonnemanget kan sägas upp när som helst. Efter uppsägning kan ett nytt tecknas tidigast två månader senare.'}

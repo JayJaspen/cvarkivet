@@ -61,12 +61,12 @@ export default async function ForetagMeddelanden({
                   <Link
                     href={`/foretag/meddelanden?kandidat=${id}`}
                     className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${
-                      id === activeId ? 'bg-brand-50 text-brand-700' : 'hover:bg-slate-50'
+                      id === activeId ? 'bg-brand-50 text-brand-700' : 'hover:bg-sand-50'
                     }`}
                   >
                     <span>
                       <span className="font-medium">{t.name}</span>
-                      {t.headline && <span className="block text-xs text-slate-500">{t.headline}</span>}
+                      {t.headline && <span className="block text-xs text-sand-500">{t.headline}</span>}
                     </span>
                     {t.unread > 0 && <Badge tone="blue">{t.unread} ny</Badge>}
                   </Link>
@@ -95,13 +95,13 @@ export default async function ForetagMeddelanden({
                       className={`max-w-[85%] rounded-xl px-4 py-2.5 text-sm ${
                         m.senderType === 'COMPANY'
                           ? 'ml-auto bg-brand-600 text-white'
-                          : 'bg-slate-100 text-slate-800'
+                          : 'bg-sand-100 text-sand-800'
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{m.body}</p>
                       <p
                         className={`mt-1 text-[11px] ${
-                          m.senderType === 'COMPANY' ? 'text-brand-100' : 'text-slate-500'
+                          m.senderType === 'COMPANY' ? 'text-brand-100' : 'text-sand-500'
                         }`}
                       >
                         {formatDateTime(m.createdAt)}

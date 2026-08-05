@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const attGranska = await prisma.company.count({ where: { status: 'PENDING' } });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Nav
         name={admin.name}
         role="Administratör"
@@ -22,7 +22,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           { href: '/admin/mitt-konto', label: 'Mitt konto' },
         ]}
       />
-      <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+      <main className="px-4 py-8 md:ml-64 md:px-8">
+        <div className="mx-auto max-w-7xl">{children}</div>
+      </main>
     </div>
   );
 }

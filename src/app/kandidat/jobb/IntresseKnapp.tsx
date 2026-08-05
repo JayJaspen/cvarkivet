@@ -45,11 +45,11 @@ export default function IntresseKnapp({
     );
 
   return (
-    <form action={visaIntresse} className="space-y-2 rounded-lg border border-slate-200 p-3">
+    <form action={visaIntresse} className="space-y-2 rounded-lg border border-sand-200 p-3">
       <input type="hidden" name="jobAdId" value={jobAdId} />
 
-      <p className="text-sm font-medium text-slate-900">Visa intresse</p>
-      <p className="text-xs text-slate-600">
+      <p className="text-sm font-medium text-sand-900">Visa intresse</p>
+      <p className="text-xs text-sand-600">
         {foretagsnamn} får se ditt CV och kan kontakta dig. Du skickar ingen ansökan.
       </p>
 

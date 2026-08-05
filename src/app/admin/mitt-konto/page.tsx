@@ -29,19 +29,19 @@ export default async function MittKonto() {
           <h2 className="h2 mb-3">Kontouppgifter</h2>
           <dl className="space-y-2 text-sm">
             <div>
-              <dt className="text-slate-500">Namn</dt>
+              <dt className="text-sand-500">Namn</dt>
               <dd>{admin.name}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">E-postadress</dt>
+              <dt className="text-sand-500">E-postadress</dt>
               <dd>{admin.email}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Skapat</dt>
+              <dt className="text-sand-500">Skapat</dt>
               <dd>{formatDate(admin.createdAt)}</dd>
             </div>
           </dl>
-          <p className="mt-4 text-xs text-slate-500">
+          <p className="mt-4 text-xs text-sand-500">
             Adminkonton kan inte återställa lösenord via e-post. Tappar du lösenordet
             måste ett nytt konto skapas direkt mot databasen.
           </p>

@@ -65,12 +65,12 @@ export default async function AdminCompanies({
         <Card>
           <p className="muted">Årsabonnemang</p>
           <p className="mt-1 text-3xl font-bold text-brand-600">{arsabonnemang.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Faktureras en gång per år</p>
+          <p className="mt-1 text-xs text-sand-500">Faktureras en gång per år</p>
         </Card>
         <Card>
           <p className="muted">Månadsabonnemang</p>
           <p className="mt-1 text-3xl font-bold text-brand-600">{manadsabonnemang.length}</p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-sand-500">
             {manadsintakt.toLocaleString('sv-SE')} kr att fakturera denna månad
           </p>
         </Card>
@@ -79,7 +79,7 @@ export default async function AdminCompanies({
           <p className="mt-1 text-3xl font-bold text-emerald-600">
             {arsvarde.toLocaleString('sv-SE')} kr
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-sand-500">
             exkl. moms · {prisInklMoms(arsvarde).toLocaleString('sv-SE')} kr inkl. moms
           </p>
         </Card>
@@ -102,7 +102,7 @@ export default async function AdminCompanies({
                 className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-amber-200 bg-white p-4"
               >
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-900">{c.name}</p>
+                  <p className="font-semibold text-sand-900">{c.name}</p>
                   <p className="muted">
                     {c.orgNumber} · {c.municipality} · registrerad {formatDate(c.createdAt)}
                   </p>
@@ -171,9 +171,9 @@ export default async function AdminCompanies({
       {companies.length === 0 ? (
         <Empty>Inga företag matchar filtret.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-sand-200 bg-white">
           <table className="min-w-full">
-            <thead className="border-b border-slate-200 bg-slate-50">
+            <thead className="border-b border-sand-200 bg-sand-50">
               <tr>
                 <th className="th">Företag</th>
                 <th className="th">Org.nr</th>
@@ -186,9 +186,9 @@ export default async function AdminCompanies({
                 <th className="th"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-sand-100">
               {companies.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-50">
+                <tr key={c.id} className="hover:bg-sand-50">
                   <td className="td">
                     <Link
                       href={`/admin/foretag/${c.id}`}

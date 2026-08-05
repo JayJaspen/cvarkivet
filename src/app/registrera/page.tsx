@@ -3,7 +3,7 @@ import { Logo } from '@/components/ui';
 
 export default function RegisterChoice() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-sand-50 px-4 py-12">
       <div className="w-full max-w-2xl">
         <div className="mb-8 flex justify-center">
           <Logo />
@@ -29,7 +29,7 @@ export default function RegisterChoice() {
           </Link>
         </div>
 
-        <p className="mt-8 text-center text-sm text-slate-600">
+        <p className="mt-8 text-center text-sm text-sand-600">
           Har du redan ett konto?{' '}
           <Link href="/logga-in" className="font-medium text-brand-600 hover:underline">
             Logga in

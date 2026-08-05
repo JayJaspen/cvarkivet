@@ -58,7 +58,7 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
 
   return (
     <>
-      <Link href="/foretag/annonser" className="muted mb-4 inline-block hover:text-slate-900">
+      <Link href="/foretag/annonser" className="muted mb-4 inline-block hover:text-sand-900">
         ← Alla annonser
       </Link>
 
@@ -99,7 +99,7 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
               const alder = ageFromBirthDate(k.birthDate);
 
               return (
-                <div key={i.id} className="rounded-xl border border-slate-200 p-4">
+                <div key={i.id} className="rounded-xl border border-sand-200 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex min-w-0 gap-4">
                       {k.photoUrl ? (
@@ -107,10 +107,10 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
                         <img
                           src={k.photoUrl}
                           alt=""
-                          className="h-14 w-14 shrink-0 rounded-full border border-slate-200 object-cover"
+                          className="h-14 w-14 shrink-0 rounded-full border border-sand-200 object-cover"
                         />
                       ) : (
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-400">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sand-100 text-sm font-semibold text-sand-400">
                           {k.firstName.slice(0, 1)}
                           {k.lastName.slice(0, 1)}
                         </div>
@@ -144,7 +144,7 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
                         </div>
 
                         {i.message && (
-                          <p className="mt-3 rounded-lg bg-slate-50 p-3 text-sm italic text-slate-700">
+                          <p className="mt-3 rounded-lg bg-sand-50 p-3 text-sm italic text-sand-800">
                             &quot;{i.message}&quot;
                           </p>
                         )}

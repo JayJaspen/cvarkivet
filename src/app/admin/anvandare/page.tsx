@@ -135,9 +135,9 @@ export default async function AdminUsers({
       {users.length === 0 ? (
         <Empty>Inga användare matchar filtret.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-sand-200 bg-white">
           <table className="min-w-full">
-            <thead className="border-b border-slate-200 bg-slate-50">
+            <thead className="border-b border-sand-200 bg-sand-50">
               <tr>
                 <th className="th">Namn</th>
                 <th className="th">E-post</th>
@@ -148,9 +148,9 @@ export default async function AdminUsers({
                 <th className="th"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-sand-100">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-50">
+                <tr key={u.id} className="hover:bg-sand-50">
                   <td className="td">
                     <Link
                       href={`/admin/anvandare/${u.id}`}

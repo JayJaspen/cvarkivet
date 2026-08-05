@@ -5,7 +5,7 @@ import { SUPPORT_EPOST } from '@/lib/data';
 export default function Integritetspolicy() {
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-slate-200">
+      <header className="border-b border-sand-200">
         <div className="mx-auto max-w-3xl px-4 py-4">
           <Logo />
         </div>
@@ -15,7 +15,7 @@ export default function Integritetspolicy() {
         <h1 className="h1 mb-2">Integritetspolicy</h1>
         <p className="muted mb-8">Utkast – ska granskas av jurist före lansering.</p>
 
-        <div className="space-y-6 text-sm leading-relaxed text-slate-700">
+        <div className="space-y-6 text-sm leading-relaxed text-sand-800">
           <section>
             <h2 className="h2 mb-2">Personuppgiftsansvarig</h2>
             <p>CVArkivet.se. Kontakt: {SUPPORT_EPOST}.</p>

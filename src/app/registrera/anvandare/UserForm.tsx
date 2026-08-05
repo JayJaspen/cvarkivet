@@ -46,11 +46,11 @@ export default function UserForm() {
         <Field label="Upprepa lösenord" name="password2" type="password" required />
       </div>
 
-      <label className="flex items-start gap-2 text-sm text-slate-600">
+      <label className="flex items-start gap-2 text-sm text-sand-600">
         <input
           type="checkbox"
           name="terms"
-          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600"
+          className="mt-0.5 h-4 w-4 rounded border-sand-300 text-brand-600"
         />
         <span>
           Jag godkänner{' '}

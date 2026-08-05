@@ -4,7 +4,7 @@ import CompanyForm from './CompanyForm';
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-12">
+    <div className="min-h-screen bg-sand-50 px-4 py-12">
       <div className="mx-auto w-full max-w-2xl">
         <div className="mb-8 flex justify-center">
           <Logo />
@@ -48,7 +48,7 @@ export default function Page() {
           <CompanyForm />
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-sand-600">
           Redan registrerade?{' '}
           <Link href="/logga-in" className="font-medium text-brand-600 hover:underline">
             Logga in

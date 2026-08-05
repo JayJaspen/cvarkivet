@@ -108,20 +108,20 @@ export default async function JobbPage({
                     <img
                       src={j.company.logoUrl}
                       alt={j.company.name}
-                      className="h-14 w-14 shrink-0 rounded-lg border border-slate-200 object-contain p-1"
+                      className="h-14 w-14 shrink-0 rounded-lg border border-sand-200 object-contain p-1"
                     />
                   ) : (
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-bold text-slate-500">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-sand-100 text-sm font-bold text-sand-500">
                       {j.company.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
 
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-semibold text-slate-900">{j.title}</h2>
+                      <h2 className="text-lg font-semibold text-sand-900">{j.title}</h2>
                       {anmalt.has(j.id) && <Badge tone="green">Intresse anmält</Badge>}
                     </div>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-sand-600">
                       <Link
                         href={`/kandidat/foretag/${j.company.id}`}
                         className="font-medium text-brand-600 hover:underline"
@@ -140,7 +140,7 @@ export default async function JobbPage({
                       )}
                       <Badge tone="amber">Sista ansökningsdag {formatDate(j.deadline)}</Badge>
                     </div>
-                    <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">{j.body}</p>
+                    <p className="mt-3 whitespace-pre-wrap text-sm text-sand-800">{j.body}</p>
                   </div>
                 </div>
 

@@ -66,7 +66,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <Link href="/foretag/cvarkivet" className="muted mb-4 inline-block hover:text-slate-900">
+      <Link href="/foretag/cvarkivet" className="muted mb-4 inline-block hover:text-sand-900">
         ← Tillbaka till CVArkivet
       </Link>
 
@@ -77,10 +77,10 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
             <img
               src={user.photoUrl}
               alt={`${user.firstName} ${user.lastName}`}
-              className="h-28 w-28 rounded-full border border-slate-200 object-cover"
+              className="h-28 w-28 rounded-full border border-sand-200 object-cover"
             />
           ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-slate-100 text-3xl font-semibold text-slate-400">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-sand-100 text-3xl font-semibold text-sand-400">
               {user.firstName.slice(0, 1)}
               {user.lastName.slice(0, 1)}
             </div>
@@ -105,14 +105,14 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
         <div className="space-y-6 lg:col-span-2">
           <Card>
             <h2 className="h2 mb-3">Presentation</h2>
-            <p className="whitespace-pre-wrap text-sm text-slate-700">
+            <p className="whitespace-pre-wrap text-sm text-sand-800">
               {user.summary || 'Ingen presentation angiven.'}
             </p>
           </Card>
 
           <Card>
             <h2 className="h2 mb-3">Personligt brev</h2>
-            <p className="whitespace-pre-wrap text-sm text-slate-700">
+            <p className="whitespace-pre-wrap text-sm text-sand-800">
               {user.coverLetter || 'Inget personligt brev angivet.'}
             </p>
           </Card>
@@ -126,7 +126,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                 {user.experiences.map((e) => (
                   <div key={e.id} className="border-l-2 border-brand-200 pl-4">
                     <p className="font-medium">{e.title}</p>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-sand-600">
                       {e.employer}
                       {e.location ? ` · ${e.location}` : ''}
                     </p>
@@ -134,7 +134,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                       {e.fromDate} – {e.toDate || 'pågående'}
                     </p>
                     {e.description && (
-                      <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-sand-800">
                         {e.description}
                       </p>
                     )}
@@ -153,7 +153,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                 {user.educations.map((e) => (
                   <div key={e.id} className="border-l-2 border-brand-200 pl-4">
                     <p className="font-medium">{e.program}</p>
-                    <p className="text-sm text-slate-600">{e.school}</p>
+                    <p className="text-sm text-sand-600">{e.school}</p>
                     <p className="muted">
                       {e.fromDate} – {e.toDate || 'pågående'}
                     </p>
@@ -169,7 +169,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
             <h2 className="h2 mb-3">Fakta</h2>
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-slate-500">Status</dt>
+                <dt className="text-sand-500">Status</dt>
                 <dd className="mt-0.5 flex flex-wrap gap-1">
                   {user.activelyLooking ? (
                     <Badge tone="green">Söker aktivt jobb</Badge>
@@ -180,15 +180,15 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Ålder</dt>
+                <dt className="text-sand-500">Ålder</dt>
                 <dd>{age !== null ? `${age} år` : '–'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Hemmahörande kommun</dt>
+                <dt className="text-sand-500">Hemmahörande kommun</dt>
                 <dd>{user.homeMunicipality || '–'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Aktuella kommuner</dt>
+                <dt className="text-sand-500">Aktuella kommuner</dt>
                 <dd className="mt-1 flex flex-wrap gap-1">
                   {user.municipalities.length === 0 && '–'}
                   {user.municipalities.map((m) => (
@@ -197,7 +197,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Jobbkategorier</dt>
+                <dt className="text-sand-500">Jobbkategorier</dt>
                 <dd className="mt-1 flex flex-wrap gap-1">
                   {user.categories.length === 0 && '–'}
                   {user.categories.map((k) => (
@@ -208,19 +208,19 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Löneanspråk</dt>
+                <dt className="text-sand-500">Löneanspråk</dt>
                 <dd>{user.salaryExpectation ? `${kr(user.salaryExpectation)}/mån` : 'Ej angivet'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Kompetenser</dt>
+                <dt className="text-sand-500">Kompetenser</dt>
                 <dd>{user.skills || '–'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Språk</dt>
+                <dt className="text-sand-500">Språk</dt>
                 <dd>{user.languages || '–'}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Körkort</dt>
+                <dt className="text-sand-500">Körkort</dt>
                 <dd>{user.drivingLicense || '–'}</dd>
               </div>
             </dl>
@@ -240,11 +240,11 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
                     className={`rounded-lg px-3 py-2 text-sm ${
                       m.senderType === 'COMPANY'
                         ? 'bg-brand-50 text-brand-900'
-                        : 'bg-slate-100 text-slate-800'
+                        : 'bg-sand-100 text-sand-800'
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{m.body}</p>
-                    <p className="mt-1 text-[11px] text-slate-500">
+                    <p className="mt-1 text-[11px] text-sand-500">
                       {m.senderType === 'COMPANY' ? 'Vi' : user.firstName} ·{' '}
                       {formatDateTime(m.createdAt)}
                     </p>

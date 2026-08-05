@@ -67,7 +67,7 @@ export default function MultiSelect({
   return (
     <div ref={wrapRef} className="relative">
       <label className="label">{label}</label>
-      {hint && <p className="mb-2 text-xs text-slate-500">{hint}</p>}
+      {hint && <p className="mb-2 text-xs text-sand-500">{hint}</p>}
 
       <button
         type="button"
@@ -75,17 +75,17 @@ export default function MultiSelect({
         aria-expanded={open}
         className="input flex items-center justify-between text-left"
       >
-        <span className={selected.length ? 'text-slate-900' : 'text-slate-400'}>
+        <span className={selected.length ? 'text-sand-900' : 'text-sand-400'}>
           {selected.length === 0
             ? placeholder
             : `${selected.length} ${selected.length === 1 ? 'vald' : 'valda'}`}
         </span>
-        <span className="ml-2 shrink-0 text-slate-400">{open ? '▲' : '▼'}</span>
+        <span className="ml-2 shrink-0 text-sand-400">{open ? '▲' : '▼'}</span>
       </button>
 
       {open && (
-        <div className="absolute z-30 mt-1 w-full rounded-lg border border-slate-300 bg-white shadow-lg">
-          <div className="border-b border-slate-200 p-2">
+        <div className="absolute z-30 mt-1 w-full rounded-lg border border-sand-300 bg-white shadow-lg">
+          <div className="border-b border-sand-200 p-2">
             <input
               ref={sokRef}
               className="input"
@@ -96,28 +96,28 @@ export default function MultiSelect({
           </div>
 
           <div className="max-h-64 overflow-y-auto">
-            {filtered.length === 0 && <p className="p-3 text-sm text-slate-500">Inga träffar.</p>}
+            {filtered.length === 0 && <p className="p-3 text-sm text-sand-500">Inga träffar.</p>}
             {filtered.map((o) => (
               <label
                 key={o}
-                className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50"
+                className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-sand-50"
               >
                 <input
                   type="checkbox"
                   checked={selected.includes(o)}
                   onChange={() => toggle(o)}
-                  className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                  className="h-4 w-4 rounded border-sand-300 text-brand-600"
                 />
                 {o}
               </label>
             ))}
           </div>
 
-          <div className="flex items-center justify-between border-t border-slate-200 px-3 py-2">
+          <div className="flex items-center justify-between border-t border-sand-200 px-3 py-2">
             <button
               type="button"
               onClick={() => setSelected([])}
-              className="text-xs text-slate-500 hover:text-slate-900"
+              className="text-xs text-sand-500 hover:text-sand-900"
             >
               Rensa alla
             </button>

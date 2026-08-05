@@ -18,7 +18,7 @@ export default async function KandidatLayout({ children }: { children: React.Rea
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Nav
         name={`${user.firstName} ${user.lastName}`}
         role="Kandidat"
@@ -31,7 +31,9 @@ export default async function KandidatLayout({ children }: { children: React.Rea
           { href: '/kandidat/meddelanden', label: 'Meddelanden', badge: unread },
         ]}
       />
-      <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+      <main className="px-4 py-8 md:ml-64 md:px-8">
+        <div className="mx-auto max-w-6xl">{children}</div>
+      </main>
     </div>
   );
 }

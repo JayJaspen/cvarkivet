@@ -94,7 +94,7 @@ export default async function VarSidaPage({
           <Prenumeration company={company} />
 
           <Card>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-sand-500">
               Alla priser anges exklusive moms. Fakturering sker månadsvis av CVArkivet enligt de
               uppgifter ni angett ovan.
             </p>
@@ -104,7 +104,7 @@ export default async function VarSidaPage({
                 <summary className="cursor-pointer text-sm text-red-600">
                   Säg upp prenumerationen
                 </summary>
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-sand-500">
                   Observera: efter uppsägning kan ni inte teckna en ny prenumeration förrän efter 2
                   månader.
                 </p>
@@ -131,7 +131,7 @@ export default async function VarSidaPage({
                           : 'Sade upp'}{' '}
                       {historikPlanText(h.plan)}
                     </span>
-                    <span className="text-slate-500">{formatDate(h.createdAt)}</span>
+                    <span className="text-sand-500">{formatDate(h.createdAt)}</span>
                   </li>
                 ))}
               </ul>

@@ -56,7 +56,7 @@ export default async function MinSidaPage() {
         <Card>
           <p className="muted">Visningar av ditt CV</p>
           <p className="mt-1 text-3xl font-bold text-brand-600">{views}</p>
-          <p className="mt-1 text-xs text-slate-500">Varje gång ett företag öppnat ditt CV.</p>
+          <p className="mt-1 text-xs text-sand-500">Varje gång ett företag öppnat ditt CV.</p>
         </Card>
         <Card>
           <p className="muted">Företag som läst ditt CV</p>
@@ -81,7 +81,7 @@ export default async function MinSidaPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full">
-                  <thead className="border-b border-slate-200">
+                  <thead className="border-b border-sand-200">
                     <tr>
                       <th className="th">Företag</th>
                       <th className="th">Kommun</th>
@@ -89,7 +89,7 @@ export default async function MinSidaPage() {
                       <th className="th">Senast</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-sand-100">
                     {viewerRows.map((r) => (
                       <tr key={r.company!.id}>
                         <td className="td">
@@ -126,7 +126,7 @@ export default async function MinSidaPage() {
                 Blockera
               </button>
             </form>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-sand-500">
               Skriv bara domänen, t.ex. <b>ab.se</b> eller <b>ab.com</b>. Blockera båda om företaget
               använder flera.
             </p>
@@ -136,7 +136,7 @@ export default async function MinSidaPage() {
                 {hiddenDomains.map((d) => (
                   <li
                     key={d.id}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                    className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2"
                   >
                     <span className="text-sm font-medium">@{d.domain}</span>
                     <form action={removeHiddenDomain}>
@@ -181,7 +181,7 @@ export default async function MinSidaPage() {
                 {hiddenCompanies.map((h) => (
                   <li
                     key={h.id}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                    className="flex items-center justify-between rounded-lg bg-sand-50 px-3 py-2"
                   >
                     <span className="text-sm font-medium">{h.company.name}</span>
                     <form action={toggleHiddenCompany}>

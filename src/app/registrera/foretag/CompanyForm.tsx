@@ -27,7 +27,7 @@ export default function CompanyForm() {
             <label
               key={id}
               className={`flex cursor-pointer gap-3 rounded-lg border p-3 ${
-                typ === id ? 'border-brand-500 bg-brand-50' : 'border-slate-200'
+                typ === id ? 'border-brand-500 bg-brand-50' : 'border-sand-200'
               }`}
             >
               <input
@@ -36,13 +36,13 @@ export default function CompanyForm() {
                 value={id}
                 checked={typ === id}
                 onChange={() => setTyp(id)}
-                className="mt-0.5 h-4 w-4 border-slate-300 text-brand-600"
+                className="mt-0.5 h-4 w-4 border-sand-300 text-brand-600"
               />
               <span>
-                <span className="block text-sm font-medium text-slate-900">
+                <span className="block text-sm font-medium text-sand-900">
                   {BOLAGSTYPER[id].namn}
                 </span>
-                <span className="block text-xs text-slate-500">
+                <span className="block text-xs text-sand-500">
                   {BOLAGSTYPER[id].beskrivning}
                 </span>
                 <span className="mt-1 block text-xs font-medium text-brand-700">
@@ -53,7 +53,7 @@ export default function CompanyForm() {
             </label>
           ))}
         </div>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-sand-500">
           Vi kontrollerar uppgiften vid granskningen. Bemannings- och rekryteringsföretag har
           ett eget pris eftersom de använder arkivet för att bemanna åt andra.
         </p>
@@ -114,15 +114,15 @@ export default function CompanyForm() {
         <Field label="Upprepa lösenord" name="password2" type="password" required />
       </div>
 
-      <p className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
+      <p className="rounded-lg bg-sand-50 p-3 text-xs text-sand-600">
         Logotyp laddar ni upp under <b>Vår sida</b> när kontot är skapat.
       </p>
 
-      <label className="flex items-start gap-2 text-sm text-slate-600">
+      <label className="flex items-start gap-2 text-sm text-sand-600">
         <input
           type="checkbox"
           name="terms"
-          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600"
+          className="mt-0.5 h-4 w-4 rounded border-sand-300 text-brand-600"
         />
         <span>
           Jag godkänner{' '}

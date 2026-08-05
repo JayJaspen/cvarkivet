@@ -4,7 +4,7 @@ import { Logo } from '@/components/ui';
 export default function Villkor() {
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-slate-200">
+      <header className="border-b border-sand-200">
         <div className="mx-auto max-w-3xl px-4 py-4">
           <Logo />
         </div>
@@ -14,7 +14,7 @@ export default function Villkor() {
         <h1 className="h1 mb-2">Användarvillkor</h1>
         <p className="muted mb-8">Utkast – ska granskas av jurist före lansering.</p>
 
-        <div className="space-y-6 text-sm leading-relaxed text-slate-700">
+        <div className="space-y-6 text-sm leading-relaxed text-sand-800">
           <section>
             <h2 className="h2 mb-2">1. Tjänsten</h2>
             <p>

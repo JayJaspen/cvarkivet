@@ -52,14 +52,14 @@ export default function GranskningNotis({
         kandidaterna från att deras uppgifter hamnar hos oseriösa aktörer.
       </p>
 
-      <div className="mx-auto mt-6 max-w-md rounded-xl border border-slate-200 p-5 text-left text-sm">
-        <p className="font-semibold text-slate-900">Under tiden kan ni:</p>
-        <ul className="mt-2 space-y-1.5 text-slate-600">
+      <div className="mx-auto mt-6 max-w-md rounded-xl border border-sand-200 p-5 text-left text-sm">
+        <p className="font-semibold text-sand-900">Under tiden kan ni:</p>
+        <ul className="mt-2 space-y-1.5 text-sand-600">
           <li>• Fylla i er företagspresentation</li>
           <li>• Ladda upp er logotyp</li>
           <li>• Kontrollera att kontaktuppgifterna stämmer</li>
         </ul>
-        <p className="mt-4 text-slate-600">
+        <p className="mt-4 text-sand-600">
           Ju mer ni fyller i, desto snabbare går granskningen. Ni får ett mail så snart
           kontot är godkänt.
         </p>

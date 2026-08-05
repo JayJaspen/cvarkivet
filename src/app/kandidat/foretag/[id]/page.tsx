@@ -33,7 +33,7 @@ export default async function CompanyProfile({ params }: { params: { id: string 
 
   return (
     <>
-      <Link href="/kandidat/foretag" className="muted mb-4 inline-block hover:text-slate-900">
+      <Link href="/kandidat/foretag" className="muted mb-4 inline-block hover:text-sand-900">
         ← Alla företag
       </Link>
 
@@ -54,16 +54,16 @@ export default async function CompanyProfile({ params }: { params: { id: string 
                 <img
                   src={company.logoUrl}
                   alt={company.name}
-                  className="h-20 w-20 rounded-xl border border-slate-200 object-contain"
+                  className="h-20 w-20 rounded-xl border border-sand-200 object-contain"
                 />
               ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-slate-100 text-xl font-bold text-slate-500">
+                <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-sand-100 text-xl font-bold text-sand-500">
                   {company.name.slice(0, 2).toUpperCase()}
                 </div>
               )}
               <div>
                 <h2 className="h2">Om företaget</h2>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">
+                <p className="mt-2 whitespace-pre-wrap text-sm text-sand-800">
                   {company.presentation || 'Företaget har inte lagt in någon presentation ännu.'}
                 </p>
               </div>
@@ -77,8 +77,8 @@ export default async function CompanyProfile({ params }: { params: { id: string 
             ) : (
               <div className="space-y-3">
                 {company.jobAds.map((j) => (
-                  <div key={j.id} className="rounded-lg border border-slate-200 p-4">
-                    <p className="font-medium text-slate-900">{j.title}</p>
+                  <div key={j.id} className="rounded-lg border border-sand-200 p-4">
+                    <p className="font-medium text-sand-900">{j.title}</p>
                     <div className="mt-1 flex flex-wrap gap-1.5">
                       <Badge tone="blue">{j.category}</Badge>
                       <Badge>{j.municipality}</Badge>
@@ -89,7 +89,7 @@ export default async function CompanyProfile({ params }: { params: { id: string 
                       )}
                       <Badge tone="amber">Sista dag {formatDate(j.deadline)}</Badge>
                     </div>
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700">{j.body}</p>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-sand-800">{j.body}</p>
                   </div>
                 ))}
               </div>
@@ -117,7 +117,7 @@ export default async function CompanyProfile({ params }: { params: { id: string 
                 </button>
               </form>
             </div>
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-sand-500">
               Favoriter visas för företaget i CVArkivet – ett bra sätt att signalera intresse.
             </p>
           </Card>
@@ -126,16 +126,16 @@ export default async function CompanyProfile({ params }: { params: { id: string 
             <h2 className="h2 mb-3">Kontaktuppgifter</h2>
             <dl className="space-y-2 text-sm">
               <div>
-                <dt className="text-slate-500">Adress</dt>
+                <dt className="text-sand-500">Adress</dt>
                 <dd>{company.address}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Kommun</dt>
+                <dt className="text-sand-500">Kommun</dt>
                 <dd>{company.municipality}</dd>
               </div>
               {company.website && (
                 <div>
-                  <dt className="text-slate-500">Webbplats</dt>
+                  <dt className="text-sand-500">Webbplats</dt>
                   <dd>
                     <a
                       href={`https://${company.website}`}

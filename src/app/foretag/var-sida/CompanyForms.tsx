@@ -51,7 +51,7 @@ export default function CompanyForms({ company }: { company: CompanyLite }) {
             <div>
               <label className="label">Organisationsnummer</label>
               <input className="input" value={company.orgNumber} disabled />
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-sand-500">
                 Kontakta support för att ändra organisationsnummer.
               </p>
             </div>
@@ -92,7 +92,7 @@ export default function CompanyForms({ company }: { company: CompanyLite }) {
               <img
                 src={company.logoUrl}
                 alt="Logotyp"
-                className="mb-2 h-16 w-16 rounded-lg border border-slate-200 object-contain"
+                className="mb-2 h-16 w-16 rounded-lg border border-sand-200 object-contain"
               />
             )}
             <input
@@ -101,7 +101,7 @@ export default function CompanyForms({ company }: { company: CompanyLite }) {
               accept="image/png,image/jpeg,image/webp,image/svg+xml"
               className="input"
             />
-            <p className="mt-1 text-xs text-slate-500">PNG, JPG, WEBP eller SVG. Max 2 MB.</p>
+            <p className="mt-1 text-xs text-sand-500">PNG, JPG, WEBP eller SVG. Max 2 MB.</p>
           </div>
 
           <div className="flex justify-end">

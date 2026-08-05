@@ -66,7 +66,7 @@ export function Field({
         className="input"
         {...rest}
       />
-      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-sand-500">{hint}</p>}
     </div>
   );
 }
@@ -99,7 +99,7 @@ export function TextArea({
         defaultValue={defaultValue ?? ''}
         className="input"
       />
-      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-sand-500">{hint}</p>}
     </div>
   );
 }
@@ -155,7 +155,7 @@ export function Badge({
   tone?: 'slate' | 'green' | 'red' | 'amber' | 'blue' | 'pink';
 }) {
   const tones: Record<string, string> = {
-    slate: 'bg-slate-100 text-slate-700',
+    slate: 'bg-sand-100 text-sand-800',
     green: 'bg-emerald-100 text-emerald-800',
     red: 'bg-red-100 text-red-800',
     amber: 'bg-amber-100 text-amber-800',
@@ -167,7 +167,7 @@ export function Badge({
 
 export function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+    <div className="rounded-xl border border-dashed border-sand-300 bg-white p-10 text-center text-sm text-sand-500">
       {children}
     </div>
   );
@@ -205,7 +205,7 @@ export function Logo({ light = false }: { light?: boolean }) {
       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">
         CV
       </span>
-      <span className={`text-lg font-semibold ${light ? 'text-white' : 'text-slate-900'}`}>
+      <span className={`text-lg font-semibold ${light ? 'text-white' : 'text-sand-900'}`}>
         CVArkivet<span className="text-brand-500">.se</span>
       </span>
     </Link>

@@ -25,7 +25,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
+      <header className="border-b border-sand-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Logo />
           <div className="flex items-center gap-2">
@@ -39,15 +39,15 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="bg-gradient-to-b from-white to-slate-50">
+      <section className="bg-gradient-to-b from-white to-sand-50">
         <div className="mx-auto max-w-6xl px-4 py-20 text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-600">
             Gratis för dig som söker jobb
           </p>
-          <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-sand-900 sm:text-5xl">
             Lägg upp ditt CV en gång – låt företagen hitta dig
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600">
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-sand-600">
             På CVArkivet.se skapar du en profil gratis och bestämmer själv vilka företag som får se
             den. Företag söker bland kandidater och publicerar lediga jobb.
           </p>
@@ -79,7 +79,7 @@ export default async function Home() {
         <div className="grid gap-6 md:grid-cols-2">
           <div className="card">
             <h2 className="h2">För dig som söker jobb</h2>
-            <ul className="mt-4 space-y-2 text-sm text-slate-600">
+            <ul className="mt-4 space-y-2 text-sm text-sand-600">
               <li>✓ Helt gratis, kontot är aktivt direkt</li>
               <li>✓ Bläddra bland lediga jobb och filtrera på kommun och kategori</li>
               <li>✓ Dölj din profil för din nuvarande arbetsgivare</li>
@@ -93,7 +93,7 @@ export default async function Home() {
 
           <div className="card">
             <h2 className="h2">För arbetsgivare</h2>
-            <ul className="mt-4 space-y-2 text-sm text-slate-600">
+            <ul className="mt-4 space-y-2 text-sm text-sand-600">
               <li>✓ Kontot är gratis – prenumeration aktiveras i efterhand</li>
               <li>✓ Sök i hela CV-arkivet, filtrera på kommun och kategori</li>
               <li>✓ Hjärta intressanta kandidater och kontakta dem direkt</li>
@@ -105,17 +105,17 @@ export default async function Home() {
                 <p className="text-sm font-semibold">Arbetsgivare</p>
                 <p className="mt-1 text-2xl font-bold text-brand-600">
                   4 990 kr
-                  <span className="text-sm font-normal text-slate-500">/år exkl. moms</span>
+                  <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
                 </p>
                 <p className="muted mt-1">
                   Eller 799 kr/mån. Full tillgång till CVArkivet och egna annonser.
                 </p>
               </div>
-              <div className="rounded-lg border border-slate-200 p-4">
+              <div className="rounded-lg border border-sand-200 p-4">
                 <p className="text-sm font-semibold">Bemanning och rekrytering</p>
                 <p className="mt-1 text-2xl font-bold text-brand-600">
                   9 990 kr
-                  <span className="text-sm font-normal text-slate-500">/år exkl. moms</span>
+                  <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
                 </p>
                 <p className="muted mt-1">
                   Eller 1 499 kr/mån. För er som rekryterar åt andra företag.
@@ -129,14 +129,14 @@ export default async function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-slate-500">
+      <footer className="border-t border-sand-200 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-sand-500">
           <p>© {new Date().getFullYear()} CVArkivet.se</p>
           <div className="flex gap-4">
-            <Link href="/villkor" className="hover:text-slate-900">
+            <Link href="/villkor" className="hover:text-sand-900">
               Användarvillkor
             </Link>
-            <Link href="/integritetspolicy" className="hover:text-slate-900">
+            <Link href="/integritetspolicy" className="hover:text-sand-900">
               Integritetspolicy
             </Link>
           </div>

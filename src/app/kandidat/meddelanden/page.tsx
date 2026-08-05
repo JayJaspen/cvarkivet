@@ -53,7 +53,7 @@ export default async function MeddelandenPage({
                   <Link
                     href={`/kandidat/meddelanden?foretag=${id}`}
                     className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${
-                      id === activeId ? 'bg-brand-50 text-brand-700' : 'hover:bg-slate-50'
+                      id === activeId ? 'bg-brand-50 text-brand-700' : 'hover:bg-sand-50'
                     }`}
                   >
                     <span className="font-medium">{t.name}</span>
@@ -84,13 +84,13 @@ export default async function MeddelandenPage({
                       className={`max-w-[85%] rounded-xl px-4 py-2.5 text-sm ${
                         m.senderType === 'USER'
                           ? 'ml-auto bg-brand-600 text-white'
-                          : 'bg-slate-100 text-slate-800'
+                          : 'bg-sand-100 text-sand-800'
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{m.body}</p>
                       <p
                         className={`mt-1 text-[11px] ${
-                          m.senderType === 'USER' ? 'text-brand-100' : 'text-slate-500'
+                          m.senderType === 'USER' ? 'text-brand-100' : 'text-sand-500'
                         }`}
                       >
                         {formatDateTime(m.createdAt)}

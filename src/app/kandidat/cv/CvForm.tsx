@@ -59,10 +59,10 @@ export default function CvForm({
             <img
               src={user.photoUrl}
               alt="Din profilbild"
-              className="h-24 w-24 rounded-full border border-slate-200 object-cover"
+              className="h-24 w-24 rounded-full border border-sand-200 object-cover"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 text-2xl text-slate-400">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-sand-100 text-2xl text-sand-400">
               👤
             </div>
           )}
@@ -74,7 +74,7 @@ export default function CvForm({
               accept="image/png,image/jpeg,image/webp"
               className="input"
             />
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-sand-500">
               PNG, JPG eller WEBP. Max 2 MB. Bilden beskärs till en cirkel, så en kvadratisk
               bild blir snyggast.
             </p>

@@ -144,7 +144,7 @@ export default async function CvArkivetPage({
                 name="hjartade"
                 value="1"
                 defaultChecked={!!hjartade}
-                className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                className="h-4 w-4 rounded border-sand-300 text-brand-600"
               />
               Endast hjärtade kandidater
             </label>
@@ -154,7 +154,7 @@ export default async function CvArkivetPage({
                 name="favoriter"
                 value="1"
                 defaultChecked={!!favoriter}
-                className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                className="h-4 w-4 rounded border-sand-300 text-brand-600"
               />
               Endast de som valt oss som favorit
             </label>
@@ -164,7 +164,7 @@ export default async function CvArkivetPage({
                 name="aktiva"
                 value="ja"
                 defaultChecked={aktiva === 'ja'}
-                className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                className="h-4 w-4 rounded border-sand-300 text-brand-600"
               />
               Endast aktivt jobbsökande
             </label>
@@ -179,9 +179,9 @@ export default async function CvArkivetPage({
       {list.length === 0 ? (
         <Empty>Inga kandidater matchar er sökning.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-sand-200 bg-white">
           <table className="min-w-full">
-            <thead className="border-b border-slate-200 bg-slate-50">
+            <thead className="border-b border-sand-200 bg-sand-50">
               <tr>
                 <th className="th w-10"></th>
                 <th className="th">Kandidat</th>
@@ -192,9 +192,9 @@ export default async function CvArkivetPage({
                 <th className="th"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-sand-100">
               {list.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-50">
+                <tr key={c.id} className="hover:bg-sand-50">
                   <td className="td">
                     <form action={toggleHeart}>
                       <input type="hidden" name="userId" value={c.id} />
@@ -202,7 +202,7 @@ export default async function CvArkivetPage({
                         type="submit"
                         title={heartSet.has(c.id) ? 'Ta bort hjärta' : 'Hjärta kandidaten'}
                         className={`text-xl leading-none ${
-                          heartSet.has(c.id) ? 'text-pink-500' : 'text-slate-300 hover:text-pink-400'
+                          heartSet.has(c.id) ? 'text-pink-500' : 'text-sand-300 hover:text-pink-400'
                         }`}
                       >
                         {heartSet.has(c.id) ? '♥' : '♡'}
@@ -216,10 +216,10 @@ export default async function CvArkivetPage({
                         <img
                           src={c.photoUrl}
                           alt=""
-                          className="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover"
+                          className="h-10 w-10 shrink-0 rounded-full border border-sand-200 object-cover"
                         />
                       ) : (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-400">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand-100 text-xs font-semibold text-sand-400">
                           {c.firstName.slice(0, 1)}
                           {c.lastName.slice(0, 1)}
                         </div>
