@@ -123,6 +123,8 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
   const address = String(form.get('address') ?? '').trim();
   const municipality = String(form.get('municipality') ?? '').trim();
   const website = normalizeDomain(String(form.get('website') ?? ''));
+  const companyTypeRaw = String(form.get('companyType') ?? '');
+  const companyType = companyTypeRaw === 'AGENCY' ? 'AGENCY' : 'EMPLOYER';
   const password = String(form.get('password') ?? '');
   const password2 = String(form.get('password2') ?? '');
   const terms = form.get('terms');
@@ -135,6 +137,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
         'formatet är 556677-8899 och sista siffran är en kontrollsiffra.',
     };
 
+  if (!companyTypeRaw) return { error: 'Ange vilken typ av verksamhet ni är.' };
   if (!name) return { error: 'Ange företagsnamn.' };
   if (!contactName) return { error: 'Ange namn på kontaktperson.' };
   if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
@@ -185,6 +188,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
   const company = await prisma.company.create({
     data: {
       orgNumber: orgnr,
+      companyType,
       name,
       contactName,
       email,

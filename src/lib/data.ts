@@ -127,28 +127,69 @@ export const SUPPORT_EPOST = 'support@cvarkivet.se';
 /** Alla priser anges exklusive moms (B2B-standard). */
 export const MOMSSATS = 0.25;
 
-export const PLANER = {
-  NONE: {
-    id: 'NONE',
-    namn: 'Ingen prenumeration',
-    pris: 0,
-    beskrivning: 'Kontot är skapat men tjänsten är inte aktiverad.',
+/** Bolagstyp – styr vilket pris som gäller. */
+export const BOLAGSTYPER = {
+  EMPLOYER: {
+    id: 'EMPLOYER',
+    namn: 'Arbetsgivare',
+    beskrivning: 'Vi rekryterar till vår egen verksamhet.',
   },
-  CV: {
-    id: 'CV',
-    namn: 'CV-prenumeration',
-    pris: 299,
-    beskrivning: 'Bläddra bland alla registrerade CV under fliken CVArkivet.',
-  },
-  CV_ADS: {
-    id: 'CV_ADS',
-    namn: 'CV + Annonspaket',
-    pris: 499,
-    beskrivning: 'Allt i CV-prenumerationen samt möjlighet att publicera egna annonser.',
+  AGENCY: {
+    id: 'AGENCY',
+    namn: 'Bemannings- eller rekryteringsföretag',
+    beskrivning: 'Vi rekryterar eller hyr ut personal åt andra företag.',
   },
 } as const;
 
-export type PlanId = keyof typeof PLANER;
+export function bolagstypText(id: string) {
+  return (BOLAGSTYPER as Record<string, { namn: string }>)[id]?.namn ?? id;
+}
+
+/**
+ * Priser per bolagstyp och betalningsperiod, exklusive moms.
+ * Alla betalande företag får både tillgång till CVArkivet och egna annonser.
+ */
+export const PRISER = {
+  EMPLOYER: { YEARLY: 4990, MONTHLY: 799 },
+  AGENCY: { YEARLY: 9990, MONTHLY: 1499 },
+} as const;
+
+export function pris(companyType: string, period: 'YEARLY' | 'MONTHLY') {
+  const typ = companyType === 'AGENCY' ? 'AGENCY' : 'EMPLOYER';
+  return PRISER[typ][period];
+}
+
+/** Vad kostar ett årsabonnemang jämfört med tolv månadsbetalningar? */
+export function arsbesparing(companyType: string) {
+  return pris(companyType, 'MONTHLY') * 12 - pris(companyType, 'YEARLY');
+}
+
+export const PERIODER = {
+  YEARLY: { id: 'YEARLY', namn: 'Årsabonnemang', enhet: '/år' },
+  MONTHLY: { id: 'MONTHLY', namn: 'Månadsabonnemang', enhet: '/mån' },
+} as const;
+
+/**
+ * Läsbar text för en historikpost. Nya poster sparas som "YEARLY_EMPLOYER",
+ * gamla från den tidigare prismodellen som "CV" eller "CV_ADS".
+ */
+export function historikPlanText(plan: string) {
+  const gamla: Record<string, string> = {
+    CV: 'CV-prenumeration (tidigare prislista)',
+    CV_ADS: 'CV + Annonspaket (tidigare prislista)',
+  };
+  if (gamla[plan]) return gamla[plan];
+
+  const [period, typ] = plan.split('_');
+  const periodText = period === 'YEARLY' ? 'årsabonnemang' : 'månadsabonnemang';
+  return typ ? `${periodText} (${bolagstypText(typ).toLowerCase()})` : periodText;
+}
+
+export function planNamnFor(subscription: string, companyType: string) {
+  if (subscription === 'NONE') return 'Ingen prenumeration';
+  const period = subscription === 'YEARLY' ? 'Årsabonnemang' : 'Månadsabonnemang';
+  return `${period} – ${bolagstypText(companyType)}`;
+}
 
 export const FAKTURASATT = {
   EMAIL: {
@@ -173,13 +214,24 @@ export function prisInklMoms(pris: number) {
   return Math.round(pris * (1 + MOMSSATS));
 }
 
-export function planNamn(id: string) {
-  return (PLANER as Record<string, { namn: string }>)[id]?.namn ?? id;
-}
-
 /** Ett företag måste vara godkänt av admin innan det får se något CV. */
 export function arGodkant(company: { status: string }) {
   return company.status === 'APPROVED';
+}
+
+/**
+ * Har företaget en giltig prenumeration just nu?
+ *
+ * Ett uppsagt årsabonnemang gäller perioden ut – de har betalat för året och
+ * ska inte låsas ute i förtid.
+ */
+export function harGiltigPrenumeration(company: {
+  subscription: string;
+  subscriptionEndsAt: Date | null;
+}) {
+  if (company.subscription === 'NONE') return false;
+  if (company.subscriptionEndsAt && company.subscriptionEndsAt < new Date()) return false;
+  return true;
 }
 
 export function statusText(status: string) {
@@ -190,12 +242,17 @@ export function statusText(status: string) {
       : 'Väntar på granskning';
 }
 
-export function harCvAtkomst(company: { subscription: string; status: string }) {
-  if (!arGodkant(company)) return false;
-  return company.subscription === 'CV' || company.subscription === 'CV_ADS';
+type AtkomstKontroll = {
+  subscription: string;
+  status: string;
+  subscriptionEndsAt: Date | null;
+};
+
+/** Alla betalande företag får både CVArkivet och annonser. */
+export function harCvAtkomst(company: AtkomstKontroll) {
+  return arGodkant(company) && harGiltigPrenumeration(company);
 }
 
-export function harAnnonsAtkomst(company: { subscription: string; status: string }) {
-  if (!arGodkant(company)) return false;
-  return company.subscription === 'CV_ADS';
+export function harAnnonsAtkomst(company: AtkomstKontroll) {
+  return arGodkant(company) && harGiltigPrenumeration(company);
 }

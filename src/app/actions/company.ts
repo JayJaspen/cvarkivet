@@ -115,14 +115,17 @@ export async function activateSubscription(
   form: FormData
 ): Promise<FormState> {
   const company = await requireCompany();
-  const plan = String(form.get('plan'));
-  if (!['CV', 'CV_ADS'].includes(plan)) return { error: 'Välj ett paket.' };
+  const period = String(form.get('period'));
+  if (!['MONTHLY', 'YEARLY'].includes(period))
+    return { error: 'Välj månads- eller årsabonnemang.' };
 
   // Ingen prenumeration innan kontot är granskat och godkänt.
   if (!arGodkant(company))
-    return { error: 'Kontot är inte godkänt ännu. Prenumeration kan tecknas när granskningen är klar.' };
+    return {
+      error: 'Kontot är inte godkänt ännu. Prenumeration kan tecknas när granskningen är klar.',
+    };
 
-  // Karens: 2 månader efter uppsägning
+  // Karens efter uppsägning av månadsabonnemang
   if (company.blockedUntil && company.blockedUntil > new Date())
     return {
       error: `Ny prenumeration kan tecknas tidigast ${company.blockedUntil.toLocaleDateString('sv-SE')}.`,
@@ -131,13 +134,22 @@ export async function activateSubscription(
   const faktura = lasFakturauppgifter(form);
   if (!faktura.ok) return { error: faktura.error };
 
+  // Årsabonnemang binder ett år framåt. Månadsabonnemang har inget slutdatum.
+  let subscriptionEndsAt: Date | null = null;
+  if (period === 'YEARLY') {
+    subscriptionEndsAt = new Date();
+    subscriptionEndsAt.setFullYear(subscriptionEndsAt.getFullYear() + 1);
+  }
+
   await prisma.$transaction([
     prisma.company.update({
       where: { id: company.id },
       data: {
-        subscription: plan,
-        subscriptionStarted: company.subscriptionStarted ?? new Date(),
+        subscription: period,
+        subscriptionStarted: new Date(),
+        subscriptionEndsAt,
         cancelledAt: null,
+        blockedUntil: null,
         ...faktura.data,
       },
     }),
@@ -145,14 +157,21 @@ export async function activateSubscription(
       data: {
         companyId: company.id,
         type: company.subscription === 'NONE' ? 'ACTIVATED' : 'CHANGED',
-        plan,
+        plan: `${period}_${company.companyType}`,
       },
     }),
   ]);
 
   revalidatePath('/foretag/var-sida');
   revalidatePath('/foretag/cvarkivet');
-  return { ok: 'Prenumerationen är aktiverad.' };
+  revalidatePath('/foretag/annonser');
+
+  return {
+    ok:
+      period === 'YEARLY'
+        ? `Årsabonnemanget är aktiverat och gäller till ${subscriptionEndsAt!.toLocaleDateString('sv-SE')}.`
+        : 'Månadsabonnemanget är aktiverat.',
+  };
 }
 
 /** Ändra faktureringssätt utan att röra prenumerationen. */
@@ -174,23 +193,39 @@ export async function cancelSubscription() {
   const company = await requireCompany();
   if (company.subscription === 'NONE') return;
 
+  const arsabonnemang = company.subscription === 'YEARLY';
+
   await prisma.$transaction([
     prisma.company.update({
       where: { id: company.id },
       data: {
-        subscription: 'NONE',
         cancelledAt: new Date(),
-        subscriptionStarted: null,
-        blockedUntil: monthsFromNow(2), // kan inte teckna nytt inom 2 månader
+
+        // Årsabonnemang: åtkomsten löper vidare till slutdatumet de betalat för,
+        // och ingen karens – de har visat att de menar allvar.
+        // Månadsabonnemang: åtkomsten upphör direkt och 2 månaders karens gäller.
+        ...(arsabonnemang
+          ? {}
+          : {
+              subscription: 'NONE',
+              subscriptionStarted: null,
+              subscriptionEndsAt: null,
+              blockedUntil: monthsFromNow(2),
+            }),
       },
     }),
     prisma.subscriptionEvent.create({
-      data: { companyId: company.id, type: 'CANCELLED', plan: company.subscription },
+      data: {
+        companyId: company.id,
+        type: 'CANCELLED',
+        plan: `${company.subscription}_${company.companyType}`,
+      },
     }),
   ]);
 
   revalidatePath('/foretag/var-sida');
   revalidatePath('/foretag/cvarkivet');
+  revalidatePath('/foretag/annonser');
 }
 
 // ------------------------------------------------------------------ Annonser

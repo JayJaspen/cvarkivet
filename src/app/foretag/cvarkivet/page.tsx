@@ -39,7 +39,7 @@ export default async function CvArkivetPage({
     return (
       <>
         <PageHeader title="CVArkivet" />
-        <Paywall need="CV" />
+        <Paywall companyType={company.companyType} />
       </>
     );
   }

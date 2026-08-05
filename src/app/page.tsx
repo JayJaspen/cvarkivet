@@ -97,24 +97,29 @@ export default async function Home() {
               <li>✓ Kontot är gratis – prenumeration aktiveras i efterhand</li>
               <li>✓ Sök i hela CV-arkivet, filtrera på kommun och kategori</li>
               <li>✓ Hjärta intressanta kandidater och kontakta dem direkt</li>
-              <li>✓ Publicera annonser med sista ansökningsdag</li>
+              <li>✓ Publicera annonser och se vilka som anmält intresse</li>
+              <li>✓ Allt ingår – ingen uppdelning i paket</li>
             </ul>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-slate-200 p-4">
-                <p className="text-sm font-semibold">CV-prenumeration</p>
-                <p className="mt-1 text-2xl font-bold text-brand-600">
-                  299 kr
-                  <span className="text-sm font-normal text-slate-500">/mån exkl. moms</span>
-                </p>
-                <p className="muted mt-1">Tillgång till CVArkivet.</p>
-              </div>
+            <div className="mt-5 space-y-3">
               <div className="rounded-lg border-2 border-brand-500 p-4">
-                <p className="text-sm font-semibold">CV + Annonspaket</p>
+                <p className="text-sm font-semibold">Arbetsgivare</p>
                 <p className="mt-1 text-2xl font-bold text-brand-600">
-                  499 kr
-                  <span className="text-sm font-normal text-slate-500">/mån exkl. moms</span>
+                  4 990 kr
+                  <span className="text-sm font-normal text-slate-500">/år exkl. moms</span>
                 </p>
-                <p className="muted mt-1">CVArkivet + egna annonser.</p>
+                <p className="muted mt-1">
+                  Eller 799 kr/mån. Full tillgång till CVArkivet och egna annonser.
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-200 p-4">
+                <p className="text-sm font-semibold">Bemanning och rekrytering</p>
+                <p className="mt-1 text-2xl font-bold text-brand-600">
+                  9 990 kr
+                  <span className="text-sm font-normal text-slate-500">/år exkl. moms</span>
+                </p>
+                <p className="muted mt-1">
+                  Eller 1 499 kr/mån. För er som rekryterar åt andra företag.
+                </p>
               </div>
             </div>
             <Link href="/registrera/foretag" className="btn-primary mt-6">

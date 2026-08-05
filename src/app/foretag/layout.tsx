@@ -2,7 +2,7 @@ import Nav from '@/components/Nav';
 import { requireCompany } from '@/lib/session';
 import { logout } from '@/app/actions/auth';
 import { prisma } from '@/lib/db';
-import { planNamn } from '@/lib/data';
+import { planNamnFor } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,7 @@ export default async function ForetagLayout({ children }: { children: React.Reac
     <div className="min-h-screen bg-slate-50">
       <Nav
         name={company.name}
-        role={planNamn(company.subscription)}
+        role={planNamnFor(company.subscription, company.companyType)}
         logoutAction={logout}
         tabs={[
           { href: '/foretag/cvarkivet', label: 'CVArkivet' },

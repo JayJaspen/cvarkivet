@@ -80,9 +80,18 @@ export async function godkannForetag(form: FormData) {
   await requireAdmin();
   const id = String(form.get('id'));
 
+  // Admin kan korrigera bolagstypen i samband med godkännandet – den styr priset.
+  const typRaw = String(form.get('companyType') ?? '');
+  const companyType = typRaw === 'AGENCY' || typRaw === 'EMPLOYER' ? typRaw : undefined;
+
   const company = await prisma.company.update({
     where: { id },
-    data: { status: 'APPROVED', reviewedAt: new Date(), reviewNote: null },
+    data: {
+      status: 'APPROVED',
+      reviewedAt: new Date(),
+      reviewNote: null,
+      ...(companyType ? { companyType } : {}),
+    },
   });
 
   const mail = companyApprovedEmail(company.contactName, company.name, appUrl('/logga-in'));
@@ -110,6 +119,18 @@ export async function avslaForetag(form: FormData) {
   const mail = companyRejectedEmail(company.contactName, company.name, motivering);
   await sendEmail({ to: company.email, ...mail });
 
+  revalidatePath('/admin/foretag');
+  revalidatePath(`/admin/foretag/${id}`);
+}
+
+/** Ändra bolagstyp i efterhand, t.ex. om ett företag angett fel vid registrering. */
+export async function andraBolagstyp(form: FormData) {
+  await requireAdmin();
+  const id = String(form.get('id'));
+  const typRaw = String(form.get('companyType') ?? '');
+  if (typRaw !== 'AGENCY' && typRaw !== 'EMPLOYER') return;
+
+  await prisma.company.update({ where: { id }, data: { companyType: typRaw } });
   revalidatePath('/admin/foretag');
   revalidatePath(`/admin/foretag/${id}`);
 }

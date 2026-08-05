@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { registerCompany } from '@/app/actions/auth';
 import { Field, Select } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
-import { KOMMUNER } from '@/lib/data';
+import { BOLAGSTYPER, KOMMUNER, PRISER } from '@/lib/data';
 
 export default function CompanyForm() {
   const [state, formAction] = useFormState(registerCompany, undefined);
+  const [typ, setTyp] = useState<'EMPLOYER' | 'AGENCY'>('EMPLOYER');
 
   return (
     <form action={formAction} className="space-y-4">
@@ -17,6 +19,45 @@ export default function CompanyForm() {
           {state.error}
         </div>
       )}
+
+      <div>
+        <p className="label">Vilken typ av verksamhet är ni? *</p>
+        <div className="space-y-2">
+          {(['EMPLOYER', 'AGENCY'] as const).map((id) => (
+            <label
+              key={id}
+              className={`flex cursor-pointer gap-3 rounded-lg border p-3 ${
+                typ === id ? 'border-brand-500 bg-brand-50' : 'border-slate-200'
+              }`}
+            >
+              <input
+                type="radio"
+                name="companyType"
+                value={id}
+                checked={typ === id}
+                onChange={() => setTyp(id)}
+                className="mt-0.5 h-4 w-4 border-slate-300 text-brand-600"
+              />
+              <span>
+                <span className="block text-sm font-medium text-slate-900">
+                  {BOLAGSTYPER[id].namn}
+                </span>
+                <span className="block text-xs text-slate-500">
+                  {BOLAGSTYPER[id].beskrivning}
+                </span>
+                <span className="mt-1 block text-xs font-medium text-brand-700">
+                  {PRISER[id].YEARLY.toLocaleString('sv-SE')} kr/år eller{' '}
+                  {PRISER[id].MONTHLY.toLocaleString('sv-SE')} kr/mån, exkl. moms
+                </span>
+              </span>
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          Vi kontrollerar uppgiften vid granskningen. Bemannings- och rekryteringsföretag har
+          ett eget pris eftersom de använder arkivet för att bemanna åt andra.
+        </p>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field

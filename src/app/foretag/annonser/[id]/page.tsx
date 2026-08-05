@@ -25,7 +25,10 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
     return (
       <>
         <PageHeader title="Annonser" />
-        <Paywall need="CV_ADS" title="Annonsering ingår i CV + Annonspaket" />
+        <Paywall
+          companyType={company.companyType}
+          title="Annonsering kräver en aktiv prenumeration"
+        />
       </>
     );
 

@@ -26,16 +26,17 @@ export default function Page() {
           <p>
             Registreringen kostar ingenting. För att kunna använda tjänsten – söka bland CV och
             publicera annonser – aktiverar ni en prenumeration under fliken <b>Vår sida</b> när
-            kontot är godkänt.
+            kontot är godkänt. Allt ingår, det finns ingen uppdelning i paket.
           </p>
           <ul className="mt-2 space-y-1">
             <li>
-              • <b>CV-prenumeration</b> – 299 kr/mån exkl. moms
+              • <b>Arbetsgivare</b> – 4 990 kr/år eller 799 kr/mån
             </li>
             <li>
-              • <b>CV + Annonspaket</b> – 499 kr/mån exkl. moms
+              • <b>Bemanning och rekrytering</b> – 9 990 kr/år eller 1 499 kr/mån
             </li>
           </ul>
+          <p className="mt-2 text-xs">Priser exklusive moms.</p>
         </Notice>
 
         <div className="card">

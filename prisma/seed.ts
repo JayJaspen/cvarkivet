@@ -38,7 +38,8 @@ async function main() {
       phone: '070-111 22 33',
       address: 'Hamngatan 12, 211 22 Malmö',
       municipality: 'Malmö',
-      subscription: 'CV_ADS',
+      companyType: 'EMPLOYER',
+      subscription: 'YEARLY',
       status: 'APPROVED',
       presentation:
         'Nordisk Logistik AB är en av Sydsveriges ledande tredjepartslogistiker med 240 anställda. Vi kör dygnet runt och satsar hårt på intern utveckling.',
@@ -51,7 +52,8 @@ async function main() {
       phone: '070-222 33 44',
       address: 'Verkstadsgatan 5, 417 07 Göteborg',
       municipality: 'Göteborg',
-      subscription: 'CV',
+      companyType: 'AGENCY',
+      subscription: 'MONTHLY',
       status: 'APPROVED',
       presentation:
         'Vi bygger bostäder i västra Sverige. Trygga anställningar, kollektivavtal och bra kompisgäng.',
@@ -64,6 +66,7 @@ async function main() {
       phone: '070-333 44 55',
       address: 'Kungsgatan 40, 111 35 Stockholm',
       municipality: 'Stockholm',
+      companyType: 'AGENCY',
       subscription: 'NONE',
       status: 'PENDING', // ligger i granskningskön så att adminvyn går att testa
       presentation: 'Teknikkonsulter inom automation och industriell IT.',
@@ -77,6 +80,7 @@ async function main() {
       update: {
         status: f.status,
         subscription: f.subscription,
+        companyType: f.companyType,
         reviewedAt: f.status === 'APPROVED' ? new Date() : null,
       },
       create: {

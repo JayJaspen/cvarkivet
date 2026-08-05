@@ -42,8 +42,29 @@ export type GallringsResultat = {
   varnadeKandidater: number;
   raderadeKandidater: number;
   raderadeForetag: number;
+  avslutadeAbonnemang: number;
   fel: string[];
 };
+
+/**
+ * Avslutar uppsagda årsabonnemang som passerat sitt slutdatum.
+ * Fram till dess behåller företaget åtkomsten – de har betalat för perioden.
+ */
+async function avslutaUtgangnaAbonnemang(torrkorning: boolean) {
+  const where = {
+    subscription: 'YEARLY',
+    cancelledAt: { not: null },
+    subscriptionEndsAt: { lt: new Date() },
+  } as const;
+
+  if (torrkorning) return prisma.company.count({ where });
+
+  const { count } = await prisma.company.updateMany({
+    where,
+    data: { subscription: 'NONE', subscriptionStarted: null, subscriptionEndsAt: null },
+  });
+  return count;
+}
 
 /**
  * Kör hela gallringen. Anropas av cron-jobbet varje natt, men kan också
@@ -57,8 +78,11 @@ export async function korGallring(torrkorning = false): Promise<GallringsResulta
     varnadeKandidater: 0,
     raderadeKandidater: 0,
     raderadeForetag: 0,
+    avslutadeAbonnemang: 0,
     fel: [],
   };
+
+  resultat.avslutadeAbonnemang = await avslutaUtgangnaAbonnemang(torrkorning);
 
   const raderaFore = raderingsGrans();
   const varnaFore = varningsGrans();

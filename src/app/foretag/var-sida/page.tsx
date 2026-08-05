@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
-import { planNamn, SUPPORT_EPOST } from '@/lib/data';
+import { historikPlanText, SUPPORT_EPOST } from '@/lib/data';
 import { Card, Notice, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { cancelSubscription } from '@/app/actions/company';
@@ -62,7 +62,9 @@ export default async function VarSidaPage({
         </Notice>
       )}
 
-      {company.status === 'APPROVED' && company.subscription === 'NONE' && !searchParams.valkommen && (
+      {company.status === 'APPROVED' &&
+        company.subscription === 'NONE' &&
+        !searchParams.valkommen && (
         <Notice tone="amber" title="Ingen aktiv prenumeration">
           Kontot är gratis, men tjänsten kräver en prenumeration. Välj ett paket nedan.
         </Notice>
@@ -127,7 +129,7 @@ export default async function VarSidaPage({
                         : h.type === 'CHANGED'
                           ? 'Bytte till'
                           : 'Sade upp'}{' '}
-                      {planNamn(h.plan)}
+                      {historikPlanText(h.plan)}
                     </span>
                     <span className="text-slate-500">{formatDate(h.createdAt)}</span>
                   </li>

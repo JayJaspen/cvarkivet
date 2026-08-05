@@ -5,9 +5,19 @@ import { useFormState } from 'react-dom';
 import { activateSubscription, updateInvoiceSettings } from '@/app/actions/company';
 import { Badge, Card, Field } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
-import { FAKTURASATT, PLANER, planNamn, prisInklMoms, fakturasattText } from '@/lib/data';
+import {
+  arsbesparing,
+  bolagstypText,
+  FAKTURASATT,
+  fakturasattText,
+  PERIODER,
+  planNamnFor,
+  pris,
+  prisInklMoms,
+} from '@/lib/data';
 
 type CompanyLite = {
+  companyType: string;
   subscription: string;
   status: string;
   address: string;
@@ -19,15 +29,13 @@ type CompanyLite = {
   blockedUntil: Date | null;
   cancelledAt: Date | null;
   subscriptionStarted: Date | null;
+  subscriptionEndsAt: Date | null;
 };
 
-function Fakturaval({
-  company,
-  idPrefix,
-}: {
-  company: CompanyLite;
-  idPrefix: string;
-}) {
+const datum = (d: Date | null | undefined) => d?.toLocaleDateString('sv-SE') ?? '';
+const kr = (n: number) => n.toLocaleString('sv-SE');
+
+function Fakturaval({ company, idPrefix }: { company: CompanyLite; idPrefix: string }) {
   const [metod, setMetod] = useState(company.invoiceMethod ?? 'EMAIL');
 
   return (
@@ -50,9 +58,7 @@ function Fakturaval({
             className="mt-0.5 h-4 w-4 border-slate-300 text-brand-600"
           />
           <span>
-            <span className="block text-sm font-medium text-slate-900">
-              {FAKTURASATT[id].namn}
-            </span>
+            <span className="block text-sm font-medium text-slate-900">{FAKTURASATT[id].namn}</span>
             <span className="block text-xs text-slate-500">{FAKTURASATT[id].beskrivning}</span>
           </span>
         </label>
@@ -65,7 +71,7 @@ function Fakturaval({
           type="email"
           required
           defaultValue={company.invoiceEmail ?? company.email}
-          hint="Hit skickas fakturan som PDF. Kan vara en annan adress än inloggningen."
+          hint="Hit skickas fakturan som PDF."
           id={`${idPrefix}-email`}
         />
       ) : (
@@ -82,9 +88,6 @@ function Fakturaval({
             className="input"
             placeholder={'Företaget AB\nFakturagatan 1\n111 22 Stockholm'}
           />
-          <p className="mt-1 text-xs text-slate-500">
-            Skriv fullständig postadress inklusive postnummer och ort.
-          </p>
         </div>
       )}
 
@@ -93,7 +96,6 @@ function Fakturaval({
         name="invoiceRef"
         defaultValue={company.invoiceRef ?? ''}
         placeholder="t.ex. kostnadsställe eller namn"
-        hint="Skrivs ut på fakturan om ni behöver det för er attestering."
         id={`${idPrefix}-ref`}
       />
     </div>
@@ -120,20 +122,25 @@ function Meddelande({ state }: { state: { error?: string; ok?: string } | undefi
 export default function Prenumeration({ company }: { company: CompanyLite }) {
   const [aktState, aktivera] = useFormState(activateSubscription, undefined);
   const [fakturaState, sparaFaktura] = useFormState(updateInvoiceSettings, undefined);
-  const [valtPaket, setValtPaket] = useState<string | null>(null);
+  const [valdPeriod, setValdPeriod] = useState<string | null>(null);
 
   const blocked = company.blockedUntil && company.blockedUntil > new Date();
   const godkant = company.status === 'APPROVED';
   const harPrenumeration = company.subscription !== 'NONE';
+  const uppsagt = Boolean(company.cancelledAt) && harPrenumeration;
+  const besparing = arsbesparing(company.companyType);
 
   return (
     <>
       <Card>
         <h2 className="h2 mb-1">Prenumeration</h2>
+        <p className="muted">
+          Nuvarande: <b>{planNamnFor(company.subscription, company.companyType)}</b>
+          {company.subscriptionStarted && ` sedan ${datum(company.subscriptionStarted)}`}
+        </p>
         <p className="muted mb-4">
-          Nuvarande: <b>{planNamn(company.subscription)}</b>
-          {company.subscriptionStarted &&
-            ` sedan ${company.subscriptionStarted.toLocaleDateString('sv-SE')}`}
+          Ert konto är registrerat som <b>{bolagstypText(company.companyType)}</b>. Stämmer det
+          inte, hör av er till support så ändrar vi.
         </p>
 
         <Meddelande state={aktState} />
@@ -144,68 +151,96 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
           </div>
         )}
 
+        {uppsagt && company.subscriptionEndsAt && (
+          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            Ni sade upp abonnemanget {datum(company.cancelledAt)}. Ni har kvar full åtkomst till
+            och med <b>{datum(company.subscriptionEndsAt)}</b>, som ni betalat för.
+          </div>
+        )}
+
         {blocked && (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-            Ni sade upp er prenumeration {company.cancelledAt?.toLocaleDateString('sv-SE')}. En ny
-            kan tecknas tidigast <b>{company.blockedUntil?.toLocaleDateString('sv-SE')}</b>.
+            Ni sade upp ert månadsabonnemang {datum(company.cancelledAt)}. Ett nytt kan tecknas
+            tidigast <b>{datum(company.blockedUntil)}</b>.
           </div>
         )}
 
         <div className="space-y-3">
-          {(['CV', 'CV_ADS'] as const).map((id) => {
-            const p = PLANER[id];
-            const nuvarande = company.subscription === id;
-            const oppen = valtPaket === id;
+          {(['YEARLY', 'MONTHLY'] as const).map((period) => {
+            const p = PERIODER[period];
+            const belopp = pris(company.companyType, period);
+            const nuvarande = company.subscription === period;
+            const oppen = valdPeriod === period;
 
             return (
               <div
-                key={id}
+                key={period}
                 className={`rounded-xl border p-4 ${
                   nuvarande ? 'border-brand-500 bg-brand-50' : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-2">
                   <p className="font-semibold">{p.namn}</p>
-                  {nuvarande && <Badge tone="blue">Aktiv</Badge>}
+                  <div className="flex gap-1">
+                    {period === 'YEARLY' && besparing > 0 && (
+                      <Badge tone="green">Spara {kr(besparing)} kr</Badge>
+                    )}
+                    {nuvarande && <Badge tone="blue">Aktivt</Badge>}
+                  </div>
                 </div>
+
                 <p className="mt-1 text-2xl font-bold text-brand-600">
-                  {p.pris} kr
-                  <span className="text-sm font-normal text-slate-500">/mån exkl. moms</span>
+                  {kr(belopp)} kr
+                  <span className="text-sm font-normal text-slate-500">
+                    {p.enhet} exkl. moms
+                  </span>
                 </p>
-                <p className="text-xs text-slate-500">{prisInklMoms(p.pris)} kr inkl. moms</p>
-                <p className="muted mt-1">{p.beskrivning}</p>
+                <p className="text-xs text-slate-500">
+                  {kr(prisInklMoms(belopp))} kr inkl. moms
+                  {period === 'YEARLY' &&
+                    ` · motsvarar ${kr(Math.round(belopp / 12))} kr/mån`}
+                </p>
+
+                <p className="muted mt-2">
+                  Full tillgång till CVArkivet och egna annonser.
+                  {period === 'YEARLY'
+                    ? ' Betalas en gång och gäller ett år.'
+                    : ' Faktureras varje månad, uppsägningsbart löpande.'}
+                </p>
 
                 {!nuvarande && !oppen && (
                   <button
                     type="button"
-                    onClick={() => setValtPaket(id)}
+                    onClick={() => setValdPeriod(period)}
                     disabled={!!blocked || !godkant}
                     className="btn-primary mt-3 w-full"
                   >
-                    {harPrenumeration ? 'Byt till detta paket' : 'Välj detta paket'}
+                    {harPrenumeration ? 'Byt till detta' : 'Välj detta'}
                   </button>
                 )}
 
                 {oppen && (
                   <form action={aktivera} className="mt-4 space-y-4 border-t border-slate-200 pt-4">
-                    <input type="hidden" name="plan" value={id} />
-                    <Fakturaval company={company} idPrefix={`akt-${id}`} />
+                    <input type="hidden" name="period" value={period} />
+                    <Fakturaval company={company} idPrefix={`akt-${period}`} />
 
                     <div className="flex flex-wrap gap-2">
                       <SubmitButton pendingText="Aktiverar…">
-                        Aktivera {p.pris} kr/mån
+                        Aktivera för {kr(belopp)} kr{p.enhet}
                       </SubmitButton>
                       <button
                         type="button"
-                        onClick={() => setValtPaket(null)}
+                        onClick={() => setValdPeriod(null)}
                         className="btn-secondary"
                       >
                         Avbryt
                       </button>
                     </div>
+
                     <p className="text-xs text-slate-500">
-                      Prenumerationen löper månadsvis och kan sägas upp när som helst. Efter
-                      uppsägning kan en ny tecknas tidigast två månader senare.
+                      {period === 'YEARLY'
+                        ? 'Årsabonnemanget gäller ett år från idag. Säger ni upp det i förtid behåller ni åtkomsten perioden ut, men ingen återbetalning sker.'
+                        : 'Månadsabonnemanget kan sägas upp när som helst. Efter uppsägning kan ett nytt tecknas tidigast två månader senare.'}
                     </p>
                   </form>
                 )}
@@ -220,7 +255,9 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
           <h2 className="h2 mb-1">Faktureringsuppgifter</h2>
           <p className="muted mb-4">
             Nuvarande: <b>{fakturasattText(company.invoiceMethod)}</b>
-            {company.invoiceMethod === 'EMAIL' && company.invoiceEmail && ` till ${company.invoiceEmail}`}
+            {company.invoiceMethod === 'EMAIL' &&
+              company.invoiceEmail &&
+              ` till ${company.invoiceEmail}`}
           </p>
 
           <Meddelande state={fakturaState} />

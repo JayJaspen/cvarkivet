@@ -29,7 +29,7 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
     return (
       <>
         <PageHeader title="CVArkivet" />
-        <Paywall need="CV" />
+        <Paywall companyType={company.companyType} />
       </>
     );
   }

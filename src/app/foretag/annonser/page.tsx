@@ -28,8 +28,8 @@ export default async function AnnonserPage() {
       <>
         <PageHeader title="Annonser" />
         <Paywall
-          need="CV_ADS"
-          title="Annonsering ingår i CV + Annonspaket"
+          companyType={company.companyType}
+          title="Annonsering kräver en aktiv prenumeration"
         />
       </>
     );

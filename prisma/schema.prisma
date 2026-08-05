@@ -152,11 +152,19 @@ model Company {
   invoiceEmail   String?
   invoiceRef     String? // Frivillig referens/beställarkod som kunden vill ha på fakturan
 
-  // Prenumeration: NONE | CV | CV_ADS
+  /// Bolagstyp: EMPLOYER (arbetsgivare) | AGENCY (bemanning/rekrytering)
+  /// Anges av företaget vid registrering och kontrolleras av admin vid granskning.
+  companyType String @default("EMPLOYER")
+
+  /// Prenumeration: NONE | MONTHLY | YEARLY
+  /// Priset avgörs av companyType. Alla betalande får både CV och annonser.
   subscription        String    @default("NONE")
   subscriptionStarted DateTime?
+  /// Slutdatum för årsabonnemang. Åtkomsten gäller till och med detta datum
+  /// även om prenumerationen sägs upp i förtid.
+  subscriptionEndsAt  DateTime?
   cancelledAt         DateTime?
-  blockedUntil        DateTime? // 2 mån karens efter uppsägning
+  blockedUntil        DateTime? // 2 mån karens, gäller bara månadsabonnemang
 
   jobAds          JobAd[]
   cvViews         CvView[]

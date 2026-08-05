@@ -44,13 +44,31 @@ export default function Villkor() {
               adresser hos gratistjänster godkänns inte.
             </p>
             <p className="mt-2">
-              För att söka bland CV eller publicera annonser krävs en aktiv prenumeration:
-              CV-prenumeration 299 kr/mån eller CV + Annonspaket 499 kr/mån (priser exklusive
-              moms). Prenumerationen faktureras månadsvis.
+              För att söka bland CV eller publicera annonser krävs en aktiv prenumeration. Priset
+              beror på verksamhetens art. Alla prenumerationer ger full tillgång till både
+              CV-databasen och annonsering. Priser exklusive moms:
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              <li>Arbetsgivare: 4 990 kr per år eller 799 kr per månad.</li>
+              <li>
+                Bemannings- och rekryteringsföretag: 9 990 kr per år eller 1 499 kr per månad.
+                Hit räknas verksamheter som rekryterar eller hyr ut personal åt andra företag.
+              </li>
+            </ul>
+            <p className="mt-2">
+              CVArkivet avgör vilken kategori ett företag tillhör och kan korrigera en felaktig
+              uppgift. Visar det sig att ett företag angett fel kategori kan CVArkivet
+              efterfakturera mellanskillnaden eller avsluta kontot.
             </p>
             <p className="mt-2">
-              Prenumerationen kan sägas upp när som helst. Efter uppsägning kan en ny prenumeration
-              tecknas tidigast två månader senare.
+              <b>Månadsabonnemang</b> faktureras månadsvis och kan sägas upp när som helst.
+              Åtkomsten upphör vid uppsägningen, och en ny prenumeration kan tecknas tidigast två
+              månader senare.
+            </p>
+            <p className="mt-2">
+              <b>Årsabonnemang</b> faktureras i förskott och gäller tolv månader. Vid uppsägning i
+              förtid behåller företaget åtkomsten till periodens slut. Ingen återbetalning sker för
+              outnyttjad tid.
             </p>
             <p className="mt-2">
               Uppgifter från CVArkivet får endast användas för rekryteringsändamål. Det är inte

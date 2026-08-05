@@ -2,17 +2,24 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
-import { planNamn } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate, formatDateTime, kr } from '@/lib/utils';
 import {
+  andraBolagstyp,
   aterstallGranskning,
   avslaForetag,
   clearCompanyBlock,
   godkannForetag,
   toggleCompanySuspended,
 } from '@/app/actions/admin';
-import { fakturasattText, statusText } from '@/lib/data';
+import {
+  bolagstypText,
+  fakturasattText,
+  historikPlanText,
+  planNamnFor,
+  pris,
+  statusText,
+} from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,6 +84,15 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
               <dd className="font-medium">{company.orgNumber}</dd>
             </div>
             <div>
+              <dt className="text-slate-500">Angiven bolagstyp</dt>
+              <dd className="font-medium">
+                {bolagstypText(company.companyType)}
+                {company.companyType === 'AGENCY'
+                  ? ` · ${pris('AGENCY', 'YEARLY').toLocaleString('sv-SE')} kr/år`
+                  : ` · ${pris('EMPLOYER', 'YEARLY').toLocaleString('sv-SE')} kr/år`}
+              </dd>
+            </div>
+            <div>
               <dt className="text-slate-500">E-postdomän</dt>
               <dd className="font-medium">@{company.email.split('@').pop()}</dd>
             </div>
@@ -91,10 +107,23 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
           </dl>
 
           <div className="mt-5 flex flex-wrap items-start gap-3">
-            <form action={godkannForetag}>
+            <form action={godkannForetag} className="flex flex-wrap items-center gap-2">
               <input type="hidden" name="id" value={company.id} />
+              <select
+                name="companyType"
+                defaultValue={company.companyType}
+                className="input w-64"
+                aria-label="Bolagstyp"
+              >
+                <option value="EMPLOYER">
+                  Arbetsgivare – {pris('EMPLOYER', 'YEARLY').toLocaleString('sv-SE')} kr/år
+                </option>
+                <option value="AGENCY">
+                  Bemanning/rekrytering – {pris('AGENCY', 'YEARLY').toLocaleString('sv-SE')} kr/år
+                </option>
+              </select>
               <button className="btn-primary" type="submit">
-                Godkänn företaget
+                Godkänn med denna typ
               </button>
             </form>
 
@@ -215,9 +244,49 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Prenumeration</dt>
-                <dd className="font-medium">{planNamn(company.subscription)}</dd>
+                <dt className="text-slate-500">Bolagstyp</dt>
+                <dd>
+                  <form action={andraBolagstyp} className="mt-1 flex gap-2">
+                    <input type="hidden" name="id" value={company.id} />
+                    <select
+                      name="companyType"
+                      defaultValue={company.companyType}
+                      className="input"
+                      aria-label="Bolagstyp"
+                    >
+                      <option value="EMPLOYER">Arbetsgivare</option>
+                      <option value="AGENCY">Bemanning/rekrytering</option>
+                    </select>
+                    <button className="btn-secondary shrink-0" type="submit">
+                      Spara
+                    </button>
+                  </form>
+                </dd>
               </div>
+              <div>
+                <dt className="text-slate-500">Prenumeration</dt>
+                <dd className="font-medium">
+                  {planNamnFor(company.subscription, company.companyType)}
+                </dd>
+              </div>
+              {company.subscription !== 'NONE' && (
+                <div>
+                  <dt className="text-slate-500">Belopp</dt>
+                  <dd className="font-medium">
+                    {pris(
+                      company.companyType,
+                      company.subscription as 'YEARLY' | 'MONTHLY'
+                    ).toLocaleString('sv-SE')}{' '}
+                    kr {company.subscription === 'YEARLY' ? 'per år' : 'per månad'} exkl. moms
+                  </dd>
+                </div>
+              )}
+              {company.subscriptionEndsAt && (
+                <div>
+                  <dt className="text-slate-500">Gäller till och med</dt>
+                  <dd>{formatDate(company.subscriptionEndsAt)}</dd>
+                </div>
+              )}
               <div>
                 <dt className="text-slate-500">Startdatum</dt>
                 <dd>{formatDate(company.subscriptionStarted)}</dd>
@@ -306,7 +375,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                         : h.type === 'CHANGED'
                           ? 'Bytte till'
                           : 'Sade upp'}{' '}
-                      {planNamn(h.plan)}
+                      {historikPlanText(h.plan)}
                     </span>
                     <span className="text-slate-500">{formatDate(h.createdAt)}</span>
                   </li>
