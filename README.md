@@ -62,6 +62,7 @@ src/lib/storage.ts        Logotyper: Vercel Blob i drift, disk lokalt
 src/lib/search.ts         Skiftlägesokänslig sökning
 src/lib/retention.ts      Gallring av inaktiva konton
 src/app/api/cron/         Nattligt gallringsjobb (schemaläggs i vercel.json)
+src/components/Skeleton   Laddningsskelett som visas medan servern hämtar data
 
 src/app/actions/          Server actions: auth, user, company, admin
 src/app/kandidat/         Lediga jobb · Företag · Mitt CV · Min sida · Meddelanden
@@ -101,6 +102,19 @@ src/app/admin/            Registrerade användare · Registrerade företag
   manuellt från *Registrerade användare*.
 
 ---
+
+## Prestanda
+
+- **Servern körs i Frankfurt** (`regions` i `vercel.json`) eftersom Neon-databasen ligger i
+  eu-central-1. Varje sidvisning gör flera databasfrågor, och med servern i USA korsade
+  varje fråga Atlanten. Flyttar du databasen måste servern följa med.
+- `vercel.json` är JSON utan kommentarer. Lägg **inte** till egna nycklar som `//` –
+  Vercel avvisar hela filen och deployen misslyckas.
+- Varje vy har ett `loading.tsx` så att sidan svarar direkt på klicket.
+- `requireUser`, `requireCompany` och `requireAdmin` är insvepta i Reacts `cache()`, så att
+  layout och sida delar på en databasfråga i stället för att göra samma två gånger.
+- Loggning av CV-visningar, företagsbesök och senaste aktivitet skrivs i bakgrunden och
+  fördröjer inte svaret.
 
 ## Kända begränsningar
 

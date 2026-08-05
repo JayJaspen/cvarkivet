@@ -1,9 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-
-  "//": "Servern körs i Frankfurt eftersom Neon-databasen ligger i eu-central-1. Varje sida gör flera databasfrågor, och med servern i USA korsade varje fråga Atlanten fram och tillbaka.",
   "regions": ["fra1"],
-
   "crons": [
     {
       "path": "/api/cron/gallring",
