@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { SignJWT, jwtVerify } from 'jose';
 import { redirect } from 'next/navigation';
@@ -43,8 +44,13 @@ export async function getSession(): Promise<SessionData | null> {
   }
 }
 
-/** Inloggad kandidat, eller redirect till login. Avstängda konton slängs ut. */
-export async function requireUser() {
+/**
+ * Inloggad kandidat, eller redirect till login. Avstängda konton slängs ut.
+ *
+ * Insvept i React cache: både layouten och sidan behöver användaren, och utan
+ * detta gjordes samma databasfråga två gånger vid varje sidvisning.
+ */
+export const requireUser = cache(async () => {
   const s = await getSession();
   if (!s || s.role !== 'USER') redirect('/logga-in');
   const user = await prisma.user.findUnique({ where: { id: s.id } });
@@ -53,10 +59,10 @@ export async function requireUser() {
     redirect('/logga-in?fel=avstangd');
   }
   return user;
-}
+});
 
 /** Inloggat företag, eller redirect. */
-export async function requireCompany() {
+export const requireCompany = cache(async () => {
   const s = await getSession();
   if (!s || s.role !== 'COMPANY') redirect('/logga-in');
   const company = await prisma.company.findUnique({ where: { id: s.id } });
@@ -65,9 +71,9 @@ export async function requireCompany() {
     redirect('/logga-in?fel=avstangd');
   }
   return company;
-}
+});
 
-export async function requireAdmin() {
+export const requireAdmin = cache(async () => {
   const s = await getSession();
   if (!s || s.role !== 'ADMIN') redirect('/logga-in');
   const admin = await prisma.admin.findUnique({ where: { id: s.id } });
@@ -76,4 +82,4 @@ export async function requireAdmin() {
     redirect('/logga-in');
   }
   return admin;
-}
+});

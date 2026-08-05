@@ -19,8 +19,11 @@ export default async function CompanyProfile({ params }: { params: { id: string 
   });
   if (!company || company.suspended || company.status !== 'APPROVED') notFound();
 
-  // Logga besöket (admin kan se vilka företagsprofiler en användare besökt)
-  await prisma.companyVisit.create({ data: { userId: user.id, companyId: company.id } });
+  // Logga besöket (admin kan se vilka företagsprofiler en användare besökt).
+  // Inte inväntad – sidan ska inte fördröjas av en loggpost.
+  void prisma.companyVisit
+    .create({ data: { userId: user.id, companyId: company.id } })
+    .catch((err) => console.error('Kunde inte logga företagsbesök:', err));
 
   const [fav, hidden] = await Promise.all([
     prisma.favorite.findUnique({

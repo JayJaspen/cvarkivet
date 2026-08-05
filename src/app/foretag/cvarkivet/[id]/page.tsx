@@ -46,8 +46,9 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
   if (!user || user.suspended) notFound();
   if (await isUserHiddenFrom(user.id, company)) notFound();
 
-  // Logga visningen och notifiera kandidaten (max en gång per dygn och företag)
-  await logCvView(company, user);
+  // Logga visningen och notifiera kandidaten (max en gång per dygn och företag).
+  // Körs parallellt med resten av sidans data.
+  const loggning = logCvView(company, user);
 
   const [heart, fav, messages] = await Promise.all([
     prisma.heart.findUnique({
@@ -61,6 +62,8 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
       orderBy: { createdAt: 'asc' },
     }),
   ]);
+
+  await loggning;
 
   const age = ageFromBirthDate(user.birthDate);
 

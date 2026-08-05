@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState, useTransition } from 'react';
 
 export type Tab = { href: string; label: string; badge?: number };
 
@@ -21,12 +21,31 @@ export default function Nav({
   logoutAction: () => Promise<void>;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
 
-  // Stäng mobilmenyn när man navigerat
-  useEffect(() => setOpen(false), [pathname]);
+  // Vilken flik användaren klickat på, innan sidan hunnit laddas.
+  // Utan detta står markeringen kvar på den gamla fliken tills allt är klart.
+  const [pakladd, setPakladd] = useState<string | null>(null);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+  useEffect(() => {
+    setOpen(false);
+    setPakladd(null);
+  }, [pathname]);
+
+  const isActive = (href: string) => {
+    if (pakladd) return pakladd === href;
+    return pathname === href || pathname.startsWith(href + '/');
+  };
+
+  const navigera = (e: React.MouseEvent, href: string) => {
+    // Låt mittenklick och ctrl-klick öppna i ny flik som vanligt
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    setPakladd(href);
+    startTransition(() => router.push(href));
+  };
 
   const menyInnehall = (
     <div className="flex h-full flex-col">
@@ -40,20 +59,35 @@ export default function Nav({
       </Link>
 
       <nav className="flex-1 space-y-1 px-3">
-        {tabs.map((t) => (
-          <Link
-            key={t.href}
-            href={t.href}
-            className={`navlink ${isActive(t.href) ? 'navlink-active' : ''}`}
-          >
-            <span>{t.label}</span>
-            {!!t.badge && (
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-500 px-1.5 text-[11px] font-semibold text-white">
-                {t.badge}
+        {tabs.map((t) => {
+          const aktiv = isActive(t.href);
+          const laddar = pending && pakladd === t.href;
+
+          return (
+            <Link
+              key={t.href}
+              href={t.href}
+              prefetch
+              onClick={(e) => navigera(e, t.href)}
+              className={`navlink ${aktiv ? 'navlink-active' : ''}`}
+            >
+              <span>{t.label}</span>
+              <span className="flex items-center gap-2">
+                {!!t.badge && (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-500 px-1.5 text-[11px] font-semibold text-white">
+                    {t.badge}
+                  </span>
+                )}
+                {laddar && (
+                  <span
+                    aria-hidden
+                    className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                  />
+                )}
               </span>
-            )}
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </nav>
 
       <div className="border-t border-white/10 p-4">

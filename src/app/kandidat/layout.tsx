@@ -10,8 +10,8 @@ export default async function KandidatLayout({ children }: { children: React.Rea
   const user = await requireUser();
 
   // Räknas som aktiv så länge sidan används – annars skulle en inloggad
-  // kandidat kunna gallras bort trots att hen är kvar.
-  await registreraAktivitet(user);
+  // kandidat kunna gallras bort trots att hen är kvar. Skrivningen inväntas inte.
+  registreraAktivitet(user);
 
   const unread = await prisma.message.count({
     where: { userId: user.id, senderType: 'COMPANY', readAt: null },

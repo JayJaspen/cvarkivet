@@ -15,7 +15,11 @@ export async function logCvView(
   company: { id: string; name: string },
   user: { id: string; firstName: string; email: string; notifyOnCvView: boolean }
 ) {
-  await prisma.cvView.create({ data: { companyId: company.id, userId: user.id } });
+  // Visningen loggas i bakgrunden. Företaget ska inte vänta på skrivningen,
+  // och kandidatens statistik behöver inte vara uppdaterad på millisekunden.
+  void prisma.cvView
+    .create({ data: { companyId: company.id, userId: user.id } })
+    .catch((err) => console.error('Kunde inte logga CV-visning:', err));
 
   if (!user.notifyOnCvView) return;
 

@@ -206,7 +206,7 @@ export async function gallringsStatus() {
  * skrivning per dygn. Utan detta skulle någon som är inloggad hela tiden
  * felaktigt räknas som inaktiv.
  */
-export async function registreraAktivitet(user: {
+export function registreraAktivitet(user: {
   id: string;
   lastLoginAt: Date | null;
   retentionWarningAt: Date | null;
@@ -214,8 +214,13 @@ export async function registreraAktivitet(user: {
   const ettDygnSedan = new Date(Date.now() - 24 * 60 * 60 * 1000);
   if (user.lastLoginAt && user.lastLoginAt > ettDygnSedan && !user.retentionWarningAt) return;
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { lastLoginAt: new Date(), retentionWarningAt: null },
-  });
+  // Medvetet inte inväntad: sidan ska inte behöva vänta på en skrivning som
+  // bara håller gallringsklockan aktuell. Misslyckas den görs ett nytt försök
+  // vid nästa sidvisning.
+  void prisma.user
+    .update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date(), retentionWarningAt: null },
+    })
+    .catch((err) => console.error('Kunde inte uppdatera senaste aktivitet:', err));
 }
