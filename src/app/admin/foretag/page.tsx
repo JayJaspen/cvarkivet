@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
-import { arPilot, pris, prisInklMoms } from '@/lib/data';
+import { arPilot, KOMMUNER, pris, prisInklMoms } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { godkannForetag, toggleCompanySuspended } from '@/app/actions/admin';
@@ -12,10 +12,16 @@ export const dynamic = 'force-dynamic';
 export default async function AdminCompanies({
   searchParams,
 }: {
-  searchParams: { q?: string; plan?: string; status?: string; granskning?: string };
+  searchParams: {
+    q?: string;
+    plan?: string;
+    status?: string;
+    granskning?: string;
+    kommun?: string;
+  };
 }) {
   await requireAdmin();
-  const { q, plan, status, granskning } = searchParams;
+  const { q, plan, status, granskning, kommun } = searchParams;
 
   const companies = await prisma.company.findMany({
     where: {
@@ -23,6 +29,7 @@ export default async function AdminCompanies({
       ...(granskning ? { status: granskning } : {}),
       ...(status === 'avstangda' ? { suspended: true } : {}),
       ...(status === 'aktiva' ? { suspended: false } : {}),
+      ...(kommun ? { municipality: kommun } : {}),
       ...(q
         ? {
             OR: [{ name: contains(q) }, { orgNumber: contains(q) }, { email: contains(q) }],
@@ -124,7 +131,7 @@ export default async function AdminCompanies({
       )}
 
       <Card className="mb-6">
-        <form className="grid gap-3 sm:grid-cols-5">
+        <form className="grid gap-3 sm:grid-cols-6">
           <div className="sm:col-span-2">
             <label className="label">Sök</label>
             <input
@@ -133,6 +140,17 @@ export default async function AdminCompanies({
               placeholder="Företagsnamn, orgnr eller e-post"
               className="input"
             />
+          </div>
+          <div>
+            <label className="label">Kommun</label>
+            <select name="kommun" defaultValue={kommun ?? ''} className="input">
+              <option value="">Alla kommuner</option>
+              {KOMMUNER.map((k) => (
+                <option key={k} value={k}>
+                  {k}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="label">Prenumeration</label>

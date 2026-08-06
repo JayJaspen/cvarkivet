@@ -7,6 +7,7 @@ import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { ageFromBirthDate, kr } from '@/lib/utils';
 import { hiddenUserIdsForCompany } from '@/lib/visibility';
 import { contains } from '@/lib/search';
+import { CV_HAR_INNEHALL, cvHarInnehall } from '@/lib/cv';
 import Forhandsvisning from '@/components/Forhandsvisning';
 import { toggleHeart } from '@/app/actions/company';
 
@@ -22,6 +23,7 @@ export default async function CvArkivetPage({
     hjartade?: string;
     favoriter?: string;
     aktiva?: string;
+    ifyllt?: string;
   };
 }) {
   const company = await requireCompany();
@@ -45,7 +47,7 @@ export default async function CvArkivetPage({
     );
   }
 
-  const { kommun, kategori, q, hjartade, favoriter, aktiva } = searchParams;
+  const { kommun, kategori, q, hjartade, favoriter, aktiva, ifyllt } = searchParams;
   const hiddenIds = await hiddenUserIdsForCompany(company);
 
   const [hearts, favs] = await Promise.all([
@@ -63,25 +65,42 @@ export default async function CvArkivetPage({
         ...(hjartade ? { in: Array.from(heartSet) } : {}),
       },
       ...(aktiva === 'ja' ? { activelyLooking: true } : {}),
-      ...(kommun
-        ? { OR: [{ homeMunicipality: kommun }, { municipalities: { some: { municipality: kommun } } }] }
-        : {}),
       ...(kategori ? { categories: { some: { category: kategori } } } : {}),
-      ...(q
-        ? {
-            OR: [
-              { firstName: contains(q) },
-              { lastName: contains(q) },
-              { headline: contains(q) },
-              { seeking: contains(q) },
-              { skills: contains(q) },
-            ],
-          }
-        : {}),
+
+      // Kommunfiltret, fritextsökningen och CV-filtret behöver alla ett OR.
+      // Som syskonnycklar skriver de tyst över varandra, så de samlas i AND.
+      AND: [
+        ...(kommun
+          ? [
+              {
+                OR: [
+                  { homeMunicipality: kommun },
+                  { municipalities: { some: { municipality: kommun } } },
+                ],
+              },
+            ]
+          : []),
+        ...(ifyllt === 'ja' ? [CV_HAR_INNEHALL] : []),
+        ...(q
+          ? [
+              {
+                OR: [
+                  { firstName: contains(q) },
+                  { lastName: contains(q) },
+                  { headline: contains(q) },
+                  { seeking: contains(q) },
+                  { skills: contains(q) },
+                ],
+              },
+            ]
+          : []),
+      ],
     },
     include: {
       categories: true,
       municipalities: true,
+      experiences: { select: { id: true } },
+      educations: { select: { id: true } },
       _count: { select: { cvViews: true } },
     },
     orderBy: [{ activelyLooking: 'desc' }, { cvUpdatedAt: 'desc' }, { createdAt: 'desc' }],
@@ -169,6 +188,16 @@ export default async function CvArkivetPage({
                 className="h-4 w-4 rounded border-sand-300 text-brand-600"
               />
               Endast aktivt jobbsökande
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="ifyllt"
+                value="ja"
+                defaultChecked={ifyllt === 'ja'}
+                className="h-4 w-4 rounded border-sand-300 text-brand-600"
+              />
+              Dölj tomma CV
             </label>
           </div>
         </form>
@@ -275,6 +304,7 @@ export default async function CvArkivetPage({
                       ) : (
                         <Badge tone="slate">Passiv</Badge>
                       )}
+                      {!cvHarInnehall(c) && <Badge tone="amber">Tomt CV</Badge>}
                       {favSet.has(c.id) && <Badge tone="pink">★ Har oss som favorit</Badge>}
                     </div>
                   </td>

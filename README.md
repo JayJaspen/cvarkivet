@@ -61,6 +61,7 @@ src/lib/email.ts          Mallar och utskick via Resend
 src/lib/notifications.ts  Notis när ett företag läst ett CV
 src/lib/storage.ts        Logotyper: Vercel Blob i drift, disk lokalt
 src/lib/search.ts         Skiftlägesokänslig sökning
+src/lib/cv.ts             Vad som räknas som ett ifyllt CV
 src/lib/ai.ts             Matchningspoäng och CV-granskning mot Claude, samt prislista
 src/lib/ai-kvot.ts        Dygnskvoter, nödstopp och kostnadsloggning
 src/lib/matchning.ts      Cachning av matchningspoäng
@@ -109,6 +110,13 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
   raderas manuellt.
 - **Dolda profiler:** en kandidat kan dölja sig för ett enskilt företag eller för en hel
   e-postdomän. Dolda kandidater filtreras bort i både träfflistan och detaljvyn.
+- **Tomma CV:** ett konto utan yrkesrubrik, presentation, kompetenser, erfarenhet, utbildning
+  eller kategori räknas som tomt (`src/lib/cv.ts`). Företag kan dölja dem i sökningen, och de
+  märks upp med *Tomt CV* i listan även när de visas. Att `cvUpdatedAt` är satt duger inte som
+  mått – den sätts även när någon sparar ett helt tomt formulär.
+- **Filter som använder `OR` måste ligga i `AND`.** Kommunfilter och fritextsökning bygger båda
+  ett `OR`. Läggs de som syskonnycklar i samma `where`-objekt skriver den ena tyst över den
+  andra, och användaren får fler träffar än hen bad om utan att något syns.
 - **Loggning:** varje gång ett företag öppnar ett CV skapas en `CvView` och kandidaten
   får ett mail (max ett per dygn och företag, går att stänga av). Varje gång en kandidat
   öppnar en företagsprofil skapas en `CompanyVisit`. Båda syns för admin.

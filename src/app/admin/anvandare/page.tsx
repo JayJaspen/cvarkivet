@@ -5,6 +5,7 @@ import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { korGallringManuellt, toggleUserSuspended } from '@/app/actions/admin';
 import { contains } from '@/lib/search';
+import { KOMMUNER } from '@/lib/data';
 import { gallringsStatus, INAKTIV_MANADER, VARNING_DAGAR_INNAN } from '@/lib/retention';
 import { Notice } from '@/components/ui';
 
@@ -16,6 +17,7 @@ export default async function AdminUsers({
   searchParams: {
     q?: string;
     status?: string;
+    kommun?: string;
     gallring?: string;
     varnade?: string;
     raderade?: string;
@@ -23,18 +25,41 @@ export default async function AdminUsers({
   };
 }) {
   await requireAdmin();
-  const { q, status } = searchParams;
+  const { q, status, kommun } = searchParams;
   const gallring = await gallringsStatus();
 
   const users = await prisma.user.findMany({
     where: {
       ...(status === 'avstangda' ? { suspended: true } : {}),
       ...(status === 'aktiva' ? { suspended: false } : {}),
-      ...(q
-        ? {
-            OR: [{ firstName: contains(q) }, { lastName: contains(q) }, { email: contains(q) }],
-          }
-        : {}),
+
+      // Både kommunfiltret och fritextsökningen behöver ett OR. Läggs de som
+      // syskonnycklar skriver den ena tyst över den andra, så de samlas i AND.
+      AND: [
+        // Kommun träffar både hemkommun och de kommuner kandidaten söker i –
+        // samma tolkning som i företagens sökning, så siffrorna går att jämföra.
+        ...(kommun
+          ? [
+              {
+                OR: [
+                  { homeMunicipality: kommun },
+                  { municipalities: { some: { municipality: kommun } } },
+                ],
+              },
+            ]
+          : []),
+        ...(q
+          ? [
+              {
+                OR: [
+                  { firstName: contains(q) },
+                  { lastName: contains(q) },
+                  { email: contains(q) },
+                ],
+              },
+            ]
+          : []),
+      ],
     },
     include: {
       _count: { select: { cvViews: true, companyVisits: true, interests: true } },
@@ -113,10 +138,21 @@ export default async function AdminUsers({
       </Card>
 
       <Card className="mb-6">
-        <form className="grid gap-3 sm:grid-cols-4">
+        <form className="grid gap-3 sm:grid-cols-5">
           <div className="sm:col-span-2">
             <label className="label">Sök</label>
             <input name="q" defaultValue={q ?? ''} placeholder="Namn eller e-post" className="input" />
+          </div>
+          <div>
+            <label className="label">Kommun</label>
+            <select name="kommun" defaultValue={kommun ?? ''} className="input">
+              <option value="">Alla kommuner</option>
+              {KOMMUNER.map((k) => (
+                <option key={k} value={k}>
+                  {k}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="label">Status</label>
