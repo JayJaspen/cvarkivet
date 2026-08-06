@@ -5,6 +5,7 @@ import { addEducation, addExperience, deleteEducation, deleteExperience } from '
 import CvForm from './CvForm';
 import Granskning, { type Forslag } from './Granskning';
 import { aiArPakopplad } from '@/lib/ai';
+import { aiArAvstangt } from '@/lib/ai-kvot';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +58,7 @@ export default async function CvPage({
             municipalities={municipalities.map((m) => m.municipality)}
           />
 
-          {aiArPakopplad() && (
+          {aiArPakopplad() && !(await aiArAvstangt()) && (
             <Granskning granskning={granskningsdata} inaktuell={granskningInaktuell} />
           )}
 

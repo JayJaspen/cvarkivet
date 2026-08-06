@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
 import { korGallring } from '@/lib/retention';
+import { satNodstopp } from '@/lib/ai-kvot';
 import { appUrl, companyApprovedEmail, companyRejectedEmail, sendEmail } from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -153,4 +154,19 @@ export async function clearCompanyBlock(form: FormData) {
   const id = String(form.get('id'));
   await prisma.company.update({ where: { id }, data: { blockedUntil: null } });
   revalidatePath(`/admin/foretag/${id}`);
+}
+
+/**
+ * Nödstopp för AI-funktionerna.
+ *
+ * Finns för att kostnaden ska gå att stoppa på sekunden, utan att koden
+ * behöver läggas upp på nytt. Slår av både matchning och CV-granskning;
+ * knapparna försvinner för användarna.
+ */
+export async function vaxlaAiNodstopp(form: FormData) {
+  const admin = await requireAdmin();
+  await satNodstopp(String(form.get('pa')) === 'ja', admin.email);
+  revalidatePath('/admin/ai');
+  revalidatePath('/kandidat/jobb');
+  revalidatePath('/kandidat/cv');
 }

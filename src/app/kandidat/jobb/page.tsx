@@ -7,7 +7,9 @@ import { formatDate, kr } from '@/lib/utils';
 import { contains } from '@/lib/search';
 import IntresseKnapp from './IntresseKnapp';
 import { aiArPakopplad } from '@/lib/ai';
+import { aiArAvstangt } from '@/lib/ai-kvot';
 import { raknaUtMatchning } from '@/app/actions/ai';
+import AiKnapp from '@/components/AiKnapp';
 import { Matchforbehall, Matchplakett } from '@/components/Matchning';
 
 export const dynamic = 'force-dynamic';
@@ -47,7 +49,9 @@ export default async function JobbPage({
   const anmalt = new Set(mittIntresse.map((i) => i.jobAdId));
   const dolda = new Set(doldaForetag.map((h) => h.companyId));
   const matchningar = new Map(poang.map((p) => [p.jobAdId, p]));
-  const aiPa = aiArPakopplad();
+  // Matchning räknas aldrig ut av sig självt – knappen visas bara, och bara
+  // så länge AI är påslaget och admin inte dragit i nödstoppet.
+  const aiPa = aiArPakopplad() && !(await aiArAvstangt());
 
   return (
     <>
@@ -168,12 +172,12 @@ export default async function JobbPage({
 
                 <div className="flex w-full flex-col gap-2 sm:w-56">
                   {aiPa && !matchningar.has(j.id) && (
-                    <form action={raknaUtMatchning}>
-                      <input type="hidden" name="jobAdId" value={j.id} />
-                      <button className="btn-secondary w-full" type="submit">
-                        Räkna ut min matchning
-                      </button>
-                    </form>
+                    <AiKnapp
+                      action={raknaUtMatchning}
+                      jobAdId={j.id}
+                      etikett="Räkna ut min matchning"
+                      arbetar="Räknar…"
+                    />
                   )}
 
                   <IntresseKnapp

@@ -1,8 +1,17 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { begarCvGranskning } from '@/app/actions/ai';
 import { Card } from '@/components/ui';
+
+function GranskaKnapp({ harGranskning }: { harGranskning: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-accent shrink-0">
+      {pending ? 'Granskar…' : harGranskning ? 'Granska igen' : 'Granska mitt CV'}
+    </button>
+  );
+}
 
 export type Forslag = { rubrik: string; forslag: string; allvar: 'hog' | 'medel' | 'lag' };
 
@@ -18,7 +27,7 @@ export default function Granskning({
   } | null;
   inaktuell: boolean;
 }) {
-  const [pending, startTransition] = useTransition();
+  const [state, granska] = useFormState(begarCvGranskning, undefined);
 
   const allvarston = (a: Forslag['allvar']) =>
     a === 'hog'
@@ -38,27 +47,22 @@ export default function Granskning({
           <p className="muted mt-1 max-w-xl">
             Du får konkreta förslag på vad som saknas eller kan skärpas. Granskningen tittar
             bara på innehållet i CV:t – ingenting sparas hos AI-tjänsten och företagen ser
-            aldrig återkopplingen.
+            aldrig återkopplingen. Den körs bara när du trycker på knappen.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => startTransition(() => begarCvGranskning())}
-          disabled={pending}
-          className="btn-accent shrink-0"
-        >
-          {pending ? 'Granskar…' : granskning ? 'Granska igen' : 'Granska mitt CV'}
-        </button>
+        <form action={granska}>
+          <GranskaKnapp harGranskning={Boolean(granskning)} />
+        </form>
       </div>
 
-      {pending && (
-        <p className="mt-4 text-sm text-sand-600">
-          Läser igenom ditt CV. Det tar några sekunder.
+      {state?.error && (
+        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          {state.error}
         </p>
       )}
 
-      {granskning && !pending && (
+      {granskning && (
         <div className="mt-5 space-y-4">
           {inaktuell && (
             <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">

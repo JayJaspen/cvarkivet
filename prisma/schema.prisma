@@ -442,6 +442,41 @@ model CvDownload {
   @@index([userId])
 }
 
+// ---------------------------------------------------------- AI-förbrukning
+
+/// Ett rad per anrop mot Claude. Varje anrop kostar pengar, så det ska gå att
+/// se exakt vad som förbrukats, av vem och när. Tokenantalen kommer från
+/// API-svaret och är alltså verklig förbrukning, inte en uppskattning.
+model AiAnrop {
+  id        String   @id @default(cuid())
+  /// MATCHNING | GRANSKNING
+  typ       String
+  modell    String
+  inTokens  Int      @default(0)
+  utTokens  Int      @default(0)
+  /// Vem som tryckte på knappen. Avsiktligt utan relation: kostnadshistoriken
+  /// ska överleva gallringen, så id:t blir bara ett dött värde när kontot
+  /// raderas. Adminvyn visar då "Raderat konto".
+  userId    String?
+  companyId String?
+  /// false om anropet misslyckades (kostar ändå ingenting att spara)
+  lyckades  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId, typ, createdAt])
+  @@index([companyId, createdAt])
+}
+
+/// Enkla på/av-inställningar som admin styr i drift, utan ny driftsättning.
+/// I dag bara nödstoppet för AI, men modellen är avsiktligt generell.
+model Installning {
+  nyckel    String   @id
+  varde     String
+  andradAv  String?
+  updatedAt DateTime @updatedAt
+}
+
 // ------------------------------------------------------ Lösenordsåterställning
 
 /// Gäller både kandidat- och företagskonton. Token lagras hashad –

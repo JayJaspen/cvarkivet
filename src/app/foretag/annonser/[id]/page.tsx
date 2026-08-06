@@ -8,7 +8,9 @@ import { ageFromBirthDate, formatDate, formatDateTime, kr } from '@/lib/utils';
 import Paywall from '@/components/Paywall';
 import GranskningNotis from '@/components/GranskningNotis';
 import { aiArPakopplad, MATCHSPANN, spannFor } from '@/lib/ai';
+import { aiArAvstangt } from '@/lib/ai-kvot';
 import { raknaUtMatchningForAnnons } from '@/app/actions/ai';
+import AiKnapp from '@/components/AiKnapp';
 import { Matchforbehall, Matchplakett } from '@/components/Matchning';
 
 export const dynamic = 'force-dynamic';
@@ -64,7 +66,8 @@ export default async function AnnonsDetalj({
   });
 
   const utgangen = annons.deadline < new Date();
-  const aiPa = aiArPakopplad();
+  // Poängen räknas bara ut när någon trycker på knappen nedan.
+  const aiPa = aiArPakopplad() && !(await aiArAvstangt());
 
   // Sparade matchningspoäng för kandidaterna som anmält intresse
   const poang = aiPa
@@ -129,12 +132,13 @@ export default async function AnnonsDetalj({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-medium text-sand-900">Filtrera på matchning</p>
               {saknarPoang > 0 && (
-                <form action={raknaUtMatchningForAnnons}>
-                  <input type="hidden" name="jobAdId" value={annons.id} />
-                  <button className="btn-secondary" type="submit">
-                    Räkna ut matchning för {saknarPoang} kandidater
-                  </button>
-                </form>
+                <AiKnapp
+                  action={raknaUtMatchningForAnnons}
+                  jobAdId={annons.id}
+                  etikett={`Räkna ut matchning för ${saknarPoang} ${saknarPoang === 1 ? 'kandidat' : 'kandidater'}`}
+                  arbetar="Räknar…"
+                  className="btn-secondary"
+                />
               )}
             </div>
 

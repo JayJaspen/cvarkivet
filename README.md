@@ -60,7 +60,8 @@ src/lib/email.ts          Mallar och utskick via Resend
 src/lib/notifications.ts  Notis när ett företag läst ett CV
 src/lib/storage.ts        Logotyper: Vercel Blob i drift, disk lokalt
 src/lib/search.ts         Skiftlägesokänslig sökning
-src/lib/ai.ts             Matchningspoäng och CV-granskning mot Claude
+src/lib/ai.ts             Matchningspoäng och CV-granskning mot Claude, samt prislista
+src/lib/ai-kvot.ts        Dygnskvoter, nödstopp och kostnadsloggning
 src/lib/matchning.ts      Cachning av matchningspoäng
 src/lib/onskelista.ts     Önskade företag, med normalisering av namn
 src/lib/topplista.ts      Mest följda företag
@@ -71,7 +72,7 @@ src/components/Skeleton   Laddningsskelett som visas medan servern hämtar data
 src/app/actions/          Server actions: auth, user, company, admin
 src/app/kandidat/         Lediga jobb · Företag · Mitt CV · Min sida · Meddelanden
 src/app/foretag/          CVArkivet · Annonser · Vår sida · Meddelanden
-src/app/admin/            Registrerade användare · Registrerade företag
+src/app/admin/            Registrerade användare · Registrerade företag · AI-förbrukning
 ```
 
 ---
@@ -103,6 +104,12 @@ src/app/admin/            Registrerade användare · Registrerade företag
 - **Matchningspoängen** ser bara kompetens och erfarenhet. Ålder, namn, foto och ort skickas
   aldrig till modellen. Poängen sparas och räknas om först när CV:t eller annonsen ändrats,
   och högst 25 kandidater beräknas per klick.
+- **Inget AI-anrop sker automatiskt.** Varje anrop mot Claude kostar pengar och utlöses därför
+  bara av ett klick – aldrig av en sidvisning, en inloggning eller ett schemalagt jobb. Alla
+  anrop går genom `src/app/actions/ai.ts`, som kontrollerar kvoten *innan* något skickas iväg.
+  Utöver det finns dygnskvoter per kandidat och företag, ett tak för hela sajten, och ett
+  nödstopp som admin slår av under *AI-förbrukning*. Varje anrop loggas i `AiAnrop` med
+  verklig tokenförbrukning från API-svaret, så att kostnaden går att följa i kronor.
 - **Önskelistan**: kandidater föreslår företag som borde finnas här. Namnet normaliseras
   (`Volvo AB`, `volvo` och `VOLVO Aktiebolag` blir samma post). Nya önskemål syns publikt
   först efter admins godkännande, eftersom listan ligger på startsidan. Posten försvinner
