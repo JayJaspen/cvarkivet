@@ -15,6 +15,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
 
+    "admin": "node scripts/admin.mjs",
+
     "sqlite:schema": "node scripts/make-sqlite-schema.mjs",
     "sqlite:setup": "npm run sqlite:schema && prisma generate --schema=prisma/schema.local.prisma && prisma db push --schema=prisma/schema.local.prisma --accept-data-loss && npm run sqlite:seed",
     "sqlite:seed": "cross-env DATABASE_PROVIDER=sqlite DATABASE_URL=file:./dev.db tsx prisma/seed.ts",

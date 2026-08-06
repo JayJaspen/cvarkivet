@@ -51,7 +51,8 @@ Praktiskt vid utveckling: du kan kopiera återställningslänken därifrån.
 ```
 prisma/schema.prisma      Datamodell (PostgreSQL)
 prisma/seed.ts            Testdata
-scripts/                  Genererar SQLite-varianten för lokal utveckling
+scripts/make-sqlite-schema.mjs  Genererar SQLite-varianten för lokal utveckling
+scripts/admin.mjs         Återställer adminlösenord – enda vägen in om du blir utelåst
 
 src/lib/data.ts           290 kommuner, 28 jobbkategorier, prenumerationsplaner
 src/lib/session.ts        Inloggning (JWT i httpOnly-cookie)
@@ -155,4 +156,6 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
   Ska det automatiseras är Stripe Billing nästa steg.
 - **Ingen sökbevakning.** Kandidater får inga mail om nya matchande annonser.
 - **Ingen bildbeskärning** vid logotypuppladdning – filen sparas som den är.
-- **Ingen tvåfaktorsautentisering** för admin.
+- **Ingen tvåfaktorsautentisering** för admin. Skyddet ligger i stället på Neon- och
+  Vercel-kontot, som är det som faktiskt kan återställa allt. Sätt tvåfaktor där.
+- **Adminlösenord återställs inte via mail**, utan med `npm run admin`. Se STATUS.md.

@@ -135,9 +135,38 @@ Inget av detta blockerar lansering, men bör beslutas:
 
 ---
 
+## Om du blir utelåst från admin
+
+Adminkonton kan inte återställa lösenord via e-post. Det är medvetet – en mailbaserad
+återställning på ett konto som ser alla CV i systemet vore en svag punkt. I stället:
+
+1. **Hämta databasadressen.** Logga in på [Neon](https://console.neon.tech) →
+   projektet → *Connection string*. Alternativt Vercel → Settings → Environment
+   Variables → `DATABASE_URL`. Din verkliga huvudnyckel är alltså inloggningen till
+   Neon eller Vercel, inte adminlösenordet. **Sätt tvåfaktor på det kontot.**
+2. **Kör återställningen** i projektmappen:
+
+   ```bash
+   npm run admin -- "--url=postgresql://..."
+   ```
+
+   Skriptet listar befintliga adminkonton, låter dig sätta ett nytt lösenord eller
+   skapa ett nytt konto, visar vilken databas det är på väg att ändra i och kräver att
+   du skriver JA. Trycker du bara Enter vid lösenordsfrågan får du ett slumpat.
+
+3. **Sista utvägen:** Neon-konsolen har en SQL-editor. Där kan du läsa och ändra
+   `Admin`-tabellen för hand. Lösenordet är bcrypt-hashat, så det går inte att skriva
+   in i klartext – men du kan radera raden och köra skriptet för att skapa en ny.
+
+Skriptet fungerar bara mot Postgres. Pekar `DATABASE_URL` på den lokala SQLite-filen
+vägrar det köra, så du kan inte råka nollställa fel databas.
+
+---
+
 ## Kommandon
 
 ```bash
+npm run admin          # sätt nytt adminlösenord eller skapa adminkonto
 npm run dev:sqlite     # kör lokalt med testdata
 npm run sqlite:setup   # bygg om den lokala testdatabasen från grunden
 npm run build          # kontrollera att allt kompilerar
