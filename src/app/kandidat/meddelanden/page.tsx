@@ -4,6 +4,7 @@ import { requireUser } from '@/lib/session';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDateTime } from '@/lib/utils';
 import { markMessagesRead, replyToCompany } from '@/app/actions/user';
+import UppdateraMeny from '@/components/UppdateraMeny';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,10 +33,15 @@ export default async function MeddelandenPage({
   const activeId = searchParams.foretag ?? list[0]?.[0];
   const active = activeId ? threads.get(activeId) : undefined;
 
-  if (activeId && active?.unread) await markMessagesRead(activeId);
+  const attMarkera = activeId && active?.unread ? active.unread : 0;
+  if (activeId && attMarkera) await markMessagesRead(activeId);
 
   return (
     <>
+      {/* Räknaren i sidomenyn beräknas när layouten monteras och blir annars
+          kvar tills sidan laddas om helt. */}
+      {attMarkera > 0 && <UppdateraMeny />}
+
       <PageHeader
         title="Meddelanden"
         description="Företag som är intresserade av din profil kontaktar dig här."

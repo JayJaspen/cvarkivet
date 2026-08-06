@@ -12,6 +12,7 @@ import { aiArAvstangt } from '@/lib/ai-kvot';
 import { raknaUtMatchningForAnnons } from '@/app/actions/ai';
 import AiKnapp from '@/components/AiKnapp';
 import { Matchforbehall, Matchplakett } from '@/components/Matchning';
+import UppdateraMeny from '@/components/UppdateraMeny';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,8 +60,9 @@ export default async function AnnonsDetalj({
 
   if (!annons || annons.companyId !== company.id) notFound();
 
-  // Markera anmälningarna som lästa
-  await prisma.interest.updateMany({
+  // Markera anmälningarna som lästa. Antalet behövs för att veta om
+  // sidomenyns räknare måste hämtas om – se UppdateraMeny nedan.
+  const { count: markeradeSomLasta } = await prisma.interest.updateMany({
     where: { jobAdId: annons.id, viewedAt: null },
     data: { viewedAt: new Date() },
   });
@@ -98,6 +100,11 @@ export default async function AnnonsDetalj({
 
   return (
     <>
+      {/* Notisen i sidomenyn räknas fram när layouten monteras. Har vi just
+          markerat anmälningar som lästa måste routen hämtas om, annars ligger
+          siffran kvar trots att inget är olästt. */}
+      {markeradeSomLasta > 0 && <UppdateraMeny />}
+
       <Link href="/foretag/annonser" className="muted mb-4 inline-block hover:text-sand-900">
         ← Alla annonser
       </Link>

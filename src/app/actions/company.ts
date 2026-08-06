@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
 import { epostUpptagen } from '@/lib/epost-upptagen';
+import { hiddenUserIdsForCompany } from '@/lib/visibility';
 import { uploadLogo } from '@/lib/storage';
 import { arGodkant, harAnnonsAtkomst, harCvAtkomst } from '@/lib/data';
 import { normalizeDomain, validEmail } from '@/lib/utils';
@@ -288,6 +289,17 @@ export async function messageCandidate(form: FormData) {
   const userId = String(form.get('userId'));
   const body = String(form.get('body') ?? '').trim();
   if (!body) return;
+
+  // En kandidat som dolt sig för företaget ska inte gå att kontakta ens med
+  // ett gissat id. Kontrollen fanns i sökningen men saknades här.
+  const dolda = await hiddenUserIdsForCompany(company);
+  if (dolda.includes(userId)) return;
+
+  const mottagare = await prisma.user.findFirst({
+    where: { id: userId, suspended: false },
+    select: { id: true },
+  });
+  if (!mottagare) return;
 
   await prisma.message.create({
     data: { companyId: company.id, userId, senderType: 'COMPANY', body },

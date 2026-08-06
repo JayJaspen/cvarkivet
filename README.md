@@ -114,6 +114,11 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
   eller kategori räknas som tomt (`src/lib/cv.ts`). Företag kan dölja dem i sökningen, och de
   märks upp med *Tomt CV* i listan även när de visas. Att `cvUpdatedAt` är satt duger inte som
   mått – den sätts även när någon sparar ett helt tomt formulär.
+- **Notiser i sidomenyn:** siffrorna räknas fram i `layout.tsx`, och Next.js återanvänder
+  layouten vid klientnavigering. En sida som markerar något som läst måste därför rendera
+  `<UppdateraMeny />` (`src/components/UppdateraMeny.tsx`), annars ligger siffran kvar trots
+  att databasen är uppdaterad. Komponenten renderas bara när något faktiskt markerades, så
+  den kan inte loopa.
 - **Filter som använder `OR` måste ligga i `AND`.** Kommunfilter och fritextsökning bygger båda
   ett `OR`. Läggs de som syskonnycklar i samma `where`-objekt skriver den ena tyst över den
   andra, och användaren får fler träffar än hen bad om utan att något syns.
