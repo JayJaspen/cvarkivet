@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
 import { uploadLogo } from '@/lib/storage';
 import { arGodkant, harAnnonsAtkomst, harCvAtkomst } from '@/lib/data';
-import { monthsFromNow, normalizeDomain, validEmail } from '@/lib/utils';
+import { normalizeDomain, validEmail } from '@/lib/utils';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -115,41 +115,28 @@ export async function activateSubscription(
   form: FormData
 ): Promise<FormState> {
   const company = await requireCompany();
-  const period = String(form.get('period'));
-  if (!['MONTHLY', 'YEARLY'].includes(period))
-    return { error: 'Välj månads- eller årsabonnemang.' };
 
   // Ingen prenumeration innan kontot är granskat och godkänt.
   if (!arGodkant(company))
     return {
-      error: 'Kontot är inte godkänt ännu. Prenumeration kan tecknas när granskningen är klar.',
-    };
-
-  // Karens efter uppsägning av månadsabonnemang
-  if (company.blockedUntil && company.blockedUntil > new Date())
-    return {
-      error: `Ny prenumeration kan tecknas tidigast ${company.blockedUntil.toLocaleDateString('sv-SE')}.`,
+      error: 'Kontot är inte godkänt ännu. Abonnemang kan tecknas när granskningen är klar.',
     };
 
   const faktura = lasFakturauppgifter(form);
   if (!faktura.ok) return { error: faktura.error };
 
-  // Årsabonnemang binder ett år framåt. Månadsabonnemang har inget slutdatum.
-  let subscriptionEndsAt: Date | null = null;
-  if (period === 'YEARLY') {
-    subscriptionEndsAt = new Date();
-    subscriptionEndsAt.setFullYear(subscriptionEndsAt.getFullYear() + 1);
-  }
+  // Ett enda abonnemang finns: helår, räknat från i dag.
+  const subscriptionEndsAt = new Date();
+  subscriptionEndsAt.setFullYear(subscriptionEndsAt.getFullYear() + 1);
 
   await prisma.$transaction([
     prisma.company.update({
       where: { id: company.id },
       data: {
-        subscription: period,
+        subscription: 'YEARLY',
         subscriptionStarted: new Date(),
         subscriptionEndsAt,
         cancelledAt: null,
-        blockedUntil: null,
         ...faktura.data,
       },
     }),
@@ -157,7 +144,7 @@ export async function activateSubscription(
       data: {
         companyId: company.id,
         type: company.subscription === 'NONE' ? 'ACTIVATED' : 'CHANGED',
-        plan: `${period}_${company.companyType}`,
+        plan: `YEARLY_${company.companyType}`,
       },
     }),
   ]);
@@ -167,10 +154,7 @@ export async function activateSubscription(
   revalidatePath('/foretag/annonser');
 
   return {
-    ok:
-      period === 'YEARLY'
-        ? `Årsabonnemanget är aktiverat och gäller till ${subscriptionEndsAt!.toLocaleDateString('sv-SE')}.`
-        : 'Månadsabonnemanget är aktiverat.',
+    ok: `Årsabonnemanget är aktiverat och gäller till ${subscriptionEndsAt.toLocaleDateString('sv-SE')}.`,
   };
 }
 
@@ -193,25 +177,18 @@ export async function cancelSubscription() {
   const company = await requireCompany();
   if (company.subscription === 'NONE') return;
 
-  const arsabonnemang = company.subscription === 'YEARLY';
-
   await prisma.$transaction([
     prisma.company.update({
       where: { id: company.id },
       data: {
+        // Uppsägning betyder att abonnemanget inte förnyas. Åtkomsten löper
+        // vidare till slutdatumet de redan betalat för – ett år är betalt i
+        // förskott och ska inte tas ifrån dem i förtid.
         cancelledAt: new Date(),
 
-        // Årsabonnemang: åtkomsten löper vidare till slutdatumet de betalat för,
-        // och ingen karens – de har visat att de menar allvar.
-        // Månadsabonnemang: åtkomsten upphör direkt och 2 månaders karens gäller.
-        ...(arsabonnemang
-          ? {}
-          : {
-              subscription: 'NONE',
-              subscriptionStarted: null,
-              subscriptionEndsAt: null,
-              blockedUntil: monthsFromNow(2),
-            }),
+        // Saknas slutdatum (gammalt månadsabonnemang) sätts ett direkt, så att
+        // gallringsjobbet kan avsluta det på vanligt sätt.
+        ...(company.subscriptionEndsAt ? {} : { subscriptionEndsAt: new Date() }),
       },
     }),
     prisma.subscriptionEvent.create({

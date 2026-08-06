@@ -91,15 +91,17 @@ export function companyApprovedEmail(contactName: string, companyName: string, u
       `Hej ${contactName}!`,
       `<p>Vi har granskat er registrering och <strong>${companyName}</strong> är nu godkänt
         på CVArkivet.</p>
-       <p>Nästa steg är att aktivera en prenumeration under fliken <em>Vår sida</em>.
-        Därefter kan ni söka bland kandidaternas CV.</p>
+       <p>Ni kan redan nu se ett smakprov ur CV-arkivet. För full tillgång aktiverar ni
+        abonnemanget under fliken <em>Vår sida</em>.</p>
        <ul style="padding-left:18px">
-         <li>CV-prenumeration – 299 kr/mån exkl. moms</li>
-         <li>CV + Annonspaket – 499 kr/mån exkl. moms</li>
-       </ul>`,
+         <li>Arbetsgivare – 4 990 kr/år exkl. moms</li>
+         <li>Bemanning och rekrytering – 9 990 kr/år exkl. moms</li>
+       </ul>
+       <p>Allt ingår: hela arkivet, obegränsat antal annonser och direktkontakt med
+        kandidaterna.</p>`,
       { url, label: 'Logga in och kom igång' }
     ),
-    text: `Hej ${contactName}!\n\n${companyName} är nu godkänt på CVArkivet.\n\nAktivera en prenumeration under Vår sida så kommer ni åt CVArkivet:\n- CV-prenumeration 299 kr/mån exkl. moms\n- CV + Annonspaket 499 kr/mån exkl. moms\n\nLogga in: ${url}`,
+    text: `Hej ${contactName}!\n\n${companyName} är nu godkänt på CVArkivet.\n\nNi kan redan nu se ett smakprov ur arkivet. För full tillgång aktiverar ni abonnemanget under Vår sida:\n- Arbetsgivare 4 990 kr/år exkl. moms\n- Bemanning och rekrytering 9 990 kr/år exkl. moms\n\nLogga in: ${url}`,
   };
 }
 

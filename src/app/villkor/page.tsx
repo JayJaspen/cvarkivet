@@ -49,10 +49,10 @@ export default function Villkor() {
               CV-databasen och annonsering. Priser exklusive moms:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>Arbetsgivare: 4 990 kr per år eller 799 kr per månad.</li>
+              <li>Arbetsgivare: 4 990 kr per år.</li>
               <li>
-                Bemannings- och rekryteringsföretag: 9 990 kr per år eller 1 499 kr per månad.
-                Hit räknas verksamheter som rekryterar eller hyr ut personal åt andra företag.
+                Bemannings- och rekryteringsföretag: 9 990 kr per år. Hit räknas verksamheter
+                som rekryterar eller hyr ut personal åt andra företag.
               </li>
             </ul>
             <p className="mt-2">
@@ -61,14 +61,14 @@ export default function Villkor() {
               efterfakturera mellanskillnaden eller avsluta kontot.
             </p>
             <p className="mt-2">
-              <b>Månadsabonnemang</b> faktureras månadsvis och kan sägas upp när som helst.
-              Åtkomsten upphör vid uppsägningen, och en ny prenumeration kan tecknas tidigast två
-              månader senare.
+              Abonnemanget faktureras i förskott och gäller tolv månader från aktiveringen. Vid
+              uppsägning i förtid behåller företaget åtkomsten till periodens slut. Ingen
+              återbetalning sker för outnyttjad tid.
             </p>
             <p className="mt-2">
-              <b>Årsabonnemang</b> faktureras i förskott och gäller tolv månader. Vid uppsägning i
-              förtid behåller företaget åtkomsten till periodens slut. Ingen återbetalning sker för
-              outnyttjad tid.
+              Företag utan abonnemang ser ett begränsat och anonymiserat urval om tre kandidater
+              som förhandsvisning. Namn, kontaktuppgifter och fullständiga CV:n visas först med
+              ett aktivt abonnemang.
             </p>
             <p className="mt-2">
               Uppgifter från CVArkivet får endast användas för rekryteringsändamål. Det är inte

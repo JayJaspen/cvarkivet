@@ -46,8 +46,7 @@ export default function CompanyForm() {
                   {BOLAGSTYPER[id].beskrivning}
                 </span>
                 <span className="mt-1 block text-xs font-medium text-brand-700">
-                  {PRISER[id].YEARLY.toLocaleString('sv-SE')} kr/år eller{' '}
-                  {PRISER[id].MONTHLY.toLocaleString('sv-SE')} kr/mån, exkl. moms
+                  {PRISER[id].YEARLY.toLocaleString('sv-SE')} kr/år, exkl. moms
                 </span>
               </span>
             </label>

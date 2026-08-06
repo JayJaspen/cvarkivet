@@ -7,7 +7,7 @@ import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { ageFromBirthDate, kr } from '@/lib/utils';
 import { hiddenUserIdsForCompany } from '@/lib/visibility';
 import { contains } from '@/lib/search';
-import Paywall from '@/components/Paywall';
+import Forhandsvisning from '@/components/Forhandsvisning';
 import { toggleHeart } from '@/app/actions/company';
 
 export const dynamic = 'force-dynamic';
@@ -35,11 +35,12 @@ export default async function CvArkivetPage({
     );
   }
 
+  // Utan abonnemang: ett anonymiserat smakprov i stället för en tom vägg.
   if (!harCvAtkomst(company)) {
     return (
       <>
         <PageHeader title="CVArkivet" />
-        <Paywall companyType={company.companyType} />
+        <Forhandsvisning company={company} />
       </>
     );
   }

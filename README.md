@@ -35,9 +35,9 @@ npm run sqlite:setup
 | Roll | E-post | Not |
 |---|---|---|
 | Admin | admin@cvarkivet.se | |
-| Företag | rekrytering@nordisklogistik.se | CV + Annonspaket |
-| Företag | jobb@byggpartnervast.se | Endast CV-prenumeration |
-| Företag | hr@ab.se | Ingen prenumeration – visar paywall |
+| Företag | rekrytering@nordisklogistik.se | Aktivt årsabonnemang |
+| Företag | jobb@byggpartnervast.se | Aktivt årsabonnemang |
+| Företag | hr@ab.se | Inget abonnemang – visar förhandsvisningen |
 | Kandidat | johan@example.se | Har blockerat domänen ab.se |
 | Kandidat | sara@example.se, ali@example.se, emma@example.se | |
 
@@ -87,12 +87,18 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
 - **Företag måste ha egen e-postdomän.** Gmail, Hotmail, Outlook, svenska
   internetleverantörer och engångsadresser blockeras. Listan finns i `src/lib/utils.ts`.
 - **Organisationsnumret kontrolleras** med kontrollsiffra, så påhittade nummer avvisas.
-- Företag utan prenumeration möts av en **paywall** i stället för CVArkivet och Annonser.
-- **CV-prenumeration 299 kr/mån** ger CVArkivet.
-  **CV + Annonspaket 499 kr/mån** ger även annonsering. Priser exklusive moms.
-- **Uppsägning ger 2 månaders karens.** Företaget kan inte teckna ny prenumeration under
-  tiden, och kan inte heller kringgå det genom att registrera ett nytt konto på samma
-  e-postdomän. Admin kan häva karensen manuellt.
+- **Ett enda abonnemang: helår.** 4 990 kr/år för arbetsgivare, 9 990 kr/år för bemannings-
+  och rekryteringsföretag, exklusive moms. Månadsbetalning togs bort i augusti 2026; äldre
+  poster i `SubscriptionEvent` kan fortfarande vara märkta `MONTHLY`, så läsande kod måste
+  tåla det.
+- **Företag utan abonnemang ser en förhandsvisning** med tre anonymiserade kandidater
+  (`src/components/Forhandsvisning.tsx`) i stället för en tom paywall. Inga namn, foton,
+  kontaktuppgifter eller löneanspråk, ingen länk in i CV:t och ingen `CvView` loggas –
+  kandidaten ska inte få mail om att någon läst CV:t när ingen faktiskt gjort det.
+  Kandidater som dolt sig för företaget filtreras bort även här.
+- **Uppsägning betyder att abonnemanget inte förnyas.** Åtkomsten löper till slutdatumet,
+  som är betalt i förskott. Ingen återbetalning, och ingen karens – karensregeln togs bort
+  i augusti 2026 när det bara fanns ett abonnemang kvar att välja på.
 - **Utgångna annonser** försvinner för kandidater men ligger kvar hos företaget tills de
   raderas manuellt.
 - **Dolda profiler:** en kandidat kan dölja sig för ett enskilt företag eller för en hel

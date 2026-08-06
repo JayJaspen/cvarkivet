@@ -146,32 +146,35 @@ export function bolagstypText(id: string) {
 }
 
 /**
- * Priser per bolagstyp och betalningsperiod, exklusive moms.
+ * Priser per bolagstyp, exklusive moms. Ett enda abonnemang: helår.
  * Alla betalande företag får både tillgång till CVArkivet och egna annonser.
+ *
+ * Månadsbetalning togs bort i augusti 2026. Befintliga poster i historiken
+ * kan fortfarande vara märkta MONTHLY, så läsande kod måste tåla det –
+ * men inget nytt abonnemang kan tecknas per månad.
  */
 export const PRISER = {
-  EMPLOYER: { YEARLY: 4990, MONTHLY: 799 },
-  AGENCY: { YEARLY: 9990, MONTHLY: 1499 },
+  EMPLOYER: { YEARLY: 4990 },
+  AGENCY: { YEARLY: 9990 },
 } as const;
 
-export function pris(companyType: string, period: 'YEARLY' | 'MONTHLY') {
+export function pris(companyType: string, _period: 'YEARLY' = 'YEARLY') {
   const typ = companyType === 'AGENCY' ? 'AGENCY' : 'EMPLOYER';
-  return PRISER[typ][period];
+  return PRISER[typ].YEARLY;
 }
 
-/** Vad kostar ett årsabonnemang jämfört med tolv månadsbetalningar? */
-export function arsbesparing(companyType: string) {
-  return pris(companyType, 'MONTHLY') * 12 - pris(companyType, 'YEARLY');
+/** Vad ett år kostar per månad räknat, till hjälp i säljtexterna. */
+export function manadskostnad(companyType: string) {
+  return Math.round(pris(companyType) / 12);
 }
 
 export const PERIODER = {
   YEARLY: { id: 'YEARLY', namn: 'Årsabonnemang', enhet: '/år' },
-  MONTHLY: { id: 'MONTHLY', namn: 'Månadsabonnemang', enhet: '/mån' },
 } as const;
 
 /**
  * Läsbar text för en historikpost. Nya poster sparas som "YEARLY_EMPLOYER",
- * gamla från den tidigare prismodellen som "CV" eller "CV_ADS".
+ * gamla från tidigare prismodeller som "CV", "CV_ADS" eller "MONTHLY_*".
  */
 export function historikPlanText(plan: string) {
   const gamla: Record<string, string> = {
@@ -181,15 +184,20 @@ export function historikPlanText(plan: string) {
   if (gamla[plan]) return gamla[plan];
 
   const [period, typ] = plan.split('_');
-  const periodText = period === 'YEARLY' ? 'årsabonnemang' : 'månadsabonnemang';
+  const periodText =
+    period === 'MONTHLY' ? 'månadsabonnemang (tidigare prislista)' : 'årsabonnemang';
   return typ ? `${periodText} (${bolagstypText(typ).toLowerCase()})` : periodText;
 }
 
 export function planNamnFor(subscription: string, companyType: string) {
   if (subscription === 'NONE') return 'Ingen prenumeration';
-  const period = subscription === 'YEARLY' ? 'Årsabonnemang' : 'Månadsabonnemang';
+  const period =
+    subscription === 'MONTHLY' ? 'Månadsabonnemang (tidigare prislista)' : 'Årsabonnemang';
   return `${period} – ${bolagstypText(companyType)}`;
 }
+
+/** Hur många kandidater ett företag utan abonnemang får se som smakprov. */
+export const FORHANDSVISNING_ANTAL = 3;
 
 export const FAKTURASATT = {
   EMAIL: {

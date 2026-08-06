@@ -1,6 +1,6 @@
 # Status och nästa steg
 
-Senast uppdaterad: **5 augusti 2026**
+Senast uppdaterad: **6 augusti 2026**
 
 > **Sajten är live på https://cvarkivet.se** med giltigt SSL.
 > www skickas vidare till huvudadressen, http går över till https.
@@ -53,8 +53,13 @@ Min sida (uppgifter, statistik över vilka som läst CV:t, blockera e-postdomän
 Meddelanden.
 
 **Företag** – CVArkivet (sök, filtrera, hjärta kandidater) · Annonser (skapa, se
-utgångna, radera) · Vår sida (uppgifter, presentation, logotyp, prenumeration) ·
-Meddelanden.
+utgångna, radera) · Vår sida (uppgifter, presentation, logotyp, abonnemang) ·
+Meddelanden. Utan abonnemang visas tre anonymiserade kandidater som smakprov.
+
+**Prismodell:** ett årsabonnemang, 4 990 kr för arbetsgivare och 9 990 kr för bemannings-
+och rekryteringsföretag, exklusive moms. Månadsbetalning och karensregeln togs bort
+6 augusti 2026. **Adamaswear AB flyttades då från 799 kr/mån till årsabonnemang** –
+hör av dig till dem innan nästa faktura, det är en prishöjning de inte godkänt.
 
 **Admin** – Registrerade användare (läs CV, se besökta företag, stäng av konton) ·
 Registrerade företag (faktureringsunderlag per prenumeration, lästa CV, stäng av) ·
@@ -76,8 +81,9 @@ kostnaden runt femtio kronor i månaden.
 | **Födelsedatum i stället för personnummer** | Ett register med hundratals personnummer är en stor GDPR-risk som kräver stark rättslig grund, och gav ingen nytta. Företag ser bara åldern. |
 | **Internt meddelandesystem** | Den ursprungliga beskrivningen saknade helt en väg för företaget att nå kandidaten efter att ha hjärtat hen. |
 | **Manuell fakturering** | Ditt val. Admin visar underlaget, du fakturerar i ditt bokföringsprogram. Stripe Billing är nästa steg om det ska automatiseras. |
-| **Priser exklusive moms** | Ditt val, standard för B2B. 299 kr blir 374 kr och 499 kr blir 624 kr inkl. moms. |
-| **2 månaders karens efter uppsägning** | Ska hindra företag från att hoppa in och ut ur prenumerationer. Gäller även nyregistrering på samma e-postdomän. Admin kan häva den. |
+| **Priser exklusive moms** | Ditt val, standard för B2B. 4 990 kr blir 6 238 kr och 9 990 kr blir 12 488 kr inkl. moms. |
+| **Endast årsabonnemang** | Ett pris, ett val, en faktura per kund och år. Månadsbetalning togs bort 6 augusti 2026 tillsammans med karensregeln – med bara ett abonnemang fanns inget kvar att utnyttja. |
+| **Smakprov på 3 kandidater** | Ett företag som aldrig sett innehållet har svårt att bedöma om 4 990 kr är värt det. Smakprovet är anonymiserat, så kandidaternas uppgifter ligger fortfarande bakom betalväggen. |
 | **PostgreSQL (Neon) i drift, SQLite lokalt** | Postgres krävs på Vercel. SQLite-varianten gör att du kan utveckla utan databaskonto eller internet. |
 | **Vercel + Neon framför egen server** | Enklare drift, automatisk deploy och SSL. Dyrare än en VPS men kräver ingen serverkunskap. |
 | **Gallring efter 24 månader, varning efter 23** | Integritetspolicyn lovade det redan. Betalande företag undantas så att en kund aldrig försvinner av misstag. |
@@ -90,8 +96,8 @@ kostnaden runt femtio kronor i månaden.
 
 Inget av detta blockerar lansering, men bör beslutas:
 
-1. **Karensen på 2 månader kan uppfattas som inlåsning.** Överväg om den ska framgå
-   tydligare i villkoren, eller ersättas med uppsägningstid.
+1. **Bindningstiden på ett år kan avskräcka små företag.** Överväg en kortare
+   introduktionsperiod eller rabatt för de första kunderna.
 2. **Lösenordsåterställning byggdes trots att du inte valde den** i frågan om vilka mail
    systemet ska skicka. Utan den blir du personlig supportfunktion. Vill du ändå bort
    med den: radera `src/app/glomt-losenord/` och `src/app/aterstall-losenord/`.
@@ -145,7 +151,7 @@ vill testa lösenordsåterställning: kopiera länken därifrån.
 
 Se strukturöversikten i [README.md](./README.md). Det viktigaste att känna till:
 
-- **Affärsreglerna** (paywall, karens, dolda profiler) sitter i `src/lib/` och
+- **Affärsreglerna** (abonnemang, förhandsvisning, dolda profiler) sitter i `src/lib/` och
   `src/app/actions/` – inte i sidorna.
 - **Alla ändringar av databasen** kräver en ny migration:
   `npx prisma migrate dev --name vad-du-andrade`

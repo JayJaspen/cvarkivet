@@ -9,7 +9,6 @@ import {
   validBirthDate,
   validEmail,
   normalizeDomain,
-  domainOf,
   arPrivatEpostdoman,
   giltigtOrgnummer,
 } from '@/lib/utils';
@@ -165,26 +164,9 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
     (await prisma.user.findUnique({ where: { email } }));
   if (emailTaken) return { error: 'E-postadressen är redan registrerad.' };
 
-  // Karensspärr: ett företag som sagt upp sin prenumeration ska inte kunna
-  // kringgå de 2 månaderna genom att registrera ett nytt konto på samma domän.
-  const domain = domainOf(email);
-  if (domain) {
-    const iKarens = await prisma.company.findFirst({
-      where: {
-        blockedUntil: { gt: new Date() },
-        email: { endsWith: `@${domain}` },
-      },
-      select: { blockedUntil: true },
-    });
-    if (iKarens)
-      return {
-        error:
-          'Ett konto med samma e-postdomän har nyligen sagt upp sin prenumeration. ' +
-          'Nytt konto kan registreras efter ' +
-          iKarens.blockedUntil!.toLocaleDateString('sv-SE') +
-          `. Kontakta ${SUPPORT_EPOST} om detta är fel.`,
-      };
-  }
+  // Karensregeln togs bort i augusti 2026. Den fanns för att hindra företag
+  // från att hoppa mellan månads- och årsabonnemang; med ett enda årsabonnemang
+  // finns inget att utnyttja, och ett år är i sig en lång bindning.
 
   const company = await prisma.company.create({
     data: {

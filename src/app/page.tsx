@@ -101,6 +101,7 @@ export default async function Home() {
               <li>✓ Hjärta intressanta kandidater och kontakta dem direkt</li>
               <li>✓ Publicera annonser och se vilka som anmält intresse</li>
               <li>✓ Allt ingår – ingen uppdelning i paket</li>
+              <li>✓ Se ett smakprov ur arkivet innan ni bestämmer er</li>
             </ul>
             <div className="mt-5 space-y-3">
               <div className="rounded-lg border-2 border-brand-500 p-4">
@@ -110,7 +111,7 @@ export default async function Home() {
                   <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
                 </p>
                 <p className="muted mt-1">
-                  Eller 799 kr/mån. Full tillgång till CVArkivet och egna annonser.
+                  Motsvarar 416 kr/mån. Full tillgång till CVArkivet och egna annonser.
                 </p>
               </div>
               <div className="rounded-lg border border-sand-200 p-4">
@@ -120,7 +121,7 @@ export default async function Home() {
                   <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
                 </p>
                 <p className="muted mt-1">
-                  Eller 1 499 kr/mån. För er som rekryterar åt andra företag.
+                  Motsvarar 833 kr/mån. För er som rekryterar åt andra företag.
                 </p>
               </div>
             </div>

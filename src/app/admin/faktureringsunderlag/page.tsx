@@ -12,25 +12,15 @@ const kr = (n: number) => n.toLocaleString('sv-SE');
  * Utskriftsvänligt faktureringsunderlag att bocka av mot.
  * Kan skrivas ut eller sparas som PDF via webbläsaren.
  */
-export default async function Faktureringsunderlag({
-  searchParams,
-}: {
-  searchParams: { plan?: string };
-}) {
+export default async function Faktureringsunderlag() {
   await requireAdmin();
 
   const foretag = await prisma.company.findMany({
-    where: {
-      suspended: false,
-      subscription: searchParams.plan ? searchParams.plan : { not: 'NONE' },
-    },
-    orderBy: [{ subscription: 'asc' }, { name: 'asc' }],
+    where: { suspended: false, subscription: { not: 'NONE' } },
+    orderBy: { name: 'asc' },
   });
 
-  const summa = foretag.reduce(
-    (s, c) => s + pris(c.companyType, c.subscription as 'YEARLY' | 'MONTHLY'),
-    0
-  );
+  const summa = foretag.reduce((s, c) => s + pris(c.companyType), 0);
 
   return (
     <div className="bg-white p-6 print:p-0">
@@ -39,12 +29,8 @@ export default async function Faktureringsunderlag({
       <header className="mb-6 border-b border-sand-300 pb-4">
         <h1 className="text-2xl font-bold text-sand-900">Faktureringsunderlag</h1>
         <p className="muted mt-1">
-          CVArkivet.se · uttaget {formatDate(new Date())} ·{' '}
-          {searchParams.plan === 'YEARLY'
-            ? 'endast årsabonnemang'
-            : searchParams.plan === 'MONTHLY'
-              ? 'endast månadsabonnemang'
-              : 'alla betalande'}
+          CVArkivet.se · uttaget {formatDate(new Date())} · alla betalande företag,
+          årsabonnemang
         </p>
       </header>
 
@@ -55,7 +41,6 @@ export default async function Faktureringsunderlag({
             <th className="py-2 pr-2 font-semibold">Företag</th>
             <th className="py-2 pr-2 font-semibold">Org.nr</th>
             <th className="py-2 pr-2 font-semibold">Typ</th>
-            <th className="py-2 pr-2 font-semibold">Period</th>
             <th className="py-2 pr-2 font-semibold">Faktureras</th>
             <th className="py-2 pr-2 text-right font-semibold">Exkl. moms</th>
             <th className="py-2 text-right font-semibold">Inkl. moms</th>
@@ -63,7 +48,7 @@ export default async function Faktureringsunderlag({
         </thead>
         <tbody>
           {foretag.map((c) => {
-            const belopp = pris(c.companyType, c.subscription as 'YEARLY' | 'MONTHLY');
+            const belopp = pris(c.companyType);
             return (
               <tr key={c.id} className="break-inside-avoid border-b border-sand-100">
                 <td className="py-2 pr-2">
@@ -72,7 +57,6 @@ export default async function Faktureringsunderlag({
                 <td className="py-2 pr-2 font-medium">{c.name}</td>
                 <td className="py-2 pr-2">{c.orgNumber}</td>
                 <td className="py-2 pr-2">{bolagstypText(c.companyType)}</td>
-                <td className="py-2 pr-2">{c.subscription === 'YEARLY' ? 'År' : 'Månad'}</td>
                 <td className="py-2 pr-2">
                   {fakturasattText(c.invoiceMethod)}
                   <span className="block text-xs text-sand-500">

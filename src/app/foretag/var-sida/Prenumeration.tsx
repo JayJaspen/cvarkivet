@@ -6,10 +6,10 @@ import { activateSubscription, updateInvoiceSettings } from '@/app/actions/compa
 import { Badge, Card, Field } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
 import {
-  arsbesparing,
   bolagstypText,
   FAKTURASATT,
   fakturasattText,
+  manadskostnad,
   PERIODER,
   planNamnFor,
   pris,
@@ -26,7 +26,6 @@ type CompanyLite = {
   invoiceAddress: string | null;
   invoiceEmail: string | null;
   invoiceRef: string | null;
-  blockedUntil: Date | null;
   cancelledAt: Date | null;
   subscriptionStarted: Date | null;
   subscriptionEndsAt: Date | null;
@@ -122,13 +121,13 @@ function Meddelande({ state }: { state: { error?: string; ok?: string } | undefi
 export default function Prenumeration({ company }: { company: CompanyLite }) {
   const [aktState, aktivera] = useFormState(activateSubscription, undefined);
   const [fakturaState, sparaFaktura] = useFormState(updateInvoiceSettings, undefined);
-  const [valdPeriod, setValdPeriod] = useState<string | null>(null);
+  const [oppen, setOppen] = useState(false);
 
-  const blocked = company.blockedUntil && company.blockedUntil > new Date();
   const godkant = company.status === 'APPROVED';
   const harPrenumeration = company.subscription !== 'NONE';
   const uppsagt = Boolean(company.cancelledAt) && harPrenumeration;
-  const besparing = arsbesparing(company.companyType);
+  const gammaltManadsabonnemang = company.subscription === 'MONTHLY';
+  const belopp = pris(company.companyType);
 
   return (
     <>
@@ -158,95 +157,68 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
           </div>
         )}
 
-        {blocked && (
+        {gammaltManadsabonnemang && (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-            Ni sade upp ert månadsabonnemang {datum(company.cancelledAt)}. Ett nytt kan tecknas
-            tidigast <b>{datum(company.blockedUntil)}</b>.
+            Ert konto ligger kvar på den tidigare månadsprislistan. Månadsbetalning erbjuds inte
+            längre – vid nästa förnyelse går ni över till årsabonnemang. Hör av er till supporten
+            om ni har frågor.
           </div>
         )}
 
-        <div className="space-y-3">
-          {(['YEARLY', 'MONTHLY'] as const).map((period) => {
-            const p = PERIODER[period];
-            const belopp = pris(company.companyType, period);
-            const nuvarande = company.subscription === period;
-            const oppen = valdPeriod === period;
+        <div
+          className={`rounded-xl border p-4 ${
+            harPrenumeration ? 'border-brand-500 bg-brand-50' : 'border-sand-200'
+          }`}
+        >
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <p className="font-semibold">{PERIODER.YEARLY.namn}</p>
+            {harPrenumeration && <Badge tone="blue">Aktivt</Badge>}
+          </div>
 
-            return (
-              <div
-                key={period}
-                className={`rounded-xl border p-4 ${
-                  nuvarande ? 'border-brand-500 bg-brand-50' : 'border-sand-200'
-                }`}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <p className="font-semibold">{p.namn}</p>
-                  <div className="flex gap-1">
-                    {period === 'YEARLY' && besparing > 0 && (
-                      <Badge tone="green">Spara {kr(besparing)} kr</Badge>
-                    )}
-                    {nuvarande && <Badge tone="blue">Aktivt</Badge>}
-                  </div>
-                </div>
+          <p className="mt-1 text-3xl font-bold text-brand-600">
+            {kr(belopp)} kr
+            <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
+          </p>
+          <p className="text-xs text-sand-500">
+            {kr(prisInklMoms(belopp))} kr inkl. moms · motsvarar{' '}
+            {kr(manadskostnad(company.companyType))} kr/mån
+          </p>
 
-                <p className="mt-1 text-2xl font-bold text-brand-600">
-                  {kr(belopp)} kr
-                  <span className="text-sm font-normal text-sand-500">
-                    {p.enhet} exkl. moms
-                  </span>
-                </p>
-                <p className="text-xs text-sand-500">
-                  {kr(prisInklMoms(belopp))} kr inkl. moms
-                  {period === 'YEARLY' &&
-                    ` · motsvarar ${kr(Math.round(belopp / 12))} kr/mån`}
-                </p>
+          <p className="muted mt-2">
+            Allt ingår: hela CV-arkivet, obegränsat antal annonser och direktkontakt med
+            kandidaterna. Betalas en gång och gäller ett år.
+          </p>
 
-                <p className="muted mt-2">
-                  Full tillgång till CVArkivet och egna annonser.
-                  {period === 'YEARLY'
-                    ? ' Betalas en gång och gäller ett år.'
-                    : ' Faktureras varje månad, uppsägningsbart löpande.'}
-                </p>
+          {!oppen && (
+            <button
+              type="button"
+              onClick={() => setOppen(true)}
+              disabled={!godkant}
+              className="btn-primary mt-3 w-full"
+            >
+              {harPrenumeration ? 'Förnya ett år till' : 'Aktivera abonnemang'}
+            </button>
+          )}
 
-                {!nuvarande && !oppen && (
-                  <button
-                    type="button"
-                    onClick={() => setValdPeriod(period)}
-                    disabled={!!blocked || !godkant}
-                    className="btn-primary mt-3 w-full"
-                  >
-                    {harPrenumeration ? 'Byt till detta' : 'Välj detta'}
-                  </button>
-                )}
+          {oppen && (
+            <form action={aktivera} className="mt-4 space-y-4 border-t border-sand-200 pt-4">
+              <Fakturaval company={company} idPrefix="akt" />
 
-                {oppen && (
-                  <form action={aktivera} className="mt-4 space-y-4 border-t border-sand-200 pt-4">
-                    <input type="hidden" name="period" value={period} />
-                    <Fakturaval company={company} idPrefix={`akt-${period}`} />
-
-                    <div className="flex flex-wrap gap-2">
-                      <SubmitButton pendingText="Aktiverar…">
-                        Aktivera för {kr(belopp)} kr{p.enhet}
-                      </SubmitButton>
-                      <button
-                        type="button"
-                        onClick={() => setValdPeriod(null)}
-                        className="btn-secondary"
-                      >
-                        Avbryt
-                      </button>
-                    </div>
-
-                    <p className="text-xs text-sand-500">
-                      {period === 'YEARLY'
-                        ? 'Årsabonnemanget gäller ett år från idag. Säger ni upp det i förtid behåller ni åtkomsten perioden ut, men ingen återbetalning sker.'
-                        : 'Månadsabonnemanget kan sägas upp när som helst. Efter uppsägning kan ett nytt tecknas tidigast två månader senare.'}
-                    </p>
-                  </form>
-                )}
+              <div className="flex flex-wrap gap-2">
+                <SubmitButton pendingText="Aktiverar…">
+                  Aktivera för {kr(belopp)} kr/år
+                </SubmitButton>
+                <button type="button" onClick={() => setOppen(false)} className="btn-secondary">
+                  Avbryt
+                </button>
               </div>
-            );
-          })}
+
+              <p className="text-xs text-sand-500">
+                Abonnemanget gäller ett år från idag. Säger ni upp det i förtid behåller ni
+                åtkomsten perioden ut, men ingen återbetalning sker.
+              </p>
+            </form>
+          )}
         </div>
       </Card>
 

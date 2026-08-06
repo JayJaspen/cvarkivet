@@ -53,7 +53,7 @@ async function main() {
       address: 'Verkstadsgatan 5, 417 07 Göteborg',
       municipality: 'Göteborg',
       companyType: 'AGENCY',
-      subscription: 'MONTHLY',
+      subscription: 'YEARLY',
       status: 'APPROVED',
       presentation:
         'Vi bygger bostäder i västra Sverige. Trygga anställningar, kollektivavtal och bra kompisgäng.',

@@ -28,7 +28,6 @@ export default async function VarSidaPage({
     }),
   ]);
 
-  const blocked = company.blockedUntil && company.blockedUntil > new Date();
   const onskadeAvAntal = await antalSomOnskade(company.id);
 
   return (

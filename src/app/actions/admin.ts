@@ -148,13 +148,6 @@ export async function aterstallGranskning(form: FormData) {
   revalidatePath(`/admin/foretag/${id}`);
 }
 
-/** Admin kan häva karensen om t.ex. ett företag sagt upp av misstag. */
-export async function clearCompanyBlock(form: FormData) {
-  await requireAdmin();
-  const id = String(form.get('id'));
-  await prisma.company.update({ where: { id }, data: { blockedUntil: null } });
-  revalidatePath(`/admin/foretag/${id}`);
-}
 
 /**
  * Nödstopp för AI-funktionerna.

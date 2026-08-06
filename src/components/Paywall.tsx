@@ -1,52 +1,53 @@
 import Link from 'next/link';
 import { Card } from './ui';
-import { bolagstypText, PERIODER, pris, prisInklMoms } from '@/lib/data';
+import { bolagstypText, manadskostnad, pris, prisInklMoms } from '@/lib/data';
 
 const kr = (n: number) => n.toLocaleString('sv-SE');
 
 export default function Paywall({
   companyType = 'EMPLOYER',
-  title = 'Aktivera en prenumeration för att komma åt tjänsten',
+  title = 'Aktivera ert abonnemang för att komma åt tjänsten',
+  kompakt = false,
 }: {
   companyType?: string;
   title?: string;
+  /** Smalare variant, för när den ligger under en förhandsvisning. */
+  kompakt?: boolean;
 }) {
+  const belopp = pris(companyType);
+
   return (
-    <Card className="mx-auto max-w-2xl text-center">
+    <Card className={kompakt ? '' : 'mx-auto max-w-2xl text-center'}>
       <h2 className="h2">{title}</h2>
-      <p className="muted mx-auto mt-2 max-w-md">
-        Kontot är gratis, men för att söka bland CV och publicera annonser behöver ni aktivera en
-        prenumeration under fliken <b>Vår sida</b>.
+      <p className={`muted mt-2 max-w-md ${kompakt ? '' : 'mx-auto'}`}>
+        Kontot är gratis. För att söka i hela CV-arkivet, kontakta kandidater och publicera
+        annonser aktiverar ni abonnemanget under fliken <b>Vår sida</b>.
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        {(['YEARLY', 'MONTHLY'] as const).map((period) => {
-          const belopp = pris(companyType, period);
-          return (
-            <div
-              key={period}
-              className={`rounded-xl border p-5 text-left ${
-                period === 'YEARLY' ? 'border-brand-300 bg-brand-50' : 'border-sand-200'
-              }`}
-            >
-              <p className="font-semibold">{PERIODER[period].namn}</p>
-              <p className="mt-1 text-2xl font-bold text-brand-600">
-                {kr(belopp)} kr
-                <span className="text-sm font-normal text-sand-500">
-                  {PERIODER[period].enhet} exkl. moms
-                </span>
-              </p>
-              <p className="text-xs text-sand-500">{kr(prisInklMoms(belopp))} kr inkl. moms</p>
-              <p className="muted mt-2">Full tillgång till CVArkivet och egna annonser.</p>
-            </div>
-          );
-        })}
+      <div
+        className={`mt-6 rounded-xl border border-brand-300 bg-brand-50 p-5 text-left ${
+          kompakt ? '' : 'mx-auto max-w-sm'
+        }`}
+      >
+        <p className="font-semibold">Årsabonnemang</p>
+        <p className="mt-1 text-3xl font-bold text-brand-600">
+          {kr(belopp)} kr
+          <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
+        </p>
+        <p className="text-xs text-sand-500">
+          {kr(prisInklMoms(belopp))} kr inkl. moms · motsvarar {kr(manadskostnad(companyType))}{' '}
+          kr/mån
+        </p>
+        <p className="muted mt-3">
+          Allt ingår: hela CV-arkivet, obegränsat antal annonser och direktkontakt med
+          kandidaterna. Gäller ett år från den dag ni aktiverar.
+        </p>
       </div>
 
-      <p className="muted mt-4">Priserna gäller {bolagstypText(companyType).toLowerCase()}.</p>
+      <p className="muted mt-4">Priset gäller {bolagstypText(companyType).toLowerCase()}.</p>
 
       <Link href="/foretag/var-sida" className="btn-primary mt-6">
-        Gå till Vår sida
+        Aktivera abonnemang
       </Link>
     </Card>
   );

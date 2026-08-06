@@ -54,7 +54,7 @@ export async function GET(request: Request) {
 
   const rader = foretag.map((c) => {
     const belopp =
-      c.subscription === 'NONE' ? 0 : pris(c.companyType, c.subscription as 'YEARLY' | 'MONTHLY');
+      c.subscription === 'NONE' ? 0 : pris(c.companyType);
 
     return [
       c.name,

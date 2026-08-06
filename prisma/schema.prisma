@@ -166,11 +166,13 @@ model Company {
   /// Priset avgörs av companyType. Alla betalande får både CV och annonser.
   subscription        String    @default("NONE")
   subscriptionStarted DateTime?
-  /// Slutdatum för årsabonnemang. Åtkomsten gäller till och med detta datum
-  /// även om prenumerationen sägs upp i förtid.
+  /// NONE eller YEARLY. Månadsabonnemang togs bort i augusti 2026; äldre
+  /// historikposter kan fortfarande vara märkta MONTHLY.
+  ///
+  /// Slutdatum för abonnemanget. Åtkomsten gäller till och med detta datum
+  /// även om det sägs upp i förtid – året är betalt i förskott.
   subscriptionEndsAt  DateTime?
   cancelledAt         DateTime?
-  blockedUntil        DateTime? // 2 mån karens, gäller bara månadsabonnemang
 
   jobAds          JobAd[]
   cvViews         CvView[]

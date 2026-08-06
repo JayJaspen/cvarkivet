@@ -41,18 +41,8 @@ export default async function AdminCompanies({
     prisma.company.findMany({ where: { status: 'PENDING' }, orderBy: { createdAt: 'asc' } }),
   ]);
 
-  const arsabonnemang = betalande.filter((c) => c.subscription === 'YEARLY');
-  const manadsabonnemang = betalande.filter((c) => c.subscription === 'MONTHLY');
-
-  // Årsvärde av beståndet: årsabonnemangen som de är, månadsabonnemangen gånger tolv.
-  const arsvarde =
-    arsabonnemang.reduce((s, c) => s + pris(c.companyType, 'YEARLY'), 0) +
-    manadsabonnemang.reduce((s, c) => s + pris(c.companyType, 'MONTHLY') * 12, 0);
-
-  const manadsintakt = manadsabonnemang.reduce(
-    (s, c) => s + pris(c.companyType, 'MONTHLY'),
-    0
-  );
+  // Årsvärde av beståndet. Alla abonnemang är årsabonnemang.
+  const arsvarde = betalande.reduce((s, c) => s + pris(c.companyType), 0);
 
   return (
     <>
@@ -71,18 +61,11 @@ export default async function AdminCompanies({
         }
       />
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+      <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <Card>
-          <p className="muted">Årsabonnemang</p>
-          <p className="mt-1 text-3xl font-bold text-brand-600">{arsabonnemang.length}</p>
-          <p className="mt-1 text-xs text-sand-500">Faktureras en gång per år</p>
-        </Card>
-        <Card>
-          <p className="muted">Månadsabonnemang</p>
-          <p className="mt-1 text-3xl font-bold text-brand-600">{manadsabonnemang.length}</p>
-          <p className="mt-1 text-xs text-sand-500">
-            {manadsintakt.toLocaleString('sv-SE')} kr att fakturera denna månad
-          </p>
+          <p className="muted">Betalande företag</p>
+          <p className="mt-1 text-3xl font-bold text-brand-600">{betalande.length}</p>
+          <p className="mt-1 text-xs text-sand-500">Årsabonnemang, faktureras en gång per år</p>
         </Card>
         <Card>
           <p className="muted">Årsvärde av beståndet</p>
@@ -154,7 +137,6 @@ export default async function AdminCompanies({
             <select name="plan" defaultValue={plan ?? ''} className="input">
               <option value="">Alla</option>
               <option value="YEARLY">Årsabonnemang</option>
-              <option value="MONTHLY">Månadsabonnemang</option>
               <option value="NONE">Ingen</option>
             </select>
           </div>
@@ -226,8 +208,7 @@ export default async function AdminCompanies({
                         <Badge>Ingen</Badge>
                       ) : (
                         <Badge tone="green">
-                          {c.subscription === 'YEARLY' ? 'År' : 'Månad'} ·{' '}
-                          {pris(c.companyType, c.subscription as 'YEARLY' | 'MONTHLY').toLocaleString('sv-SE')} kr
+                          {pris(c.companyType).toLocaleString('sv-SE')} kr/år
                         </Badge>
                       )}
                     </div>
@@ -239,9 +220,6 @@ export default async function AdminCompanies({
                         {c.cancelledAt ? 'uppsagt, gäller t.o.m.' : 'gäller t.o.m.'}{' '}
                         {formatDate(c.subscriptionEndsAt)}
                       </p>
-                    )}
-                    {c.blockedUntil && c.blockedUntil > new Date() && (
-                      <p className="muted">Karens t.o.m. {formatDate(c.blockedUntil)}</p>
                     )}
                   </td>
                   <td className="td">

@@ -8,7 +8,6 @@ import {
   andraBolagstyp,
   aterstallGranskning,
   avslaForetag,
-  clearCompanyBlock,
   godkannForetag,
   toggleCompanySuspended,
 } from '@/app/actions/admin';
@@ -41,8 +40,6 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
     orderBy: { createdAt: 'desc' },
     take: 200,
   });
-
-  const blocked = company.blockedUntil && company.blockedUntil > new Date();
 
   return (
     <>
@@ -273,11 +270,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                 <div>
                   <dt className="text-sand-500">Belopp</dt>
                   <dd className="font-medium">
-                    {pris(
-                      company.companyType,
-                      company.subscription as 'YEARLY' | 'MONTHLY'
-                    ).toLocaleString('sv-SE')}{' '}
-                    kr {company.subscription === 'YEARLY' ? 'per år' : 'per månad'} exkl. moms
+                    {pris(company.companyType).toLocaleString('sv-SE')} kr per år exkl. moms
                   </dd>
                 </div>
               )}
@@ -347,20 +340,6 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
               </div>
             </dl>
 
-            {blocked && (
-              <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-                <p>
-                  Karens till <b>{formatDate(company.blockedUntil)}</b> – företaget kan inte teckna
-                  ny prenumeration.
-                </p>
-                <form action={clearCompanyBlock} className="mt-2">
-                  <input type="hidden" name="id" value={company.id} />
-                  <button className="btn-secondary" type="submit">
-                    Häv karensen
-                  </button>
-                </form>
-              </div>
-            )}
           </Card>
 
           {company.subscriptionLog.length > 0 && (

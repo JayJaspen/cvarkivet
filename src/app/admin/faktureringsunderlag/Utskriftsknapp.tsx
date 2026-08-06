@@ -10,15 +10,6 @@ export default function Utskriftsknapp() {
       </Link>
 
       <div className="flex flex-wrap gap-2">
-        <Link href="/admin/faktureringsunderlag" className="btn-secondary">
-          Alla
-        </Link>
-        <Link href="/admin/faktureringsunderlag?plan=YEARLY" className="btn-secondary">
-          Endast år
-        </Link>
-        <Link href="/admin/faktureringsunderlag?plan=MONTHLY" className="btn-secondary">
-          Endast månad
-        </Link>
         <button type="button" onClick={() => window.print()} className="btn-primary">
           Skriv ut eller spara som PDF
         </button>
