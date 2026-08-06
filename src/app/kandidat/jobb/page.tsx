@@ -111,41 +111,44 @@ export default async function JobbPage({
       {jobs.length === 0 ? (
         <Empty>Inga annonser matchar din sökning just nu.</Empty>
       ) : (
-        <div className="space-y-4">
-          {jobs.map((j) => (
-            <Card key={j.id}>
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="flex min-w-0 flex-1 gap-4">
+        /* Hopfällda rader. Listan ska gå att skumma – annonstexten varierar
+           från två rader till två skärmar, och drunknade allt annat. Byggt med
+           <details> så att det fungerar utan JavaScript och utan att sidan
+           behöver bli en klientkomponent. */
+        <div className="space-y-3">
+          {jobs.map((j) => {
+            const match = matchningar.get(j.id);
+
+            return (
+              <details
+                key={j.id}
+                className="group overflow-hidden rounded-xl border border-sand-200 bg-white shadow-card"
+              >
+                <summary className="flex cursor-pointer list-none items-center gap-4 p-4 hover:bg-sand-50 [&::-webkit-details-marker]:hidden">
                   {j.company.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={j.company.logoUrl}
-                      alt={j.company.name}
-                      className="h-14 w-14 shrink-0 rounded-lg border border-sand-200 object-contain p-1"
+                      alt=""
+                      className="h-11 w-11 shrink-0 rounded-lg border border-sand-200 object-contain p-1"
                     />
                   ) : (
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-sand-100 text-sm font-bold text-sand-500">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sand-100 text-xs font-bold text-sand-500">
                       {j.company.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
 
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-semibold text-sand-900">{j.title}</h2>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <h2 className="font-semibold text-sand-900">{j.title}</h2>
                       {anmalt.has(j.id) && <Badge tone="green">Intresse anmält</Badge>}
-                      {matchningar.has(j.id) && (
-                        <Matchplakett score={matchningar.get(j.id)!.score} storlek="liten" />
-                      )}
+                      {match && <Matchplakett score={match.score} storlek="liten" />}
                     </div>
-                    <p className="mt-1 text-sm text-sand-600">
-                      <Link
-                        href={`/kandidat/foretag/${j.company.id}`}
-                        className="font-medium text-brand-600 hover:underline"
-                      >
-                        {j.company.name}
-                      </Link>{' '}
-                      · {j.municipality}
+
+                    <p className="mt-0.5 truncate text-sm text-sand-600">
+                      {j.company.name} · {j.municipality}
                     </p>
+
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       <Badge tone="blue">{j.category}</Badge>
                       {(j.salaryMin || j.salaryMax) && (
@@ -154,61 +157,78 @@ export default async function JobbPage({
                           {j.salaryMax ? kr(j.salaryMax) : '?'}
                         </Badge>
                       )}
-                      <Badge tone="amber">Sista ansökningsdag {formatDate(j.deadline)}</Badge>
+                      <Badge tone="amber">Sista dag {formatDate(j.deadline)}</Badge>
                     </div>
-                    <p className="mt-3 whitespace-pre-wrap text-sm text-sand-800">{j.body}</p>
+                  </div>
 
-                    {matchningar.has(j.id) && (
-                      <div className="mt-3 rounded-lg border border-sand-200 bg-sand-50 p-3">
-                        <p className="text-sm text-sand-800">
-                          <b>Du matchar {matchningar.get(j.id)!.score}% med den här annonsen.</b>{' '}
-                          {matchningar.get(j.id)!.motivation}
-                        </p>
-                        <Matchforbehall className="mt-2" />
-                      </div>
+                  <span
+                    aria-hidden
+                    className="shrink-0 self-start text-sand-400 transition-transform group-open:rotate-180"
+                  >
+                    ▾
+                  </span>
+                </summary>
+
+                <div className="border-t border-sand-200 p-4">
+                  <p className="whitespace-pre-wrap text-sm text-sand-800">{j.body}</p>
+
+                  {match && (
+                    <div className="mt-4 rounded-lg border border-sand-200 bg-sand-50 p-3">
+                      <p className="text-sm text-sand-800">
+                        <b>Du matchar {match.score}% med den här annonsen.</b> {match.motivation}
+                      </p>
+                      <Matchforbehall className="mt-2" />
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex flex-wrap items-start gap-2">
+                    <IntresseKnapp
+                      jobAdId={j.id}
+                      foretagsnamn={j.company.name}
+                      anmalt={anmalt.has(j.id)}
+                      dold={dolda.has(j.company.id)}
+                    />
+
+                    {j.applyUrl && (
+                      <a
+                        href={j.applyUrl}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="btn-secondary"
+                      >
+                        Ansök via länk
+                      </a>
                     )}
+                    {j.applyEmail && (
+                      <a
+                        href={`mailto:${j.applyEmail}?subject=Ansökan: ${encodeURIComponent(j.title)}`}
+                        className="btn-secondary"
+                      >
+                        Ansök via e-post
+                      </a>
+                    )}
+
+                    {aiPa && !match && (
+                      <AiKnapp
+                        action={raknaUtMatchning}
+                        jobAdId={j.id}
+                        etikett="Räkna ut min matchning"
+                        arbetar="Räknar…"
+                        className="btn-secondary"
+                      />
+                    )}
+
+                    <Link
+                      href={`/kandidat/foretag/${j.company.id}`}
+                      className="btn-secondary"
+                    >
+                      Om {j.company.name}
+                    </Link>
                   </div>
                 </div>
-
-                <div className="flex w-full flex-col gap-2 sm:w-56">
-                  {aiPa && !matchningar.has(j.id) && (
-                    <AiKnapp
-                      action={raknaUtMatchning}
-                      jobAdId={j.id}
-                      etikett="Räkna ut min matchning"
-                      arbetar="Räknar…"
-                    />
-                  )}
-
-                  <IntresseKnapp
-                    jobAdId={j.id}
-                    foretagsnamn={j.company.name}
-                    anmalt={anmalt.has(j.id)}
-                    dold={dolda.has(j.company.id)}
-                  />
-
-                  {j.applyUrl && (
-                    <a
-                      href={j.applyUrl}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="btn-secondary"
-                    >
-                      Ansök via länk
-                    </a>
-                  )}
-                  {j.applyEmail && (
-                    <a
-                      href={`mailto:${j.applyEmail}?subject=Ansökan: ${encodeURIComponent(j.title)}`}
-                      className="btn-secondary"
-                    >
-                      Ansök via e-post
-                    </a>
-                  )}
-                </div>
-              </div>
-            </Card>
-          ))}
+              </details>
+            );
+          })}
         </div>
       )}
     </>
