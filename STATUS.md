@@ -18,6 +18,10 @@ Senast uppdaterad: **5 augusti 2026**
 3. **Vercel Pro krävs.** Hobby-planen får inte användas kommersiellt.
 4. **Juristgranskning** av villkor och integritetspolicy.
 5. **Point-in-time restore** påslaget i Neon.
+6. **`ANTHROPIC_API_KEY` är inte satt**, så matchning och CV-granskning är avstängda
+   och osynliga för användarna. Utan nyckeln kan AI inte kosta någonting. När du sätter
+   den: sätt också ett utgiftstak i Anthropic-konsolen som yttersta skyddsnät, och håll
+   ett öga på *Admin → AI-förbrukning* första veckan.
 
 Den här filen är till för att snabbt komma tillbaka in i projektet efter en paus –
 eller för att ge en ny person (eller AI-assistent) hela bilden på fem minuter.
@@ -53,7 +57,15 @@ utgångna, radera) · Vår sida (uppgifter, presentation, logotyp, prenumeration
 Meddelanden.
 
 **Admin** – Registrerade användare (läs CV, se besökta företag, stäng av konton) ·
-Registrerade företag (faktureringsunderlag per prenumeration, lästa CV, stäng av).
+Registrerade företag (faktureringsunderlag per prenumeration, lästa CV, stäng av) ·
+Topplista · Önskelistan · AI-förbrukning (kostnad i kronor per dag, månad och totalt,
+samt nödstopp som stänger av alla AI-funktioner direkt).
+
+**Om AI-kostnaden:** inget anrop mot Claude sker automatiskt. Varje matchning och varje
+CV-granskning kräver att någon trycker på en knapp, svaren sparas och återanvänds, och
+det finns dygnskvoter per konto plus ett tak för hela sajten. En matchning kostar ungefär
+3 öre och en granskning ungefär 20 öre. Med hundra kandidater och tio företag landar
+kostnaden runt femtio kronor i månaden.
 
 ---
 
