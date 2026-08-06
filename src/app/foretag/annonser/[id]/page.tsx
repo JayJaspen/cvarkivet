@@ -7,10 +7,19 @@ import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { ageFromBirthDate, formatDate, formatDateTime, kr } from '@/lib/utils';
 import Paywall from '@/components/Paywall';
 import GranskningNotis from '@/components/GranskningNotis';
+import { aiArPakopplad, MATCHSPANN, spannFor } from '@/lib/ai';
+import { raknaUtMatchningForAnnons } from '@/app/actions/ai';
+import { Matchforbehall, Matchplakett } from '@/components/Matchning';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AnnonsDetalj({ params }: { params: { id: string } }) {
+export default async function AnnonsDetalj({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { spann?: string };
+}) {
   const company = await requireCompany();
 
   if (!arGodkant(company))
@@ -55,6 +64,34 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
   });
 
   const utgangen = annons.deadline < new Date();
+  const aiPa = aiArPakopplad();
+
+  // Sparade matchningspoäng för kandidaterna som anmält intresse
+  const poang = aiPa
+    ? await prisma.matchScore.findMany({
+        where: { jobAdId: annons.id, userId: { in: annons.interests.map((i) => i.userId) } },
+        select: { userId: true, score: true, motivation: true },
+      })
+    : [];
+  const matchningar = new Map(poang.map((p) => [p.userId, p]));
+
+  const valtSpann = searchParams.spann;
+  const anmalningar = valtSpann
+    ? annons.interests.filter((i) => {
+        const m = matchningar.get(i.userId);
+        return m ? spannFor(m.score).id === valtSpann : false;
+      })
+    : annons.interests;
+
+  const antalPerSpann = MATCHSPANN.map((s) => ({
+    ...s,
+    antal: annons.interests.filter((i) => {
+      const m = matchningar.get(i.userId);
+      return m ? spannFor(m.score).id === s.id : false;
+    }).length,
+  }));
+
+  const saknarPoang = annons.interests.filter((i) => !matchningar.has(i.userId)).length;
 
   return (
     <>
@@ -87,16 +124,55 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
           )}
         </div>
 
-        {annons.interests.length === 0 ? (
+        {aiPa && annons.interests.length > 0 && (
+          <div className="mb-5 rounded-xl border border-sand-200 bg-sand-50 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-medium text-sand-900">Filtrera på matchning</p>
+              {saknarPoang > 0 && (
+                <form action={raknaUtMatchningForAnnons}>
+                  <input type="hidden" name="jobAdId" value={annons.id} />
+                  <button className="btn-secondary" type="submit">
+                    Räkna ut matchning för {saknarPoang} kandidater
+                  </button>
+                </form>
+              )}
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href={`/foretag/annonser/${annons.id}`}
+                className={!valtSpann ? 'btn-primary' : 'btn-secondary'}
+              >
+                Alla ({annons.interests.length})
+              </Link>
+              {antalPerSpann.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/foretag/annonser/${annons.id}?spann=${s.id}`}
+                  className={valtSpann === s.id ? 'btn-primary' : 'btn-secondary'}
+                >
+                  {s.namn} ({s.antal})
+                </Link>
+              ))}
+            </div>
+
+            <Matchforbehall className="mt-3" />
+          </div>
+        )}
+
+        {anmalningar.length === 0 && annons.interests.length > 0 ? (
+          <Empty>Ingen kandidat i det här matchningsspannet.</Empty>
+        ) : annons.interests.length === 0 ? (
           <Empty>
             Ingen har anmält intresse ännu. Kandidater som klickar &quot;Visa intresse&quot; på
             annonsen dyker upp här, och ni kan då kontakta dem direkt.
           </Empty>
         ) : (
           <div className="space-y-4">
-            {annons.interests.map((i) => {
+            {anmalningar.map((i) => {
               const k = i.user;
               const alder = ageFromBirthDate(k.birthDate);
+              const match = matchningar.get(k.id);
 
               return (
                 <div key={i.id} className="rounded-xl border border-sand-200 p-4">
@@ -128,6 +204,14 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
                           {alder !== null && ` · ${alder} år`}
                           {k.homeMunicipality && ` · ${k.homeMunicipality}`}
                         </p>
+                        {k.seeking && (
+                          <p className="text-sm font-medium text-brand-700">Söker: {k.seeking}</p>
+                        )}
+                        {match && (
+                          <p className="mt-2 rounded-lg bg-sand-50 p-2 text-sm text-sand-800">
+                            {match.motivation}
+                          </p>
+                        )}
 
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {k.activelyLooking ? (
@@ -154,6 +238,7 @@ export default async function AnnonsDetalj({ params }: { params: { id: string } 
                     </div>
 
                     <div className="flex flex-col gap-2">
+                      {match && <Matchplakett score={match.score} />}
                       <Link href={`/foretag/cvarkivet/${k.id}`} className="btn-primary">
                         Öppna CV
                       </Link>

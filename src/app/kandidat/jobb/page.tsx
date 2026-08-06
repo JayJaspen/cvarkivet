@@ -6,6 +6,9 @@ import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate, kr } from '@/lib/utils';
 import { contains } from '@/lib/search';
 import IntresseKnapp from './IntresseKnapp';
+import { aiArPakopplad } from '@/lib/ai';
+import { raknaUtMatchning } from '@/app/actions/ai';
+import { Matchforbehall, Matchplakett } from '@/components/Matchning';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,12 +36,18 @@ export default async function JobbPage({
     orderBy: { createdAt: 'desc' },
   });
 
-  const [mittIntresse, doldaForetag] = await Promise.all([
+  const [mittIntresse, doldaForetag, poang] = await Promise.all([
     prisma.interest.findMany({ where: { userId: user.id }, select: { jobAdId: true } }),
     prisma.hiddenCompany.findMany({ where: { userId: user.id }, select: { companyId: true } }),
+    prisma.matchScore.findMany({
+      where: { userId: user.id },
+      select: { jobAdId: true, score: true, motivation: true },
+    }),
   ]);
   const anmalt = new Set(mittIntresse.map((i) => i.jobAdId));
   const dolda = new Set(doldaForetag.map((h) => h.companyId));
+  const matchningar = new Map(poang.map((p) => [p.jobAdId, p]));
+  const aiPa = aiArPakopplad();
 
   return (
     <>
@@ -120,6 +129,9 @@ export default async function JobbPage({
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-lg font-semibold text-sand-900">{j.title}</h2>
                       {anmalt.has(j.id) && <Badge tone="green">Intresse anmält</Badge>}
+                      {matchningar.has(j.id) && (
+                        <Matchplakett score={matchningar.get(j.id)!.score} storlek="liten" />
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-sand-600">
                       <Link
@@ -141,10 +153,29 @@ export default async function JobbPage({
                       <Badge tone="amber">Sista ansökningsdag {formatDate(j.deadline)}</Badge>
                     </div>
                     <p className="mt-3 whitespace-pre-wrap text-sm text-sand-800">{j.body}</p>
+
+                    {matchningar.has(j.id) && (
+                      <div className="mt-3 rounded-lg border border-sand-200 bg-sand-50 p-3">
+                        <p className="text-sm text-sand-800">
+                          <b>Du matchar {matchningar.get(j.id)!.score}% med den här annonsen.</b>{' '}
+                          {matchningar.get(j.id)!.motivation}
+                        </p>
+                        <Matchforbehall className="mt-2" />
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex w-full flex-col gap-2 sm:w-56">
+                  {aiPa && !matchningar.has(j.id) && (
+                    <form action={raknaUtMatchning}>
+                      <input type="hidden" name="jobAdId" value={j.id} />
+                      <button className="btn-secondary w-full" type="submit">
+                        Räkna ut min matchning
+                      </button>
+                    </form>
+                  )}
+
                   <IntresseKnapp
                     jobAdId={j.id}
                     foretagsnamn={j.company.name}

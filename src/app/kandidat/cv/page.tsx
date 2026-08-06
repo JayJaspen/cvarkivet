@@ -3,6 +3,8 @@ import { requireUser } from '@/lib/session';
 import { Card, Notice, PageHeader } from '@/components/ui';
 import { addEducation, addExperience, deleteEducation, deleteExperience } from '@/app/actions/user';
 import CvForm from './CvForm';
+import Granskning, { type Forslag } from './Granskning';
+import { aiArPakopplad } from '@/lib/ai';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,12 +15,26 @@ export default async function CvPage({
 }) {
   const user = await requireUser();
 
-  const [categories, municipalities, experiences, educations] = await Promise.all([
+  const [categories, municipalities, experiences, educations, granskning] = await Promise.all([
     prisma.userCategory.findMany({ where: { userId: user.id } }),
     prisma.userMunicipality.findMany({ where: { userId: user.id } }),
     prisma.experience.findMany({ where: { userId: user.id }, orderBy: { fromDate: 'desc' } }),
     prisma.education.findMany({ where: { userId: user.id }, orderBy: { fromDate: 'desc' } }),
+    prisma.cvReview.findUnique({ where: { userId: user.id } }),
   ]);
+
+  const granskningsdata = granskning
+    ? {
+        summary: granskning.summary,
+        completeness: granskning.completeness,
+        suggestions: JSON.parse(granskning.suggestions) as Forslag[],
+        createdAt: granskning.createdAt,
+      }
+    : null;
+
+  const granskningInaktuell =
+    Boolean(granskning) &&
+    (granskning!.cvVersion?.getTime() ?? 0) !== (user.cvUpdatedAt?.getTime() ?? 0);
 
   return (
     <>
@@ -40,6 +56,10 @@ export default async function CvPage({
             categories={categories.map((c) => c.category)}
             municipalities={municipalities.map((m) => m.municipality)}
           />
+
+          {aiArPakopplad() && (
+            <Granskning granskning={granskningsdata} inaktuell={granskningInaktuell} />
+          )}
 
           {/* Arbetslivserfarenhet */}
           <Card>

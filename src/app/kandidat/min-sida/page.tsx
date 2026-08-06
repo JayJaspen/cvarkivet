@@ -33,6 +33,13 @@ export default async function MinSidaPage() {
     prisma.interest.count({ where: { userId: user.id } }),
   ]);
 
+  const nedladdningar = await prisma.cvDownload.findMany({
+    where: { userId: user.id },
+    include: { company: { select: { id: true, name: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  });
+
   const companies = await prisma.company.findMany({
     where: { id: { in: viewers.map((v) => v.companyId) } },
     select: { id: true, name: true, municipality: true },
@@ -71,6 +78,29 @@ export default async function MinSidaPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <ProfileForms user={user} />
+
+          {nedladdningar.length > 0 && (
+            <Card>
+              <h2 className="h2 mb-1">Företag som laddat ner ditt CV</h2>
+              <p className="muted mb-4">
+                När ett företag skriver ut eller sparar ditt CV lämnar uppgifterna
+                plattformen. Därför visas det här.
+              </p>
+              <ul className="space-y-1 text-sm">
+                {nedladdningar.map((n) => (
+                  <li key={n.id} className="flex justify-between gap-2">
+                    <Link
+                      href={`/kandidat/foretag/${n.company.id}`}
+                      className="text-brand-600 hover:underline"
+                    >
+                      {n.company.name}
+                    </Link>
+                    <span className="text-sand-500">{formatDateTime(n.createdAt)}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
           <Card>
             <h2 className="h2 mb-1">Företag som har läst ditt CV</h2>

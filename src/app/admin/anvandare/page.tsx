@@ -51,6 +51,11 @@ export default async function AdminUsers({
       <PageHeader
         title="Registrerade användare"
         description={`${total} konton totalt, varav ${suspended} avstängda.`}
+        action={
+          <a href="/admin/export/kandidater" className="btn-secondary">
+            Ladda ner CSV
+          </a>
+        }
       />
 
       {searchParams.gallring && (

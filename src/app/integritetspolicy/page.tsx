@@ -59,6 +59,30 @@ export default function Integritetspolicy() {
           </section>
 
           <section>
+            <h2 className="h2 mb-2">Automatisk matchning och CV-granskning</h2>
+            <p>
+              Om du eller ett företag begär det kan innehållet i ditt CV skickas till en
+              AI-tjänst för att räkna ut en matchningspoäng mot en annons, eller för att ge dig
+              förslag på förbättringar. Endast yrkesmässiga uppgifter skickas – aldrig namn,
+              födelsedatum, foto eller kontaktuppgifter. Underlaget används inte för att träna
+              någon modell.
+            </p>
+            <p className="mt-2">
+              Matchningspoängen är ett hjälpmedel och fattar inga beslut. Ett företag som
+              använder den ska fortfarande läsa ditt CV.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="h2 mb-2">Nedladdning av CV</h2>
+            <p>
+              Företag med aktiv prenumeration kan skriva ut eller spara ditt CV. Då lämnar
+              uppgifterna vår plattform och företaget ansvarar själv för dem. Varje nedladdning
+              loggas och visas för dig under Min sida.
+            </p>
+          </section>
+
+          <section>
             <h2 className="h2 mb-2">Lagringstid</h2>
             <p>
               Uppgifterna sparas så länge kontot är aktivt. Raderar du ditt konto tas alla

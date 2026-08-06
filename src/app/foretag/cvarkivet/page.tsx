@@ -72,6 +72,7 @@ export default async function CvArkivetPage({
               { firstName: contains(q) },
               { lastName: contains(q) },
               { headline: contains(q) },
+              { seeking: contains(q) },
               { skills: contains(q) },
             ],
           }
@@ -236,6 +237,11 @@ export default async function CvArkivetPage({
                           {ageFromBirthDate(c.birthDate) !== null &&
                             ` · ${ageFromBirthDate(c.birthDate)} år`}
                         </p>
+                        {c.seeking && (
+                          <p className="mt-0.5 text-sm font-medium text-brand-700">
+                            Söker: {c.seeking}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </td>

@@ -19,6 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         tabs={[
           { href: '/admin/anvandare', label: 'Registrerade användare' },
           { href: '/admin/foretag', label: 'Registrerade företag', badge: attGranska },
+          { href: '/admin/topplista', label: 'Topplista' },
           { href: '/admin/mitt-konto', label: 'Mitt konto' },
         ]}
       />

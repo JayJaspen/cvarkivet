@@ -36,6 +36,7 @@ export async function saveCv(_prev: FormState, form: FormData): Promise<FormStat
         photoUrl,
         homeMunicipality: String(form.get('homeMunicipality') ?? '').trim() || null,
         headline: String(form.get('headline') ?? '').trim() || null,
+        seeking: String(form.get('seeking') ?? '').trim().slice(0, 80) || null,
         summary: String(form.get('summary') ?? '').trim() || null,
         coverLetter: String(form.get('coverLetter') ?? '').trim() || null,
         skills: String(form.get('skills') ?? '').trim() || null,

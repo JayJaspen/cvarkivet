@@ -93,15 +93,23 @@ export default async function CvDetail({ params }: { params: { id: string } }) {
               {user.firstName} {user.lastName}
             </h1>
             {user.headline && <p className="muted mt-1">{user.headline}</p>}
+            {user.seeking && (
+              <p className="mt-1 font-medium text-brand-700">Söker: {user.seeking}</p>
+            )}
           </div>
         </div>
 
-        <form action={toggleHeart}>
-          <input type="hidden" name="userId" value={user.id} />
-          <button className={heart ? 'btn-primary' : 'btn-secondary'} type="submit">
-            {heart ? '♥ Hjärtad' : '♡ Hjärta kandidaten'}
-          </button>
-        </form>
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/foretag/cvarkivet/${user.id}/utskrift`} className="btn-secondary">
+            Skriv ut eller spara som PDF
+          </Link>
+          <form action={toggleHeart}>
+            <input type="hidden" name="userId" value={user.id} />
+            <button className={heart ? 'btn-primary' : 'btn-secondary'} type="submit">
+              {heart ? '♥ Hjärtad' : '♡ Hjärta kandidaten'}
+            </button>
+          </form>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

@@ -40,6 +40,8 @@ model User {
   photoUrl          String? // Frivillig profilbild
   homeMunicipality  String? // Hemmahörande kommun – visas i företagens träfflista
   headline          String? // Yrkesrubrik, t.ex. "Lagerarbetare"
+  /// Vilken tjänst kandidaten söker, fritext. Visas som "Söker: Innesäljare".
+  seeking           String?
   coverLetter       String? // Personligt brev
   summary           String? // Kort presentation
   skills            String? // Fritext
@@ -70,6 +72,9 @@ model User {
   interests      Interest[]
   messages       Message[]
   viewNotices    CvViewNotification[]
+  matchScores    MatchScore[]
+  cvReview       CvReview?
+  cvDownloads    CvDownload[]
 
   @@index([activelyLooking])
 }
@@ -175,6 +180,7 @@ model Company {
   messages        Message[]
   subscriptionLog SubscriptionEvent[]
   viewNotices     CvViewNotification[]
+  cvDownloads     CvDownload[]
 
   @@index([subscription])
   @@index([status])
@@ -204,9 +210,13 @@ model JobAd {
   municipality String
   category     String
   createdAt    DateTime @default(now())
+  /// Uppdateras automatiskt vid ändring. Används för att veta när sparade
+  /// matchningspoäng blivit inaktuella och behöver räknas om.
+  updatedAt    DateTime @updatedAt
   company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  interests Interest[]
+  interests   Interest[]
+  matchScores MatchScore[]
 
   @@index([deadline])
   @@index([municipality])
@@ -325,6 +335,64 @@ model CvViewNotification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, userId])
+}
+
+// ------------------------------------------------------------- AI-funktioner
+
+/// Sparad matchningspoäng mellan en kandidat och en annons.
+///
+/// Räknas ut först när någon vill se den och sparas sedan. Blir inaktuell när
+/// CV:t eller annonsen ändrats, vilket upptäcks genom att jämföra tidsstämplarna.
+model MatchScore {
+  id         String   @id @default(cuid())
+  userId     String
+  jobAdId    String
+  /// 0–100
+  score      Int
+  /// Kort motivering på svenska, visas för den som frågat
+  motivation String
+  /// Vad poängen räknades ut mot – används för att upptäcka inaktuella poäng
+  cvVersion  DateTime?
+  adVersion  DateTime
+  createdAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobAd JobAd @relation(fields: [jobAdId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobAdId])
+  @@index([jobAdId, score])
+}
+
+/// AI-granskning av ett CV med förbättringsförslag. En per kandidat, ersätts
+/// när kandidaten begär en ny granskning.
+model CvReview {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  /// Helhetsomdöme i klartext
+  summary    String
+  /// Förslagen som JSON-array med { rubrik, forslag, allvar }
+  suggestions String
+  /// 0–100, hur komplett CV:t är
+  completeness Int
+  cvVersion  DateTime?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Loggas när ett företag laddar ner eller skriver ut ett CV.
+/// Kandidaten ser det på Min sida – nedladdning innebär att uppgifterna
+/// lämnar plattformen och det ska inte ske i det tysta.
+model CvDownload {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ------------------------------------------------------ Lösenordsåterställning

@@ -59,6 +59,16 @@ export default async function AdminCompanies({
       <PageHeader
         title="Registrerade företag"
         description="Filtrera på prenumeration för att ta fram faktureringsunderlag."
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/faktureringsunderlag" className="btn-primary">
+              Faktureringsunderlag
+            </Link>
+            <a href="/admin/export/foretag" className="btn-secondary">
+              Ladda ner CSV
+            </a>
+          </div>
+        }
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">

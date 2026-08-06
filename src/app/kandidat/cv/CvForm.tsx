@@ -12,6 +12,7 @@ type UserLite = {
   photoUrl: string | null;
   homeMunicipality: string | null;
   headline: string | null;
+  seeking: string | null;
   summary: string | null;
   coverLetter: string | null;
   skills: string | null;
@@ -117,6 +118,15 @@ export default function CvForm({
               blankLabel="Välj kommun…"
             />
           </div>
+
+          <Field
+            label="Vilken tjänst söker du?"
+            name="seeking"
+            defaultValue={user.seeking}
+            placeholder="t.ex. Innesäljare"
+            maxLength={80}
+            hint='Visas som "Söker: Innesäljare" i företagens träfflista. Var konkret – en tjänstetitel säger mer än "något inom försäljning".'
+          />
           <TextArea
             label="Kort presentation"
             name="summary"

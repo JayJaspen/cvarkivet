@@ -27,6 +27,7 @@ export default async function ForetagLayout({ children }: { children: React.Reac
         tabs={[
           { href: '/foretag/cvarkivet', label: 'CVArkivet' },
           { href: '/foretag/annonser', label: 'Annonser', badge: nyaIntressen },
+          { href: '/foretag/topplista', label: 'Topplista' },
           { href: '/foretag/var-sida', label: 'Vår sida' },
           { href: '/foretag/meddelanden', label: 'Meddelanden', badge: unread },
         ]}
