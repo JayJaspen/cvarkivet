@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireUser, destroySession } from '@/lib/session';
+import { epostUpptagen } from '@/lib/epost-upptagen';
 import { normalizeDomain, validBirthDate, validEmail } from '@/lib/utils';
 import { uploadProfilePhoto } from '@/lib/storage';
 import { appUrl, interestReceivedEmail, sendEmail } from '@/lib/email';
@@ -187,12 +188,8 @@ export async function updateProfile(_prev: FormState, form: FormData): Promise<F
   if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
   if (!birthDate) return { error: 'Ange födelsedatum som ÅÅÅÅMMDD.' };
 
-  if (email !== user.email) {
-    const taken =
-      (await prisma.user.findUnique({ where: { email } })) ||
-      (await prisma.company.findUnique({ where: { email } }));
-    if (taken) return { error: 'E-postadressen används redan.' };
-  }
+  if (email !== user.email && (await epostUpptagen(email, { userId: user.id })))
+    return { error: 'E-postadressen används redan.' };
 
   await prisma.user.update({
     where: { id: user.id },

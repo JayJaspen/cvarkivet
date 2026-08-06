@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { createSession, destroySession } from '@/lib/session';
+import { epostUpptagen } from '@/lib/epost-upptagen';
 import {
   validBirthDate,
   validEmail,
@@ -91,10 +92,7 @@ export async function registerUser(_prev: FormState, form: FormData): Promise<Fo
   if (password !== password2) return { error: 'Lösenorden matchar inte.' };
   if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
 
-  const taken =
-    (await prisma.user.findUnique({ where: { email } })) ||
-    (await prisma.company.findUnique({ where: { email } }));
-  if (taken) return { error: 'E-postadressen är redan registrerad.' };
+  if (await epostUpptagen(email)) return { error: 'E-postadressen är redan registrerad.' };
 
   const user = await prisma.user.create({
     data: {
@@ -159,10 +157,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
   const orgTaken = await prisma.company.findUnique({ where: { orgNumber: orgnr } });
   if (orgTaken) return { error: 'Organisationsnumret är redan registrerat.' };
 
-  const emailTaken =
-    (await prisma.company.findUnique({ where: { email } })) ||
-    (await prisma.user.findUnique({ where: { email } }));
-  if (emailTaken) return { error: 'E-postadressen är redan registrerad.' };
+  if (await epostUpptagen(email)) return { error: 'E-postadressen är redan registrerad.' };
 
   // Karensregeln togs bort i augusti 2026. Den fanns för att hindra företag
   // från att hoppa mellan månads- och årsabonnemang; med ett enda årsabonnemang

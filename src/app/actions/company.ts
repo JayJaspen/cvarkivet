@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
+import { epostUpptagen } from '@/lib/epost-upptagen';
 import { uploadLogo } from '@/lib/storage';
 import { arGodkant, harAnnonsAtkomst, harCvAtkomst } from '@/lib/data';
 import { normalizeDomain, validEmail } from '@/lib/utils';
@@ -28,12 +29,8 @@ export async function updateCompany(_prev: FormState, form: FormData): Promise<F
   if (!validEmail(email)) return { error: 'Ange en giltig e-postadress.' };
   if (!municipality) return { error: 'Välj hemmahörande kommun.' };
 
-  if (email !== company.email) {
-    const taken =
-      (await prisma.company.findUnique({ where: { email } })) ||
-      (await prisma.user.findUnique({ where: { email } }));
-    if (taken) return { error: 'E-postadressen används redan.' };
-  }
+  if (email !== company.email && (await epostUpptagen(email, { companyId: company.id })))
+    return { error: 'E-postadressen används redan.' };
 
   // Logotyp – Vercel Blob i produktion, lokal disk vid utveckling
   let logoUrl = company.logoUrl;
