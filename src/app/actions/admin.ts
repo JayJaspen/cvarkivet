@@ -7,6 +7,7 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
 import { korGallring } from '@/lib/retention';
 import { satNodstopp } from '@/lib/ai-kvot';
+import { granskaLosenord } from '@/lib/losenord';
 import { appUrl, companyApprovedEmail, companyRejectedEmail, sendEmail } from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -26,6 +27,9 @@ export async function changeAdminPassword(
     return { error: 'Adminlösenordet måste vara minst 12 tecken.' };
   if (next !== next2) return { error: 'De nya lösenorden matchar inte.' };
   if (next === current) return { error: 'Välj ett annat lösenord än det nuvarande.' };
+
+  const losen = await granskaLosenord(next, { epost: admin.email, fornamn: admin.name });
+  if (!losen.ok) return { error: losen.error };
 
   await prisma.admin.update({
     where: { id: admin.id },

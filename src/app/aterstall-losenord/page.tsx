@@ -18,7 +18,7 @@ export default function AterstallLosenord({
 
         <div className="card">
           <h1 className="h1 mb-1">Välj nytt lösenord</h1>
-          <p className="muted mb-6">Minst 8 tecken.</p>
+          <p className="muted mb-6">Minst 10 tecken. Vi kontrollerar mot kända dataintrång – tre slumpvisa ord blir både starkt och lätt att minnas.</p>
 
           {token ? (
             <ResetForm token={token} />

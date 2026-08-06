@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireUser, destroySession } from '@/lib/session';
 import { epostUpptagen } from '@/lib/epost-upptagen';
+import { granskaLosenord } from '@/lib/losenord';
 import { normalizeDomain, validBirthDate, validEmail } from '@/lib/utils';
 import { uploadProfilePhoto } from '@/lib/storage';
 import { appUrl, interestReceivedEmail, sendEmail } from '@/lib/email';
@@ -208,12 +209,18 @@ export async function changePassword(_prev: FormState, form: FormData): Promise<
 
   if (!(await bcrypt.compare(current, user.passwordHash)))
     return { error: 'Nuvarande lösenord stämmer inte.' };
-  if (next.length < 8) return { error: 'Nytt lösenord måste vara minst 8 tecken.' };
   if (next !== next2) return { error: 'De nya lösenorden matchar inte.' };
+
+  const losen = await granskaLosenord(next, {
+    epost: user.email,
+    fornamn: user.firstName,
+    efternamn: user.lastName,
+  });
+  if (!losen.ok) return { error: losen.error };
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { passwordHash: await bcrypt.hash(next, 10) },
+    data: { passwordHash: await bcrypt.hash(next, 12) },
   });
   return { ok: 'Lösenordet är uppdaterat.' };
 }

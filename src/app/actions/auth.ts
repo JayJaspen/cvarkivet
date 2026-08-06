@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { createSession, destroySession } from '@/lib/session';
 import { epostUpptagen } from '@/lib/epost-upptagen';
+import { granskaLosenord } from '@/lib/losenord';
 import {
   validBirthDate,
   validEmail,
@@ -88,9 +89,11 @@ export async function registerUser(_prev: FormState, form: FormData): Promise<Fo
   const birthDate = validBirthDate(birthRaw);
   if (!birthDate) return { error: 'Ange födelsedatum som ÅÅÅÅMMDD, t.ex. 19900115.' };
 
-  if (password.length < 8) return { error: 'Lösenordet måste vara minst 8 tecken.' };
   if (password !== password2) return { error: 'Lösenorden matchar inte.' };
   if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
+
+  const losen = await granskaLosenord(password, { epost: email, fornamn: firstName, efternamn: lastName });
+  if (!losen.ok) return { error: losen.error };
 
   if (await epostUpptagen(email)) return { error: 'E-postadressen är redan registrerad.' };
 
@@ -101,7 +104,7 @@ export async function registerUser(_prev: FormState, form: FormData): Promise<Fo
       email,
       phone,
       birthDate,
-      passwordHash: await bcrypt.hash(password, 10),
+      passwordHash: await bcrypt.hash(password, 12),
     },
   });
 
@@ -150,9 +153,11 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
   if (phone.replace(/\D/g, '').length < 6) return { error: 'Ange ett giltigt telefonnummer.' };
   if (!address) return { error: 'Ange adress.' };
   if (!municipality) return { error: 'Välj hemmahörande kommun.' };
-  if (password.length < 8) return { error: 'Lösenordet måste vara minst 8 tecken.' };
   if (password !== password2) return { error: 'Lösenorden matchar inte.' };
   if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
+
+  const losen = await granskaLosenord(password, { epost: email, foretag: name, fornamn: contactName });
+  if (!losen.ok) return { error: losen.error };
 
   const orgTaken = await prisma.company.findUnique({ where: { orgNumber: orgnr } });
   if (orgTaken) return { error: 'Organisationsnumret är redan registrerat.' };
@@ -174,7 +179,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
       address,
       municipality,
       website: website || null,
-      passwordHash: await bcrypt.hash(password, 10),
+      passwordHash: await bcrypt.hash(password, 12),
     },
   });
 
@@ -254,8 +259,10 @@ export async function resetPassword(_prev: FormState, form: FormData): Promise<F
   const password = String(form.get('password') ?? '');
   const password2 = String(form.get('password2') ?? '');
 
-  if (password.length < 8) return { error: 'Lösenordet måste vara minst 8 tecken.' };
   if (password !== password2) return { error: 'Lösenorden matchar inte.' };
+
+  const losen = await granskaLosenord(password);
+  if (!losen.ok) return { error: losen.error };
 
   const record = await prisma.passwordResetToken.findUnique({
     where: { tokenHash: hashToken(token) },
@@ -264,7 +271,7 @@ export async function resetPassword(_prev: FormState, form: FormData): Promise<F
   if (!record || record.usedAt || record.expiresAt < new Date())
     return { error: 'Länken är ogiltig eller har gått ut. Begär en ny återställning.' };
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 12);
 
   if (record.role === 'USER') {
     await prisma.user.update({ where: { id: record.accountId }, data: { passwordHash } });

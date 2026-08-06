@@ -173,11 +173,11 @@ async function main() {
   }
 
   const eget = (
-    await fraga('\n  Eget lösenord (minst 8 tecken), eller Enter för ett slumpat: ')
+    await fraga('\n  Eget lösenord (minst 12 tecken), eller Enter för ett slumpat: ')
   ).trim();
 
-  if (eget && eget.length < 8) {
-    console.error('\n  Lösenordet måste vara minst 8 tecken.\n');
+  if (eget && eget.length < 12) {
+    console.error('\n  Lösenordet måste vara minst 12 tecken.\n');
     await prisma.$disconnect();
     rl.close();
     process.exit(1);
@@ -198,7 +198,7 @@ async function main() {
     return;
   }
 
-  const passwordHash = await bcrypt.hash(losenord, 10);
+  const passwordHash = await bcrypt.hash(losenord, 12);
 
   if (val === '1') {
     await prisma.admin.update({ where: { email: epost }, data: { passwordHash } });

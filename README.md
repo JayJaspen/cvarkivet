@@ -125,6 +125,13 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
 - **Loggning:** varje gång ett företag öppnar ett CV skapas en `CvView` och kandidaten
   får ett mail (max ett per dygn och företag, går att stänga av). Varje gång en kandidat
   öppnar en företagsprofil skapas en `CompanyVisit`. Båda syns för admin.
+- **Lösenord kontrolleras mot kända dataintrång** (`src/lib/losenord.ts`) vid registrering,
+  byte och återställning. Uppslaget görs mot Have I Been Pwned med k-anonymitet: vi skickar
+  de fem första tecknen av lösenordets SHA-1-hash och jämför resten lokalt, så lösenordet
+  lämnar aldrig servern. Svarar tjänsten inte släpps lösenordet igenom – ett externt API som
+  ligger nere ska inte hindra någon från att skapa konto. Minsta längd är 10 tecken, och
+  lösenordet får inte innehålla namn, e-postadress eller företagsnamn. Lagring sker med
+  bcrypt, kostnad 12.
 - **Personnummer lagras inte** – bara födelsedatum, och företagen ser enbart åldern.
 - **Matchningspoängen** ser bara kompetens och erfarenhet. Ålder, namn, foto och ort skickas
   aldrig till modellen. Poängen sparas och räknas om först när CV:t eller annonsen ändrats,

@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
 import { epostUpptagen } from '@/lib/epost-upptagen';
+import { granskaLosenord } from '@/lib/losenord';
 import { hiddenUserIdsForCompany } from '@/lib/visibility';
 import { uploadLogo } from '@/lib/storage';
 import { arGodkant, harAnnonsAtkomst, harCvAtkomst } from '@/lib/data';
@@ -72,12 +73,14 @@ export async function changeCompanyPassword(
 
   if (!(await bcrypt.compare(current, company.passwordHash)))
     return { error: 'Nuvarande lösenord stämmer inte.' };
-  if (next.length < 8) return { error: 'Nytt lösenord måste vara minst 8 tecken.' };
   if (next !== next2) return { error: 'De nya lösenorden matchar inte.' };
+
+  const losen = await granskaLosenord(next, { epost: company.email, foretag: company.name });
+  if (!losen.ok) return { error: losen.error };
 
   await prisma.company.update({
     where: { id: company.id },
-    data: { passwordHash: await bcrypt.hash(next, 10) },
+    data: { passwordHash: await bcrypt.hash(next, 12) },
   });
   return { ok: 'Lösenordet är uppdaterat.' };
 }

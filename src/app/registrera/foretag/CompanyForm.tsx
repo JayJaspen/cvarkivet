@@ -108,7 +108,7 @@ export default function CompanyForm() {
           type="password"
           required
           autoComplete="new-password"
-          hint="Minst 8 tecken."
+          hint="Minst 10 tecken. Vi kontrollerar mot kända dataintrång – tre slumpvisa ord blir både starkt och lätt att minnas."
         />
         <Field label="Upprepa lösenord" name="password2" type="password" required />
       </div>
