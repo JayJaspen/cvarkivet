@@ -27,6 +27,7 @@ export default async function KandidatLayout({ children }: { children: React.Rea
           { href: '/kandidat/jobb', label: 'Lediga jobb' },
           { href: '/kandidat/foretag', label: 'Registrerade företag' },
           { href: '/kandidat/topplista', label: 'Topplista' },
+          { href: '/kandidat/onskelista', label: 'Önska företag' },
           { href: '/kandidat/cv', label: 'Mitt CV' },
           { href: '/kandidat/min-sida', label: 'Min sida' },
           { href: '/kandidat/meddelanden', label: 'Meddelanden', badge: unread },

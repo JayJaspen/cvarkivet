@@ -60,6 +60,10 @@ src/lib/email.ts          Mallar och utskick via Resend
 src/lib/notifications.ts  Notis när ett företag läst ett CV
 src/lib/storage.ts        Logotyper: Vercel Blob i drift, disk lokalt
 src/lib/search.ts         Skiftlägesokänslig sökning
+src/lib/ai.ts             Matchningspoäng och CV-granskning mot Claude
+src/lib/matchning.ts      Cachning av matchningspoäng
+src/lib/onskelista.ts     Önskade företag, med normalisering av namn
+src/lib/topplista.ts      Mest följda företag
 src/lib/retention.ts      Gallring av inaktiva konton
 src/app/api/cron/         Nattligt gallringsjobb (schemaläggs i vercel.json)
 src/components/Skeleton   Laddningsskelett som visas medan servern hämtar data
@@ -96,6 +100,14 @@ src/app/admin/            Registrerade användare · Registrerade företag
   får ett mail (max ett per dygn och företag, går att stänga av). Varje gång en kandidat
   öppnar en företagsprofil skapas en `CompanyVisit`. Båda syns för admin.
 - **Personnummer lagras inte** – bara födelsedatum, och företagen ser enbart åldern.
+- **Matchningspoängen** ser bara kompetens och erfarenhet. Ålder, namn, foto och ort skickas
+  aldrig till modellen. Poängen sparas och räknas om först när CV:t eller annonsen ändrats,
+  och högst 25 kandidater beräknas per klick.
+- **Önskelistan**: kandidater föreslår företag som borde finnas här. Namnet normaliseras
+  (`Volvo AB`, `volvo` och `VOLVO Aktiebolag` blir samma post). Nya önskemål syns publikt
+  först efter admins godkännande, eftersom listan ligger på startsidan. Posten försvinner
+  automatiskt när företaget registrerar sig.
+- **Nedladdning av CV loggas** och visas för kandidaten under Min sida.
 - **Gallring:** konton som varit inaktiva i 24 månader raderas automatiskt av ett cron-jobb
   varje natt. Kandidaten varnas via mail 30 dagar innan och behåller kontot genom att logga
   in. Företagskonton omfattas bara om de saknar prenumeration. Admin kan testköra och köra

@@ -75,6 +75,7 @@ model User {
   matchScores    MatchScore[]
   cvReview       CvReview?
   cvDownloads    CvDownload[]
+  wishVotes      CompanyWishVote[]
 
   @@index([activelyLooking])
 }
@@ -335,6 +336,52 @@ model CvViewNotification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, userId])
+}
+
+// -------------------------------------------------------------- Önskelistan
+
+/// Ett företag som kandidater önskar ska registrera sig på CVArkivet.
+///
+/// Namnet normaliseras till en slug så att "Volvo AB", "volvo" och "Volvo  ab"
+/// blir samma post i stället för tre. Admin kan rätta stavning och slå ihop
+/// poster som ändå hamnat fel.
+model CompanyWish {
+  id   String @id @default(cuid())
+  /// Visningsnamnet, som admin kan rätta
+  name String
+  /// Normaliserad form, används för att hitta dubbletter
+  slug String @unique
+
+  website String?
+
+  /// PENDING = inte granskad, syns bara internt
+  /// APPROVED = syns publikt på startsidan
+  /// HIDDEN = dold, men rösterna finns kvar
+  status String @default("PENDING")
+
+  /// Sätts när företaget faktiskt registrerat sig. Då lämnar posten listan.
+  fulfilledAt          DateTime?
+  fulfilledByCompanyId String?
+
+  createdAt DateTime @default(now())
+
+  votes CompanyWishVote[]
+
+  @@index([status, fulfilledAt])
+}
+
+/// En kandidats röst på ett önskat företag. En röst per kandidat och företag.
+model CompanyWishVote {
+  id        String   @id @default(cuid())
+  wishId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  wish CompanyWish @relation(fields: [wishId], references: [id], onDelete: Cascade)
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([wishId, userId])
+  @@index([userId])
 }
 
 // ------------------------------------------------------------- AI-funktioner

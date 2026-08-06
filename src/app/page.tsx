@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { Logo } from '@/components/ui';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { hamtaOnskelista } from '@/lib/onskelista';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,7 @@ export default async function Home() {
   if (session?.role === 'COMPANY') redirect('/foretag/cvarkivet');
   if (session?.role === 'ADMIN') redirect('/admin/anvandare');
 
-  const [users, companies, ads] = await Promise.all([
+  const [users, companies, ads, onskade] = await Promise.all([
     prisma.user.count({ where: { suspended: false } }),
     prisma.company.count({ where: { suspended: false, status: 'APPROVED' } }),
     prisma.jobAd.count({
@@ -21,6 +22,7 @@ export default async function Home() {
         company: { suspended: false, status: 'APPROVED' },
       },
     }),
+    hamtaOnskelista(12),
   ]);
 
   return (
@@ -128,6 +130,54 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {onskade.length > 0 && (
+        <section className="border-t border-sand-200 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-16">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-wider text-accent-600">
+                Önskelistan
+              </p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-sand-900">
+                Företagen som kandidaterna väntar på
+              </h2>
+              <p className="mt-3 text-sand-600">
+                Det här är arbetsgivare som våra kandidater vill se här. Står ni med på listan
+                finns det redan personer som vill jobba hos er.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {onskade.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-sand-200 bg-sand-50 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-sand-900">{o.namn}</p>
+                    {o.website && <p className="truncate text-xs text-sand-500">{o.website}</p>}
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-xl font-bold text-accent-600">{o.roster}</p>
+                    <p className="text-[11px] text-sand-500">
+                      {o.roster === 1 ? 'väntar' : 'väntar'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href="/registrera/foretag" className="btn-accent px-6 py-3 text-base">
+                Vi finns på listan – registrera oss
+              </Link>
+              <Link href="/registrera/anvandare" className="btn-secondary px-6 py-3 text-base">
+                Önska ett företag
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <footer className="border-t border-sand-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-sand-500">

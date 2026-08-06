@@ -8,7 +8,10 @@ export const dynamic = 'force-dynamic';
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
 
-  const attGranska = await prisma.company.count({ where: { status: 'PENDING' } });
+  const [attGranska, onskemalAttGranska] = await Promise.all([
+    prisma.company.count({ where: { status: 'PENDING' } }),
+    prisma.companyWish.count({ where: { status: 'PENDING', fulfilledAt: null } }),
+  ]);
 
   return (
     <div className="min-h-screen">
@@ -20,6 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           { href: '/admin/anvandare', label: 'Registrerade användare' },
           { href: '/admin/foretag', label: 'Registrerade företag', badge: attGranska },
           { href: '/admin/topplista', label: 'Topplista' },
+          { href: '/admin/onskelista', label: 'Önskelistan', badge: onskemalAttGranska },
           { href: '/admin/mitt-konto', label: 'Mitt konto' },
         ]}
       />

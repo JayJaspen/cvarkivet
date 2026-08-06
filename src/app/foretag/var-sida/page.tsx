@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { requireCompany } from '@/lib/session';
 import { historikPlanText, SUPPORT_EPOST } from '@/lib/data';
+import { antalSomOnskade } from '@/lib/onskelista';
 import { Card, Notice, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { cancelSubscription } from '@/app/actions/company';
@@ -28,6 +29,7 @@ export default async function VarSidaPage({
   ]);
 
   const blocked = company.blockedUntil && company.blockedUntil > new Date();
+  const onskadeAvAntal = await antalSomOnskade(company.id);
 
   return (
     <>
@@ -37,6 +39,14 @@ export default async function VarSidaPage({
         <Notice tone="green" title="Kontot är skapat!">
           Nästa steg är att vi granskar er registrering. Fyll gärna i presentation och
           logotyp nedan – det gör granskningen snabbare.
+        </Notice>
+      )}
+
+      {onskadeAvAntal > 0 && (
+        <Notice tone="green" title={`${onskadeAvAntal} kandidater önskade er hit`}>
+          Ni stod på önskelistan på startsidan innan ni registrerade er.{' '}
+          {onskadeAvAntal === 1 ? 'En kandidat' : `${onskadeAvAntal} kandidater`} hade skrivit
+          upp er som en arbetsgivare de vill se på CVArkivet.
         </Notice>
       )}
 

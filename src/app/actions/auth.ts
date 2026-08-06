@@ -20,6 +20,7 @@ import {
   sendEmail,
 } from '@/lib/email';
 import { SUPPORT_EPOST } from '@/lib/data';
+import { markeraOnskemalSomUppfyllt } from '@/lib/onskelista';
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -199,6 +200,9 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
       passwordHash: await bcrypt.hash(password, 10),
     },
   });
+
+  // Fanns företaget på önskelistan? Då lämnar de listan nu.
+  await markeraOnskemalSomUppfyllt(company.id, name);
 
   // Meddela administratörerna att det finns något att granska.
   const admins = await prisma.admin.findMany({ select: { email: true } });
