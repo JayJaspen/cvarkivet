@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
-import { pris, bolagstypText, fakturasattText } from '@/lib/data';
+import { arPilot, pris, bolagstypText, fakturasattText } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,18 +53,19 @@ export async function GET(request: Request) {
   ];
 
   const rader = foretag.map((c) => {
-    const belopp =
-      c.subscription === 'NONE' ? 0 : pris(c.companyType);
+    // Pilotkunder debiteras inte, så beloppet ska vara noll även om de
+    // formellt har ett abonnemang registrerat.
+    const belopp = c.subscription === 'NONE' || arPilot(c) ? 0 : pris(c.companyType);
 
     return [
       c.name,
       c.orgNumber,
       bolagstypText(c.companyType),
-      c.subscription === 'NONE'
-        ? 'Ingen'
-        : c.subscription === 'YEARLY'
-          ? 'Årsabonnemang'
-          : 'Månadsabonnemang',
+      arPilot(c)
+        ? 'Pilotkund (debiteras ej)'
+        : c.subscription === 'NONE'
+          ? 'Ingen'
+          : 'Årsabonnemang',
       belopp,
       c.subscriptionStarted?.toLocaleDateString('sv-SE') ?? '',
       c.subscriptionEndsAt?.toLocaleDateString('sv-SE') ?? '',

@@ -174,6 +174,16 @@ model Company {
   subscriptionEndsAt  DateTime?
   cancelledAt         DateTime?
 
+  /// Pilotkund: full åtkomst utan att debiteras. Sätts av admin.
+  /// Pilotkunder hamnar aldrig i faktureringsunderlaget och räknas inte in
+  /// i beståndets årsvärde – de ska inte se ut som intäkter.
+  isPilot   Boolean   @default(false)
+  /// Tom betyder tills vidare. Passerat datum stänger åtkomsten,
+  /// precis som ett utgånget abonnemang.
+  pilotUntil DateTime?
+  /// Varför de är pilotkund. Syns bara för admin.
+  pilotNote  String?
+
   jobAds          JobAd[]
   cvViews         CvView[]
   hearts          Heart[]

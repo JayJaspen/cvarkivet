@@ -163,3 +163,34 @@ export async function vaxlaAiNodstopp(form: FormData) {
   revalidatePath('/kandidat/jobb');
   revalidatePath('/kandidat/cv');
 }
+
+/**
+ * Markera ett företag som pilotkund, eller ta bort markeringen.
+ *
+ * Pilotkunder får full åtkomst utan att debiteras. De hamnar aldrig i
+ * faktureringsunderlaget och räknas inte in i beståndets årsvärde – annars
+ * skulle intäktssiffran ljuga.
+ */
+export async function satPilotkund(form: FormData) {
+  await requireAdmin();
+  const id = String(form.get('id'));
+  const pa = String(form.get('pa')) === 'ja';
+
+  const slutRaw = String(form.get('pilotUntil') ?? '').trim();
+  const slut = slutRaw ? new Date(slutRaw) : null;
+
+  await prisma.company.update({
+    where: { id },
+    data: pa
+      ? {
+          isPilot: true,
+          pilotUntil: slut && !Number.isNaN(slut.getTime()) ? slut : null,
+          pilotNote: String(form.get('pilotNote') ?? '').trim().slice(0, 300) || null,
+        }
+      : { isPilot: false, pilotUntil: null, pilotNote: null },
+  });
+
+  revalidatePath('/admin/foretag');
+  revalidatePath(`/admin/foretag/${id}`);
+  revalidatePath('/admin/faktureringsunderlag');
+}

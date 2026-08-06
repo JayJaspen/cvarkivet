@@ -149,9 +149,12 @@ export async function korGallring(torrkorning = false): Promise<GallringsResulta
   }
 
   // 3. Radera företagskonton utan prenumeration som passerat gränsen.
+  //    Pilotkunder undantas: de har full åtkomst och är kunder i allt utom
+  //    faktureringen, så de ska inte gallras bort som övergivna konton.
   const foretagAttRadera = await prisma.company.findMany({
     where: {
       subscription: 'NONE',
+      isPilot: false,
       OR: [
         { lastLoginAt: { lt: raderaFore } },
         { lastLoginAt: null, createdAt: { lt: raderaFore } },

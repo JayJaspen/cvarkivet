@@ -227,6 +227,18 @@ export default async function MinSidaPage() {
           </Card>
 
           <Card>
+            <h2 className="h2 mb-2">Ladda ner mina uppgifter</h2>
+            <p className="muted mb-4">
+              Du får en fil med allt vi har om dig: ditt CV, dina inställningar, vilka
+              företag som läst eller laddat ner CV:t och alla meddelanden. Filen är i
+              formatet JSON, som går att läsa in i andra tjänster.
+            </p>
+            <a href="/kandidat/export" className="btn-secondary" download>
+              Ladda ner allt om mig
+            </a>
+          </Card>
+
+          <Card>
             <h2 className="h2 mb-2">Radera konto</h2>
             <p className="muted mb-4">
               Ditt CV och all data raderas permanent. Detta går inte att ångra.

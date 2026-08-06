@@ -228,15 +228,31 @@ export function arGodkant(company: { status: string }) {
 }
 
 /**
+ * Är företaget en aktiv pilotkund?
+ *
+ * Pilotkunder får full åtkomst utan att debiteras. Saknas slutdatum gäller det
+ * tills vidare; har datumet passerat upphör åtkomsten precis som för ett
+ * utgånget abonnemang.
+ */
+export function arPilot(company: { isPilot?: boolean; pilotUntil?: Date | null }) {
+  if (!company.isPilot) return false;
+  if (company.pilotUntil && company.pilotUntil < new Date()) return false;
+  return true;
+}
+
+/**
  * Har företaget en giltig prenumeration just nu?
  *
  * Ett uppsagt årsabonnemang gäller perioden ut – de har betalat för året och
- * ska inte låsas ute i förtid.
+ * ska inte låsas ute i förtid. Pilotkunder räknas som giltiga utan att betala.
  */
 export function harGiltigPrenumeration(company: {
   subscription: string;
   subscriptionEndsAt: Date | null;
+  isPilot?: boolean;
+  pilotUntil?: Date | null;
 }) {
+  if (arPilot(company)) return true;
   if (company.subscription === 'NONE') return false;
   if (company.subscriptionEndsAt && company.subscriptionEndsAt < new Date()) return false;
   return true;
@@ -254,6 +270,8 @@ type AtkomstKontroll = {
   subscription: string;
   status: string;
   subscriptionEndsAt: Date | null;
+  isPilot?: boolean;
+  pilotUntil?: Date | null;
 };
 
 /** Alla betalande företag får både CVArkivet och annonser. */

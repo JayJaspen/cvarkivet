@@ -16,7 +16,8 @@ export default async function Faktureringsunderlag() {
   await requireAdmin();
 
   const foretag = await prisma.company.findMany({
-    where: { suspended: false, subscription: { not: 'NONE' } },
+    // Pilotkunder debiteras inte och ska inte dyka upp på underlaget.
+    where: { suspended: false, subscription: { not: 'NONE' }, isPilot: false },
     orderBy: { name: 'asc' },
   });
 

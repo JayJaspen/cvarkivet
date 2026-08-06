@@ -6,6 +6,7 @@ import { activateSubscription, updateInvoiceSettings } from '@/app/actions/compa
 import { Badge, Card, Field } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
 import {
+  arPilot,
   bolagstypText,
   FAKTURASATT,
   fakturasattText,
@@ -20,6 +21,8 @@ type CompanyLite = {
   companyType: string;
   subscription: string;
   status: string;
+  isPilot: boolean;
+  pilotUntil: Date | null;
   address: string;
   email: string;
   invoiceMethod: string | null;
@@ -127,7 +130,34 @@ export default function Prenumeration({ company }: { company: CompanyLite }) {
   const harPrenumeration = company.subscription !== 'NONE';
   const uppsagt = Boolean(company.cancelledAt) && harPrenumeration;
   const gammaltManadsabonnemang = company.subscription === 'MONTHLY';
+  const pilot = arPilot(company);
   const belopp = pris(company.companyType);
+
+  // Pilotkunder har full åtkomst utan att betala. De ska inte mötas av en
+  // prislapp eller en aktiveringsknapp – det vore bara förvirrande.
+  if (pilot)
+    return (
+      <Card>
+        <h2 className="h2 mb-1">Pilotkund</h2>
+        <p className="muted">
+          Ni har full tillgång till CVArkivet och annonsering utan kostnad
+          {company.pilotUntil ? ` till och med ${datum(company.pilotUntil)}` : ' tills vidare'}.
+        </p>
+        <div className="mt-4 rounded-xl border border-brand-300 bg-brand-50 p-4">
+          <p className="font-semibold text-sand-900">Allt ingår</p>
+          <p className="muted mt-1">
+            Hela CV-arkivet, obegränsat antal annonser och direktkontakt med kandidaterna.
+            Ingen faktura skickas under pilotperioden.
+          </p>
+          {company.pilotUntil && (
+            <p className="muted mt-2">
+              Vi hör av oss i god tid innan {datum(company.pilotUntil)} om hur ni vill göra
+              sedan.
+            </p>
+          )}
+        </div>
+      </Card>
+    );
 
   return (
     <>

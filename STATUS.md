@@ -16,7 +16,9 @@ Senast uppdaterad: **6 augusti 2026**
    notiser till kandidater eller besked till företag om godkännande. Kräver DNS-poster
    hos one.com, gör det i samma veva som punkt 1.
 3. **Vercel Pro krävs.** Hobby-planen får inte användas kommersiellt.
-4. **Juristgranskning** av villkor och integritetspolicy.
+4. ~~Juristgranskning av villkor och integritetspolicy~~ – **publicerade 6 augusti** utan
+   utkastmärkning. De är fortfarande skrivna utan jurist; låt gärna en titta på dem när
+   det finns pengar till det, särskilt ansvarsbegränsningen.
 5. **Point-in-time restore** påslaget i Neon.
 6. **`ANTHROPIC_API_KEY` är inte satt**, så matchning och CV-granskning är avstängda
    och osynliga för användarna. Utan nyckeln kan AI inte kosta någonting. När du sätter
@@ -66,6 +68,10 @@ Registrerade företag (faktureringsunderlag per prenumeration, lästa CV, stäng
 Topplista · Önskelistan · AI-förbrukning (kostnad i kronor per dag, månad och totalt,
 samt nödstopp som stänger av alla AI-funktioner direkt).
 
+**Pilotkunder:** admin kan markera ett företag som pilotkund på företagets sida. De får full
+åtkomst utan att debiteras, med valfritt slutdatum. Pilotkunder hamnar aldrig i
+faktureringsunderlaget och räknas inte in i årsvärdet, så intäktssiffran förblir sann.
+
 **Om AI-kostnaden:** inget anrop mot Claude sker automatiskt. Varje matchning och varje
 CV-granskning kräver att någon trycker på en knapp, svaren sparas och återanvänds, och
 det finns dygnskvoter per konto plus ett tak för hela sajten. En matchning kostar ungefär
@@ -112,9 +118,10 @@ Inget av detta blockerar lansering, men bör beslutas:
 ## Nästa steg, i ordning
 
 1. **Lansera** enligt DRIFTSATTNING.md – konton, DNS, adminkonto, checklista.
-2. **Juristgranska** `/villkor` och `/integritetspolicy`. De är utkast.
-3. **Skaffa de första företagen.** Tjänsten är värdelös för kandidater utan företag,
-   och tvärtom. Fundera på om de första kunderna ska få rabatt eller fri period.
+2. **Skaffa de första företagen.** Tjänsten är värdelös för kandidater utan företag,
+   och tvärtom. Markera dem som pilotkunder i admin så får de full åtkomst utan faktura,
+   och du slipper förhandla pris innan du vet om tjänsten håller.
+3. **Juristgranska** `/villkor` och `/integritetspolicy` när det finns budget.
 4. **Följ upp efter en månad:** hur många CV finns, hur många företag betalar, hur
    många meddelanden skickas? Adminvyn visar det mesta.
 

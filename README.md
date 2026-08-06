@@ -96,6 +96,11 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
   kontaktuppgifter eller löneanspråk, ingen länk in i CV:t och ingen `CvView` loggas –
   kandidaten ska inte få mail om att någon läst CV:t när ingen faktiskt gjort det.
   Kandidater som dolt sig för företaget filtreras bort även här.
+- **Pilotkunder** (`isPilot`) får full åtkomst utan att debiteras. Sätts av admin på företagets
+  sida, med valfritt slutdatum och en anteckning. De filtreras bort ur faktureringsunderlaget,
+  ur CSV-exporten och ur beståndets årsvärde – annars skulle intäktssiffran ljuga – och undantas
+  från gallringen av inaktiva konton. Tomt slutdatum betyder tills vidare; ett passerat datum
+  stänger åtkomsten precis som ett utgånget abonnemang.
 - **Uppsägning betyder att abonnemanget inte förnyas.** Åtkomsten löper till slutdatumet,
   som är betalt i förskott. Ingen återbetalning, och ingen karens – karensregeln togs bort
   i augusti 2026 när det bara fanns ett abonnemang kvar att välja på.
@@ -121,6 +126,9 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
   först efter admins godkännande, eftersom listan ligger på startsidan. Posten försvinner
   automatiskt när företaget registrerar sig.
 - **Nedladdning av CV loggas** och visas för kandidaten under Min sida.
+- **Dataportabilitet:** kandidaten laddar ner allt vi har om hen som JSON från Min sida
+  (`src/app/kandidat/export/route.ts`). Krävs enligt artikel 20 i GDPR, och gör att ingen
+  behöver mejla support för att få ut sina uppgifter.
 - **Gallring:** konton som varit inaktiva i 24 månader raderas automatiskt av ett cron-jobb
   varje natt. Kandidaten varnas via mail 30 dagar innan och behåller kontot genom att logga
   in. Företagskonton omfattas bara om de saknar prenumeration. Admin kan testköra och köra

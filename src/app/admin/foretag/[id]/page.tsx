@@ -9,9 +9,11 @@ import {
   aterstallGranskning,
   avslaForetag,
   godkannForetag,
+  satPilotkund,
   toggleCompanySuspended,
 } from '@/app/actions/admin';
 import {
+  arPilot,
   bolagstypText,
   fakturasattText,
   historikPlanText,
@@ -264,9 +266,10 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
                 <dt className="text-sand-500">Prenumeration</dt>
                 <dd className="font-medium">
                   {planNamnFor(company.subscription, company.companyType)}
+                  {arPilot(company) && ' · pilotkund, debiteras inte'}
                 </dd>
               </div>
-              {company.subscription !== 'NONE' && (
+              {company.subscription !== 'NONE' && !arPilot(company) && (
                 <div>
                   <dt className="text-sand-500">Belopp</dt>
                   <dd className="font-medium">
@@ -340,6 +343,70 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
               </div>
             </dl>
 
+            {/* Pilotkund: full åtkomst utan fakturering */}
+            <div
+              className={`mt-4 rounded-lg border p-3 text-sm ${
+                arPilot(company)
+                  ? 'border-brand-300 bg-brand-50'
+                  : 'border-sand-200 bg-sand-50'
+              }`}
+            >
+              {arPilot(company) ? (
+                <>
+                  <p className="font-medium text-sand-900">
+                    Pilotkund – full åtkomst utan debitering
+                  </p>
+                  <p className="muted mt-1">
+                    {company.pilotUntil
+                      ? `Gäller till och med ${formatDate(company.pilotUntil)}.`
+                      : 'Gäller tills vidare.'}
+                    {company.pilotNote ? ` ${company.pilotNote}` : ''}
+                  </p>
+                  <form action={satPilotkund} className="mt-3">
+                    <input type="hidden" name="id" value={company.id} />
+                    <input type="hidden" name="pa" value="nej" />
+                    <button className="btn-secondary" type="submit">
+                      Avsluta pilotperioden
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <form action={satPilotkund} className="space-y-3">
+                  <input type="hidden" name="id" value={company.id} />
+                  <input type="hidden" name="pa" value="ja" />
+                  <div>
+                    <p className="font-medium text-sand-900">Gör till pilotkund</p>
+                    <p className="muted mt-1">
+                      Ger full åtkomst till CVArkivet och annonser utan abonnemang. Företaget
+                      hamnar inte i faktureringsunderlaget och räknas inte som intäkt.
+                    </p>
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <div>
+                      <label className="label" htmlFor="pilotUntil">
+                        Till och med (tomt = tills vidare)
+                      </label>
+                      <input id="pilotUntil" type="date" name="pilotUntil" className="input" />
+                    </div>
+                    <div>
+                      <label className="label" htmlFor="pilotNote">
+                        Anteckning (syns bara för admin)
+                      </label>
+                      <input
+                        id="pilotNote"
+                        name="pilotNote"
+                        className="input"
+                        placeholder="t.ex. första kunden, testar under hösten"
+                        maxLength={300}
+                      />
+                    </div>
+                  </div>
+                  <button className="btn-primary" type="submit">
+                    Markera som pilotkund
+                  </button>
+                </form>
+              )}
+            </div>
           </Card>
 
           {company.subscriptionLog.length > 0 && (

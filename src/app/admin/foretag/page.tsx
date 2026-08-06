@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
-import { pris, prisInklMoms } from '@/lib/data';
+import { arPilot, pris, prisInklMoms } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { godkannForetag, toggleCompanySuspended } from '@/app/actions/admin';
@@ -35,7 +35,7 @@ export default async function AdminCompanies({
 
   const [betalande, vantande] = await Promise.all([
     prisma.company.findMany({
-      where: { suspended: false, subscription: { not: 'NONE' } },
+      where: { suspended: false, subscription: { not: 'NONE' }, isPilot: false },
       select: { companyType: true, subscription: true },
     }),
     prisma.company.findMany({ where: { status: 'PENDING' }, orderBy: { createdAt: 'asc' } }),
@@ -65,7 +65,9 @@ export default async function AdminCompanies({
         <Card>
           <p className="muted">Betalande företag</p>
           <p className="mt-1 text-3xl font-bold text-brand-600">{betalande.length}</p>
-          <p className="mt-1 text-xs text-sand-500">Årsabonnemang, faktureras en gång per år</p>
+          <p className="mt-1 text-xs text-sand-500">
+            Årsabonnemang, faktureras en gång per år. Pilotkunder räknas inte in.
+          </p>
         </Card>
         <Card>
           <p className="muted">Årsvärde av beståndet</p>
@@ -204,7 +206,9 @@ export default async function AdminCompanies({
                       ) : (
                         <Badge>Arbetsgivare</Badge>
                       )}
-                      {c.subscription === 'NONE' ? (
+                      {arPilot(c) ? (
+                        <Badge tone="pink">Pilotkund</Badge>
+                      ) : c.subscription === 'NONE' ? (
                         <Badge>Ingen</Badge>
                       ) : (
                         <Badge tone="green">

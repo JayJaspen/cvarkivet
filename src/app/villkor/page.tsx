@@ -12,7 +12,7 @@ export default function Villkor() {
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="h1 mb-2">Användarvillkor</h1>
-        <p className="muted mb-8">Utkast – ska granskas av jurist före lansering.</p>
+        <p className="muted mb-8">Gäller från 6 augusti 2026.</p>
 
         <div className="space-y-6 text-sm leading-relaxed text-sand-800">
           <section>
@@ -64,6 +64,11 @@ export default function Villkor() {
               Abonnemanget faktureras i förskott och gäller tolv månader från aktiveringen. Vid
               uppsägning i förtid behåller företaget åtkomsten till periodens slut. Ingen
               återbetalning sker för outnyttjad tid.
+            </p>
+            <p className="mt-2">
+              CVArkivet kan erbjuda enskilda företag en kostnadsfri pilotperiod med full
+              tillgång till tjänsten. Pilotperioden gäller den tid som avtalats och kan avslutas
+              av CVArkivet. Den övergår inte automatiskt i ett betalt abonnemang.
             </p>
             <p className="mt-2">
               Företag utan abonnemang ser ett begränsat och anonymiserat urval om tre kandidater

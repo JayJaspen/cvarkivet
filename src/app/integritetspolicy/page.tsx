@@ -13,7 +13,7 @@ export default function Integritetspolicy() {
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="h1 mb-2">Integritetspolicy</h1>
-        <p className="muted mb-8">Utkast – ska granskas av jurist före lansering.</p>
+        <p className="muted mb-8">Gäller från 6 augusti 2026.</p>
 
         <div className="space-y-6 text-sm leading-relaxed text-sand-800">
           <section>
