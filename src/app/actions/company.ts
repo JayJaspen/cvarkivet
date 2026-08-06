@@ -50,7 +50,7 @@ export async function updateCompany(_prev: FormState, form: FormData): Promise<F
       contactName,
       email,
       phone,
-      address,
+      address: address || null,
       municipality,
       website: website || null,
       presentation: presentation || null,

@@ -88,7 +88,12 @@ export default function CompanyForm() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Adress" name="address" required placeholder="Storgatan 1, 111 22 Stockholm" />
+        <Field
+          label="Besöksadress"
+          name="address"
+          placeholder="Storgatan 1, 111 22 Stockholm"
+          hint="Frivilligt. Har ni ingen besöksadress lämnar ni fältet tomt."
+        />
         <Select
           label="Hemmahörande kommun"
           name="municipality"

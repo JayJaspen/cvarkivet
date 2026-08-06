@@ -133,7 +133,9 @@ model Company {
   contactName  String
   email        String   @unique
   phone        String
-  address      String
+  /// Frivillig. Tjänsteföretag och webbshoppar har inte alltid en besöksadress.
+  /// Fakturaadress är något annat och ligger i invoiceAddress.
+  address      String?
   municipality String
   logoUrl      String?
   presentation String?

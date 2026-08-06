@@ -111,7 +111,7 @@ export default async function AdminCompanies({
                   <p className="muted">
                     {c.contactName} · {c.email} · {c.phone}
                   </p>
-                  <p className="muted">{c.address}</p>
+                  {c.address && <p className="muted">{c.address}</p>}
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/admin/foretag/${c.id}`} className="btn-secondary">

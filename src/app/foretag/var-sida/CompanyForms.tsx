@@ -12,7 +12,7 @@ type CompanyLite = {
   contactName: string;
   email: string;
   phone: string;
-  address: string;
+  address: string | null;
   municipality: string;
   website: string | null;
   presentation: string | null;
@@ -66,7 +66,12 @@ export default function CompanyForms({ company }: { company: CompanyLite }) {
             <Field label="Telefon" name="phone" type="tel" required defaultValue={company.phone} />
             <Field label="E-postadress" name="email" type="email" required defaultValue={company.email} />
             <Field label="Webbplats" name="website" defaultValue={company.website ?? ''} />
-            <Field label="Adress" name="address" required defaultValue={company.address} />
+            <Field
+              label="Besöksadress"
+              name="address"
+              defaultValue={company.address ?? ''}
+              hint="Frivilligt."
+            />
             <Select
               label="Hemmahörande kommun"
               name="municipality"

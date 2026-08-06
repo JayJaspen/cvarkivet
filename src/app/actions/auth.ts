@@ -151,7 +151,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
     };
 
   if (phone.replace(/\D/g, '').length < 6) return { error: 'Ange ett giltigt telefonnummer.' };
-  if (!address) return { error: 'Ange adress.' };
+  // Adressen är frivillig – alla företag har inte en besöksadress.
   if (!municipality) return { error: 'Välj hemmahörande kommun.' };
   if (password !== password2) return { error: 'Lösenorden matchar inte.' };
   if (!terms) return { error: 'Du behöver godkänna användarvillkoren.' };
@@ -176,7 +176,7 @@ export async function registerCompany(_prev: FormState, form: FormData): Promise
       contactName,
       email,
       phone,
-      address,
+      address: address || null,
       municipality,
       website: website || null,
       passwordHash: await bcrypt.hash(password, 12),

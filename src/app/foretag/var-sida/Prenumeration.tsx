@@ -23,7 +23,7 @@ type CompanyLite = {
   status: string;
   isPilot: boolean;
   pilotUntil: Date | null;
-  address: string;
+  address: string | null;
   email: string;
   invoiceMethod: string | null;
   invoiceAddress: string | null;
@@ -86,7 +86,7 @@ function Fakturaval({ company, idPrefix }: { company: CompanyLite; idPrefix: str
             name="invoiceAddress"
             rows={3}
             required
-            defaultValue={company.invoiceAddress ?? company.address}
+            defaultValue={company.invoiceAddress ?? company.address ?? ''}
             className="input"
             placeholder={'Företaget AB\nFakturagatan 1\n111 22 Stockholm'}
           />

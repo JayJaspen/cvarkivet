@@ -329,7 +329,7 @@ export default async function AdminCompanyDetail({ params }: { params: { id: str
               </div>
               <div>
                 <dt className="text-sand-500">Besöksadress</dt>
-                <dd>{company.address}</dd>
+                <dd>{company.address || 'Ingen angiven'}</dd>
               </div>
               <div>
                 <dt className="text-sand-500">Kontaktperson</dt>

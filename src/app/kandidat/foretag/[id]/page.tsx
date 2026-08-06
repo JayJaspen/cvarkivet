@@ -128,10 +128,12 @@ export default async function CompanyProfile({ params }: { params: { id: string 
           <Card>
             <h2 className="h2 mb-3">Kontaktuppgifter</h2>
             <dl className="space-y-2 text-sm">
-              <div>
-                <dt className="text-sand-500">Adress</dt>
-                <dd>{company.address}</dd>
-              </div>
+              {company.address && (
+                <div>
+                  <dt className="text-sand-500">Besöksadress</dt>
+                  <dd>{company.address}</dd>
+                </div>
+              )}
               <div>
                 <dt className="text-sand-500">Kommun</dt>
                 <dd>{company.municipality}</dd>
