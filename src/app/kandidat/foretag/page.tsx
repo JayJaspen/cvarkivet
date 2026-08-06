@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requireUser } from '@/lib/session';
-import { KOMMUNER } from '@/lib/data';
+import { foretagIKommun, KOMMUNER_FORETAG } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { toggleFavorite, toggleHiddenCompany } from '@/app/actions/user';
 import { contains } from '@/lib/search';
@@ -22,7 +22,7 @@ export default async function ForetagPage({
         suspended: false,
         status: 'APPROVED', // ogranskade företag syns inte för kandidaterna
         ...(q ? { name: contains(q) } : {}),
-        ...(kommun ? { municipality: kommun } : {}),
+        ...(kommun ? foretagIKommun(kommun) : {}),
       },
       orderBy: { name: 'asc' },
       include: { _count: { select: { jobAds: true } } },
@@ -57,7 +57,7 @@ export default async function ForetagPage({
             <label className="label">Kommun</label>
             <select name="kommun" defaultValue={kommun ?? ''} className="input">
               <option value="">Alla kommuner</option>
-              {KOMMUNER.map((k) => (
+              {KOMMUNER_FORETAG.map((k) => (
                 <option key={k} value={k}>
                   {k}
                 </option>

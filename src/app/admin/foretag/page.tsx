@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/session';
-import { arPilot, KOMMUNER, pris, prisInklMoms } from '@/lib/data';
+import { arPilot, foretagIKommun, KOMMUNER_FORETAG, pris, prisInklMoms } from '@/lib/data';
 import { Badge, Card, Empty, PageHeader } from '@/components/ui';
 import { formatDate } from '@/lib/utils';
 import { godkannForetag, toggleCompanySuspended } from '@/app/actions/admin';
@@ -29,7 +29,7 @@ export default async function AdminCompanies({
       ...(granskning ? { status: granskning } : {}),
       ...(status === 'avstangda' ? { suspended: true } : {}),
       ...(status === 'aktiva' ? { suspended: false } : {}),
-      ...(kommun ? { municipality: kommun } : {}),
+      ...(kommun ? foretagIKommun(kommun) : {}),
       ...(q
         ? {
             OR: [{ name: contains(q) }, { orgNumber: contains(q) }, { email: contains(q) }],
@@ -145,7 +145,7 @@ export default async function AdminCompanies({
             <label className="label">Kommun</label>
             <select name="kommun" defaultValue={kommun ?? ''} className="input">
               <option value="">Alla kommuner</option>
-              {KOMMUNER.map((k) => (
+              {KOMMUNER_FORETAG.map((k) => (
                 <option key={k} value={k}>
                   {k}
                 </option>

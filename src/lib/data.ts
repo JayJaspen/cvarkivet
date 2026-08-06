@@ -87,6 +87,29 @@ export const KOMMUNER: string[] = [...KOMMUNER_LANSVIS].sort((a, b) =>
 /** Kommuner + "Distans" överst – används i CV-inställningar och filter */
 export const KOMMUNER_MED_DISTANS: string[] = [REMOTE, ...KOMMUNER];
 
+/**
+ * Företag som inte hör hemma på en ort: konsulter, webbshoppar och helt
+ * distansbaserade verksamheter. De ska kunna registrera sig utan att peka ut
+ * en kommun de egentligen inte har någon koppling till.
+ */
+export const HELA_SVERIGE = 'Hela Sverige';
+
+/** Kommuner + "Hela Sverige" överst – används där ett företag väljer säte. */
+export const KOMMUNER_FORETAG: string[] = [HELA_SVERIGE, ...KOMMUNER];
+
+/**
+ * Villkor för att filtrera företag på kommun.
+ *
+ * Ett företag som valt Hela Sverige har ingen ort och är lika relevant
+ * överallt, så det följer med oavsett vilken kommun man filtrerar på. Väljer
+ * man Hela Sverige i filtret vill man däremot se just de företagen.
+ */
+export function foretagIKommun(kommun: string) {
+  return kommun === HELA_SVERIGE
+    ? { municipality: HELA_SVERIGE }
+    : { municipality: { in: [kommun, HELA_SVERIGE] } };
+}
+
 export const KATEGORIER: string[] = [
   'Administration & kontor',
   'Bank, finans & försäkring',

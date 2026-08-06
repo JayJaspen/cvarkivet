@@ -6,7 +6,7 @@ import { useFormState } from 'react-dom';
 import { registerCompany } from '@/app/actions/auth';
 import { Field, Select } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
-import { BOLAGSTYPER, KOMMUNER, PRISER } from '@/lib/data';
+import { BOLAGSTYPER, KOMMUNER_FORETAG, PRISER } from '@/lib/data';
 
 export default function CompanyForm() {
   const [state, formAction] = useFormState(registerCompany, undefined);
@@ -97,7 +97,7 @@ export default function CompanyForm() {
         <Select
           label="Hemmahörande kommun"
           name="municipality"
-          options={KOMMUNER}
+          options={KOMMUNER_FORETAG}
           required
           includeBlank
           blankLabel="Välj kommun…"

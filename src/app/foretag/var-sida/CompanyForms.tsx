@@ -4,7 +4,7 @@ import { useFormState } from 'react-dom';
 import { changeCompanyPassword, updateCompany } from '@/app/actions/company';
 import { Card, Field, Select, TextArea } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
-import { KOMMUNER } from '@/lib/data';
+import { KOMMUNER_FORETAG } from '@/lib/data';
 
 type CompanyLite = {
   orgNumber: string;
@@ -75,7 +75,7 @@ export default function CompanyForms({ company }: { company: CompanyLite }) {
             <Select
               label="Hemmahörande kommun"
               name="municipality"
-              options={KOMMUNER}
+              options={KOMMUNER_FORETAG}
               defaultValue={company.municipality}
               required
             />
