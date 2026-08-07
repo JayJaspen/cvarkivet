@@ -154,34 +154,44 @@ export default async function Home() {
             </Link>
           </div>
 
-          {/* Enkel skiss av hur profilen ser ut för företagen. Sidan var
-              tidigare helt utan bild, vilket gjorde den svår att ta in. */}
+          {/* Exempelprofil. Tidigare grå platshållarstreck, som såg ut som en
+              sida som inte laddat klart. Innehållet är påhittat och märkt som
+              exempel – ingen riktig kandidat visas här. */}
           <div className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
-            <div className="flex items-center gap-4">
-              <div className="h-14 w-14 shrink-0 rounded-full bg-brand-100" />
-              <div className="min-w-0 flex-1">
-                <div className="h-3 w-32 rounded bg-sand-300" />
-                <div className="mt-2 h-2.5 w-44 rounded bg-sand-200" />
+            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-sand-400">
+              Exempel
+            </p>
+
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand-100 text-lg font-semibold text-brand-700">
+                MA
               </div>
-              <span className="badge bg-brand-100 text-brand-800">Söker aktivt</span>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sand-900">Innesäljare med telefonvana</p>
+                <p className="muted">34 år · Växjö</p>
+                <p className="mt-1 text-sm font-medium text-brand-700">Söker: Innesäljare</p>
+              </div>
+              <span className="badge shrink-0 bg-brand-100 text-brand-800">Söker aktivt</span>
             </div>
 
-            <p className="mt-5 text-sm font-medium text-brand-700">Söker: Innesäljare</p>
-
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <span className="badge bg-sand-100 text-sand-700">Försäljning</span>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              <span className="badge bg-sand-100 text-sand-700">Försäljning &amp; detaljhandel</span>
               <span className="badge bg-sand-100 text-sand-700">Växjö</span>
               <span className="badge bg-sand-100 text-sand-700">Distans</span>
             </div>
 
-            <div className="mt-5 space-y-2">
-              <div className="h-2.5 w-full rounded bg-sand-100" />
-              <div className="h-2.5 w-5/6 rounded bg-sand-100" />
-              <div className="h-2.5 w-2/3 rounded bg-sand-100" />
-            </div>
+            <p className="mt-4 text-sm leading-relaxed text-sand-700">
+              Fem år av B2B-försäljning mot bygghandeln. Van vid hela kedjan från kall kontakt
+              till avslut, och trivs bäst när jag får äga mina egna kunder.
+            </p>
+
+            <p className="mt-3 text-sm text-sand-600">
+              <span className="font-medium text-sand-800">Kompetenser:</span> Salesforce,
+              offerthantering, B-körkort
+            </p>
 
             <p className="mt-5 border-t border-sand-200 pt-4 text-xs text-sand-500">
-              Så här ser din profil ut i företagens sökning.
+              Så här ser en profil ut när ett företag söker i CVArkivet.
             </p>
           </div>
         </div>
