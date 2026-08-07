@@ -53,3 +53,44 @@ export function cvHarInnehall(u: {
       u.categories?.length
   );
 }
+
+/**
+ * Hur komplett ett CV är, och vad som saknas.
+ *
+ * Åtta punkter som var och en gör kandidaten mer sökbar. Poängen är inte att
+ * mäta exakt utan att ge kandidaten något att fylla i – ett CV som är 40 %
+ * klart lockar mer till handling än ett tomt formulär utan återkoppling.
+ *
+ * Ordningen är avsiktlig: det som står först betyder mest för om någon
+ * hittar dig i sökningen.
+ */
+export function cvStatus(u: {
+  headline?: string | null;
+  seeking?: string | null;
+  skills?: string | null;
+  summary?: string | null;
+  homeMunicipality?: string | null;
+  categories?: unknown[];
+  municipalities?: unknown[];
+  experiences?: unknown[];
+}): { procent: number; saknas: string[]; klara: number; totalt: number } {
+  const punkter: { klar: boolean; text: string }[] = [
+    { klar: Boolean(u.headline), text: 'Yrkesrubrik' },
+    { klar: Boolean(u.seeking), text: 'Vilken tjänst du söker' },
+    { klar: Boolean(u.skills), text: 'Kompetenser' },
+    { klar: Boolean(u.categories?.length), text: 'Minst en jobbkategori' },
+    { klar: Boolean(u.homeMunicipality), text: 'Hemmahörande kommun' },
+    { klar: Boolean(u.experiences?.length), text: 'Minst en arbetslivserfarenhet' },
+    { klar: Boolean(u.summary), text: 'Kort presentation' },
+    { klar: Boolean(u.municipalities?.length), text: 'Kommuner du söker jobb i' },
+  ];
+
+  const klara = punkter.filter((p) => p.klar).length;
+
+  return {
+    procent: Math.round((klara / punkter.length) * 100),
+    saknas: punkter.filter((p) => !p.klar).map((p) => p.text),
+    klara,
+    totalt: punkter.length,
+  };
+}

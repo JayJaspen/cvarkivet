@@ -71,6 +71,36 @@ export default async function Home() {
             </Link>
           </div>
 
+          {/* Tre steg i stället för antalsrutor. Fungerar från dag ett och blir
+              inte pinsamt för att vi är få. */}
+          <ol className="mx-auto mt-16 grid max-w-3xl gap-8 text-left sm:grid-cols-3">
+            {[
+              {
+                n: '1',
+                r: 'Fyll i ditt CV',
+                t: 'Tar några minuter. Helt gratis, och kontot är aktivt direkt.',
+              },
+              {
+                n: '2',
+                r: 'Företagen söker',
+                t: 'Du ser exakt vilka som öppnat ditt CV – och kan dölja dig för vem du vill.',
+              },
+              {
+                n: '3',
+                r: 'De hör av sig',
+                t: 'Kontakten sker här i tjänsten. Du behöver aldrig lämna ut din adress.',
+              },
+            ].map((s) => (
+              <li key={s.n}>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-700">
+                  {s.n}
+                </span>
+                <p className="mt-3 font-semibold text-sand-900">{s.r}</p>
+                <p className="muted mt-1">{s.t}</p>
+              </li>
+            ))}
+          </ol>
+
           {statistik && (
             <dl className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-4">
               {[
@@ -89,56 +119,70 @@ export default async function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="card">
-            <h2 className="h2">För dig som söker jobb</h2>
-            <ul className="mt-4 space-y-2 text-sm text-sand-600">
-              <li>✓ Helt gratis, kontot är aktivt direkt</li>
-              <li>✓ Bläddra bland lediga jobb och filtrera på kommun och kategori</li>
-              <li>✓ Dölj din profil för din nuvarande arbetsgivare</li>
-              <li>✓ Se exakt vilka företag som har läst ditt CV</li>
-              <li>✓ Välj distansjobb och flera kommuner samtidigt</li>
+        <div className="grid items-center gap-10 md:grid-cols-2">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-sand-900">
+              Du bestämmer vem som ser dig
+            </h2>
+            <ul className="mt-6 space-y-3 text-sand-700">
+              {[
+                'Helt gratis, och kontot är aktivt direkt',
+                'Dölj din profil för din nuvarande arbetsgivare',
+                'Se exakt vilka företag som läst ditt CV',
+                'Blockera hela e-postdomäner du inte vill nås av',
+                'Välj distans och flera kommuner samtidigt',
+              ].map((t) => (
+                <li key={t} className="flex gap-3">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 20 20"
+                    className="mt-0.5 h-5 w-5 shrink-0 text-brand-600"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.8 3.8 6.8-6.8a1 1 0 0 1 1.4 0Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>{t}</span>
+                </li>
+              ))}
             </ul>
-            <Link href="/registrera/anvandare" className="btn-primary mt-6">
+            <Link href="/registrera/anvandare" className="btn-primary mt-8 px-6 py-3 text-base">
               Skapa mitt CV
             </Link>
           </div>
 
-          <div className="card">
-            <h2 className="h2">För arbetsgivare</h2>
-            <ul className="mt-4 space-y-2 text-sm text-sand-600">
-              <li>✓ Kontot är gratis – prenumeration aktiveras i efterhand</li>
-              <li>✓ Sök i hela CV-arkivet, filtrera på kommun och kategori</li>
-              <li>✓ Hjärta intressanta kandidater och kontakta dem direkt</li>
-              <li>✓ Publicera annonser och se vilka som anmält intresse</li>
-              <li>✓ Allt ingår – ingen uppdelning i paket</li>
-              <li>✓ Se ett smakprov ur arkivet innan ni bestämmer er</li>
-            </ul>
-            <div className="mt-5 space-y-3">
-              <div className="rounded-lg border-2 border-brand-500 p-4">
-                <p className="text-sm font-semibold">Arbetsgivare</p>
-                <p className="mt-1 text-2xl font-bold text-brand-600">
-                  4 990 kr
-                  <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
-                </p>
-                <p className="muted mt-1">
-                  Motsvarar 416 kr/mån. Full tillgång till CVArkivet och egna annonser.
-                </p>
+          {/* Enkel skiss av hur profilen ser ut för företagen. Sidan var
+              tidigare helt utan bild, vilket gjorde den svår att ta in. */}
+          <div className="rounded-2xl border border-sand-200 bg-white p-6 shadow-card">
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 shrink-0 rounded-full bg-brand-100" />
+              <div className="min-w-0 flex-1">
+                <div className="h-3 w-32 rounded bg-sand-300" />
+                <div className="mt-2 h-2.5 w-44 rounded bg-sand-200" />
               </div>
-              <div className="rounded-lg border border-sand-200 p-4">
-                <p className="text-sm font-semibold">Bemanning och rekrytering</p>
-                <p className="mt-1 text-2xl font-bold text-brand-600">
-                  9 990 kr
-                  <span className="text-sm font-normal text-sand-500">/år exkl. moms</span>
-                </p>
-                <p className="muted mt-1">
-                  Motsvarar 833 kr/mån. För er som rekryterar åt andra företag.
-                </p>
-              </div>
+              <span className="badge bg-brand-100 text-brand-800">Söker aktivt</span>
             </div>
-            <Link href="/registrera/foretag" className="btn-primary mt-6">
-              Registrera företag
-            </Link>
+
+            <p className="mt-5 text-sm font-medium text-brand-700">Söker: Innesäljare</p>
+
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              <span className="badge bg-sand-100 text-sand-700">Försäljning</span>
+              <span className="badge bg-sand-100 text-sand-700">Växjö</span>
+              <span className="badge bg-sand-100 text-sand-700">Distans</span>
+            </div>
+
+            <div className="mt-5 space-y-2">
+              <div className="h-2.5 w-full rounded bg-sand-100" />
+              <div className="h-2.5 w-5/6 rounded bg-sand-100" />
+              <div className="h-2.5 w-2/3 rounded bg-sand-100" />
+            </div>
+
+            <p className="mt-5 border-t border-sand-200 pt-4 text-xs text-sand-500">
+              Så här ser din profil ut i företagens sökning.
+            </p>
           </div>
         </div>
       </section>
@@ -172,7 +216,7 @@ export default async function Home() {
                   <div className="shrink-0 text-right">
                     <p className="text-xl font-bold text-accent-600">{o.roster}</p>
                     <p className="text-[11px] text-sand-500">
-                      {o.roster === 1 ? 'väntar' : 'väntar'}
+                      {o.roster === 1 ? 'person väntar' : 'personer väntar'}
                     </p>
                   </div>
                 </div>
@@ -190,6 +234,34 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      <section className="border-t border-sand-200 bg-brand-50">
+        <div className="mx-auto max-w-4xl px-4 py-16 text-center">
+          <p className="text-sm font-semibold uppercase tracking-wider text-brand-700">
+            För arbetsgivare
+          </p>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">
+            Söker ni personal?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-brand-800">
+            Skapa konto gratis och se ett smakprov ur arkivet innan ni bestämmer er. Sök bland
+            kandidater, publicera annonser och kontakta folk direkt – allt ingår, ingen
+            uppdelning i paket.
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link href="/registrera/foretag" className="btn-primary px-6 py-3 text-base">
+              Registrera företag – gratis
+            </Link>
+            <p className="text-sm text-brand-800">
+              Abonnemang från <b>4 990 kr/år</b> exkl. moms.{' '}
+              <Link href="/villkor" className="underline hover:no-underline">
+                Se priser
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
 
       <footer className="border-t border-sand-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-sand-500">

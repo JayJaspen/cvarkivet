@@ -5,6 +5,7 @@ import { addEducation, addExperience, deleteEducation, deleteExperience } from '
 import CvForm from './CvForm';
 import Granskning, { type Forslag } from './Granskning';
 import { aiArPakopplad } from '@/lib/ai';
+import { cvStatus } from '@/lib/cv';
 import { aiArAvstangt } from '@/lib/ai-kvot';
 
 export const dynamic = 'force-dynamic';
@@ -37,12 +38,67 @@ export default async function CvPage({
     Boolean(granskning) &&
     (granskning!.cvVersion?.getTime() ?? 0) !== (user.cvUpdatedAt?.getTime() ?? 0);
 
+  const status = cvStatus({
+    headline: user.headline,
+    seeking: user.seeking,
+    skills: user.skills,
+    summary: user.summary,
+    homeMunicipality: user.homeMunicipality,
+    categories,
+    municipalities,
+    experiences,
+  });
+
   return (
     <>
       <PageHeader
         title="Mitt CV"
         description="Det här ser företagen när de öppnar din profil i CVArkivet."
       />
+
+      {/* Något att fylla i slår ett tomt formulär utan återkoppling. */}
+      <Card className="mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="font-semibold text-sand-900">
+              {status.procent === 100
+                ? 'Ditt CV är komplett'
+                : `Ditt CV är ${status.procent} % klart`}
+            </p>
+            <p className="muted mt-0.5">
+              {status.procent === 100
+                ? 'Snyggt. Du syns i företagens sökningar med allt ifyllt.'
+                : `${status.klara} av ${status.totalt} punkter klara. Ju mer du fyller i, desto fler sökningar hittar dig.`}
+            </p>
+          </div>
+          <p className="text-3xl font-bold text-brand-600">{status.procent} %</p>
+        </div>
+
+        <div
+          className="mt-4 h-2 w-full overflow-hidden rounded-full bg-sand-200"
+          role="progressbar"
+          aria-valuenow={status.procent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Hur komplett ditt CV är"
+        >
+          <div
+            className="h-full rounded-full bg-brand-500 transition-all"
+            style={{ width: `${Math.max(status.procent, 2)}%` }}
+          />
+        </div>
+
+        {status.saknas.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="muted">Kvar att fylla i:</span>
+            {status.saknas.map((s) => (
+              <span key={s} className="badge bg-amber-100 text-amber-800">
+                {s}
+              </span>
+            ))}
+          </div>
+        )}
+      </Card>
 
       {searchParams.valkommen && (
         <Notice tone="green" title="Välkommen till CVArkivet!">
