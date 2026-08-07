@@ -5,7 +5,7 @@ import { ImageResponse } from 'next/og';
  * Slack, Teams eller liknande. Genereras vid bygget.
  */
 export const runtime = 'edge';
-export const alt = 'CVArkivet.se – lägg upp ditt CV en gång, låt företagen hitta dig';
+export const alt = 'CVArkivet.se – lägg upp ditt CV och låt företag hitta dig';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -55,7 +55,7 @@ export default async function Image() {
             maxWidth: 900,
           }}
         >
-          Lägg upp ditt CV en gång – låt företagen hitta dig
+          Lägg upp ditt CV & låt företag hitta dig
         </div>
 
         <div style={{ marginTop: 32, fontSize: 30, color: '#65655B' }}>

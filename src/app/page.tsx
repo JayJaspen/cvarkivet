@@ -56,7 +56,7 @@ export default async function Home() {
             Gratis för dig som söker jobb
           </p>
           <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-sand-900 sm:text-5xl">
-            Lägg upp ditt CV en gång – låt företagen hitta dig
+            Lägg upp ditt CV &amp; låt företag hitta dig
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-sand-600">
             På CVArkivet.se skapar du en profil gratis och bestämmer själv vilka företag som får se
