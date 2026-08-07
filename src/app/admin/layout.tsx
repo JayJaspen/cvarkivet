@@ -25,6 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           { href: '/admin/topplista', label: 'Topplista' },
           { href: '/admin/onskelista', label: 'Önskelistan', badge: onskemalAttGranska },
           { href: '/admin/ai', label: 'AI-förbrukning' },
+          { href: '/admin/installningar', label: 'Inställningar' },
           { href: '/admin/mitt-konto', label: 'Mitt konto' },
         ]}
       />

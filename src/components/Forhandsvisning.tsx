@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { Badge, Card } from '@/components/ui';
 import { ageFromBirthDate } from '@/lib/utils';
 import { FORHANDSVISNING_ANTAL } from '@/lib/data';
+import { visaPublikStatistik } from '@/lib/installningar';
 import { hiddenUserIdsForCompany } from '@/lib/visibility';
 import Paywall from '@/components/Paywall';
 
@@ -24,6 +25,8 @@ export default async function Forhandsvisning({
 }) {
   const doldaIds = await hiddenUserIdsForCompany(company);
 
+  const visaStatistik = await visaPublikStatistik();
+
   const [kandidater, totalt] = await Promise.all([
     prisma.user.findMany({
       where: { suspended: false, activelyLooking: true, id: { notIn: doldaIds } },
@@ -40,7 +43,9 @@ export default async function Forhandsvisning({
       orderBy: [{ cvUpdatedAt: 'desc' }, { createdAt: 'desc' }],
       take: FORHANDSVISNING_ANTAL,
     }),
-    prisma.user.count({ where: { suspended: false, id: { notIn: doldaIds } } }),
+    visaStatistik
+      ? prisma.user.count({ where: { suspended: false, id: { notIn: doldaIds } } })
+      : Promise.resolve(null),
   ]);
 
   return (
@@ -49,11 +54,11 @@ export default async function Forhandsvisning({
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="h2">Så här ser CVArkivet ut</h2>
           <p className="muted">
-            {totalt === 0
-              ? 'Inga kandidater ännu'
-              : `Ni ser ${Math.min(FORHANDSVISNING_ANTAL, kandidater.length)} av ${totalt} ${
+            {totalt !== null && totalt > 0
+              ? `Ni ser ${Math.min(FORHANDSVISNING_ANTAL, kandidater.length)} av ${totalt} ${
                   totalt === 1 ? 'kandidat' : 'kandidater'
-                }`}
+                }`
+              : `Ett urval om ${FORHANDSVISNING_ANTAL} kandidater`}
           </p>
         </div>
         <p className="muted mt-1 max-w-2xl">

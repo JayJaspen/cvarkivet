@@ -8,6 +8,7 @@ import { requireAdmin } from '@/lib/session';
 import { korGallring } from '@/lib/retention';
 import { satNodstopp } from '@/lib/ai-kvot';
 import { granskaLosenord } from '@/lib/losenord';
+import { satVisaPublikStatistik } from '@/lib/installningar';
 import { appUrl, companyApprovedEmail, companyRejectedEmail, sendEmail } from '@/lib/email';
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -197,4 +198,13 @@ export async function satPilotkund(form: FormData) {
   revalidatePath('/admin/foretag');
   revalidatePath(`/admin/foretag/${id}`);
   revalidatePath('/admin/faktureringsunderlag');
+}
+
+/** Visa eller dölj antalsrutorna på startsidan och i smakprovet. */
+export async function vaxlaPublikStatistik(form: FormData) {
+  const admin = await requireAdmin();
+  await satVisaPublikStatistik(String(form.get('pa')) === 'ja', admin.email);
+  revalidatePath('/');
+  revalidatePath('/admin/installningar');
+  revalidatePath('/foretag/cvarkivet');
 }

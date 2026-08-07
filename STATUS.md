@@ -86,8 +86,12 @@ Meddelanden. Utan abonnemang visas tre anonymiserade kandidater som smakprov.
 
 **Admin** – Registrerade användare (läs CV, kommunfilter, gallring) · Registrerade
 företag (godkänn, kommunfilter, faktureringsunderlag, CSV-export, pilotkund) ·
-Topplista · Önskelistan · Mitt konto · AI-förbrukning (kostnad i kronor per dag, månad
-och totalt, samt nödstopp).
+Topplista · Önskelistan · AI-förbrukning (kostnad i kronor per dag, månad och totalt,
+samt nödstopp) · Inställningar · Mitt konto.
+
+**Publik statistik är avstängd.** Antalsrutorna på startsidan och "Ni ser 3 av N
+kandidater" i smakprovet är dolda tills du slår på dem under *Admin → Inställningar*.
+Där ser du också vad siffrorna skulle visa just nu, så du kan bedöma när det är läge.
 
 ### Prismodell
 

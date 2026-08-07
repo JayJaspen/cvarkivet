@@ -62,6 +62,8 @@ src/lib/notifications.ts  Notis när ett företag läst ett CV
 src/lib/storage.ts        Logotyper: Vercel Blob i drift, disk lokalt
 src/lib/search.ts         Skiftlägesokänslig sökning
 src/lib/cv.ts             Vad som räknas som ett ifyllt CV
+src/lib/losenord.ts       Kontroll av lösenord mot kända dataintrång
+src/lib/installningar.ts  Driftreglage som admin styr, t.ex. publik statistik
 src/lib/ai.ts             Matchningspoäng och CV-granskning mot Claude, samt prislista
 src/lib/ai-kvot.ts        Dygnskvoter, nödstopp och kostnadsloggning
 src/lib/matchning.ts      Cachning av matchningspoäng
@@ -74,7 +76,7 @@ src/components/Skeleton   Laddningsskelett som visas medan servern hämtar data
 src/app/actions/          Server actions: auth, user, company, admin
 src/app/kandidat/         Lediga jobb · Företag · Mitt CV · Min sida · Meddelanden
 src/app/foretag/          CVArkivet · Annonser · Vår sida · Meddelanden
-src/app/admin/            Registrerade användare · Registrerade företag · AI-förbrukning
+src/app/admin/            Användare · Företag · Topplista · Önskelistan · AI-förbrukning · Inställningar
 ```
 
 ---
@@ -114,6 +116,11 @@ src/app/admin/            Registrerade användare · Registrerade företag · AI
   eller kategori räknas som tomt (`src/lib/cv.ts`). Företag kan dölja dem i sökningen, och de
   märks upp med *Tomt CV* i listan även när de visas. Att `cvUpdatedAt` är satt duger inte som
   mått – den sätts även när någon sparar ett helt tomt formulär.
+- **Publik statistik är avstängd som standard.** Antalsrutorna på startsidan och
+  "Ni ser 3 av N kandidater" i smakprovet visas bara när admin slagit på det under
+  *Inställningar*. En marknadsplats med få registrerade ser tommare ut än den är.
+  Är statistiken avstängd körs räknefrågorna inte alls, så siffrorna finns inte ens i
+  sidans data.
 - **Notiser i sidomenyn:** siffrorna räknas fram i `layout.tsx`, och Next.js återanvänder
   layouten vid klientnavigering. En sida som markerar något som läst måste därför rendera
   `<UppdateraMeny />` (`src/components/UppdateraMeny.tsx`), annars ligger siffran kvar trots

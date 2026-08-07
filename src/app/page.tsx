@@ -4,6 +4,7 @@ import { Logo } from '@/components/ui';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { hamtaOnskelista } from '@/lib/onskelista';
+import { visaPublikStatistik } from '@/lib/installningar';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,15 +14,23 @@ export default async function Home() {
   if (session?.role === 'COMPANY') redirect('/foretag/cvarkivet');
   if (session?.role === 'ADMIN') redirect('/admin/anvandare');
 
-  const [users, companies, ads, onskade] = await Promise.all([
-    prisma.user.count({ where: { suspended: false } }),
-    prisma.company.count({ where: { suspended: false, status: 'APPROVED' } }),
-    prisma.jobAd.count({
-      where: {
-        deadline: { gte: new Date() },
-        company: { suspended: false, status: 'APPROVED' },
-      },
-    }),
+  // Siffrorna hämtas bara när de ska visas. Är statistiken avstängd finns
+  // ingenting att läcka, inte ens i sidans data.
+  const visaStatistik = await visaPublikStatistik();
+
+  const [statistik, onskade] = await Promise.all([
+    visaStatistik
+      ? Promise.all([
+          prisma.user.count({ where: { suspended: false } }),
+          prisma.company.count({ where: { suspended: false, status: 'APPROVED' } }),
+          prisma.jobAd.count({
+            where: {
+              deadline: { gte: new Date() },
+              company: { suspended: false, status: 'APPROVED' },
+            },
+          }),
+        ])
+      : Promise.resolve(null),
     hamtaOnskelista(12),
   ]);
 
@@ -62,18 +71,20 @@ export default async function Home() {
             </Link>
           </div>
 
-          <dl className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-4">
-            {[
-              { n: users, l: 'Registrerade kandidater' },
-              { n: companies, l: 'Anslutna företag' },
-              { n: ads, l: 'Aktiva annonser' },
-            ].map((s) => (
-              <div key={s.l} className="card">
-                <dt className="text-3xl font-bold text-brand-600">{s.n}</dt>
-                <dd className="muted mt-1">{s.l}</dd>
-              </div>
-            ))}
-          </dl>
+          {statistik && (
+            <dl className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-4">
+              {[
+                { n: statistik[0], l: 'Registrerade kandidater' },
+                { n: statistik[1], l: 'Anslutna företag' },
+                { n: statistik[2], l: 'Aktiva annonser' },
+              ].map((s) => (
+                <div key={s.l} className="card">
+                  <dt className="text-3xl font-bold text-brand-600">{s.n}</dt>
+                  <dd className="muted mt-1">{s.l}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       </section>
 
